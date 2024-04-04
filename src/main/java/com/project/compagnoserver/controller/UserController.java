@@ -43,4 +43,20 @@ public class UserController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody User vo) {
+        User user = userService.login(vo.getUserId(), vo.getUserPwd(), passwordEncoder);
+        if(user!=null) {
+            log.info("컨트롤러의 user : " + user);
+            UserDTO responseDTO = UserDTO.builder()
+                                .userId(user.getUserNickname())
+                    .userName(user.getUsername())
+                    .build();
+
+            return ResponseEntity.ok().body(responseDTO);
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
 }
