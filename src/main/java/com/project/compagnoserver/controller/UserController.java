@@ -1,5 +1,6 @@
 package com.project.compagnoserver.controller;
 
+import com.project.compagnoserver.config.TokenProvider;
 import com.project.compagnoserver.domain.User;
 import com.project.compagnoserver.domain.UserDTO;
 import com.project.compagnoserver.service.UserService;
@@ -23,6 +24,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TokenProvider tokenProvider;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -51,6 +55,25 @@ public class UserController {
                 .build();
 
         return ResponseEntity.ok().body(dto);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody User vo) {
+        User user = userService.login(vo.getUserId(), vo.getPassword(), passwordEncoder);
+        if(user!=null) {
+            String token = tokenProvider.create(user);
+
+            UserDTO responseDTO = UserDTO.builder()
+                    .userId(user.getUserId())
+                    .userPersonName(user.getUserPersonName())
+                    .token(token)
+                    .build();
+
+            return ResponseEntity.ok().body(responseDTO);
+        }
+
+        // 로그인 실패
+        return ResponseEntity.badRequest().build();
     }
 
 }
