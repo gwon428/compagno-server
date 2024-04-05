@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
@@ -18,8 +20,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 @RestController
+@RequestMapping("/content")
 @RequiredArgsConstructor
 @Slf4j
 public class ParsingController {
@@ -44,14 +48,12 @@ public class ParsingController {
             stream = getNetworkConnection(conn);
             result = readStreamToString(stream);
         }
-
         return ResponseEntity.status(HttpStatus.OK).body(result);
-
     }
 
     private InputStream getNetworkConnection(HttpURLConnection conn) throws Exception {
-        conn.setConnectTimeout(300000);
-        conn.setReadTimeout(300000);
+        conn.setConnectTimeout(3000);
+        conn.setReadTimeout(3000);
         conn.setRequestMethod("GET");
         conn.setDoInput(true);
 
@@ -75,12 +77,10 @@ public class ParsingController {
                 result.append(readLine + "\n\r");
             }
 
-
             // JSON 파싱 시작
             String responseData = responseBuffer.toString();
             JSONObject jsonResponse = new JSONObject(responseData);
             JSONArray parsing = jsonResponse.getJSONArray("data");
-
 
             for (int i = 0; i < parsing.length(); i++) {
                 JSONObject vo = parsing.getJSONObject(i);
@@ -88,10 +88,10 @@ public class ParsingController {
                 String mainCate = vo.getString("카테고리2");
                 String subCate = vo.getString("카테고리3");
                 String mainregCate = vo.getString("시도 명칭");
-                String subregCate = vo.optString("시군구 명칭", "no value");
+                String subregCate = vo.optString("시군구 명칭", "-");
                 String latitude = vo.getString("위도");
                 String longtitude = vo.getString("경도");
-                String roadAddr = vo.optString("도로명주소", "no value");
+                String roadAddr = vo.optString("도로명주소", "-");
                 String addr = vo.getString("지번주소");
                 String phone = vo.getString("전화번호");
                 String url = vo.getString("홈페이지");
@@ -121,4 +121,6 @@ public class ParsingController {
         }
         return null;
     }
+
+
 }

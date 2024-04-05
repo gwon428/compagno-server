@@ -28,11 +28,20 @@ public class Parsing {
     @Column(name = "main_cate")
     private String mainCate;
 
+    @Column(name="main_cate_code")
+    private int mainCateCode;
+
     @Column(name = "sub_cate")
     private String subCate;
 
+    @Column(name="sub_cate_code")
+    private int subCateCode;
+
     @Column(name = "mainreg_cate")
     private String mainregCate;
+
+    @Column(name="mainreg_code")
+    private int mainregCode;
 
     @Column(name = "subreg_cate")
     private String subregCate;

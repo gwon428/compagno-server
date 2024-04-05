@@ -6,15 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 @Service
-public class ParsingService {
+public class ContentService {
+
     @Autowired
     private ParsingDAO dao;
-    public Parsing create(Parsing vo){
-        return dao.save(vo);
+    public List<Parsing> findByMainCateCode(int code){
+        return dao.findByMainCateCode(code);
     }
-
-
-
 }
