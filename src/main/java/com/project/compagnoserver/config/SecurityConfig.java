@@ -18,9 +18,10 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .httpBasic(basic -> basic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/signUp", "/login").permitAll()
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/signUp", "/login").permitAll()
                         .anyRequest().authenticated()
-
-                ).build();
+                )
+                .build();
     }
 }

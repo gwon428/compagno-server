@@ -3,17 +3,22 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.User;
 import com.project.compagnoserver.domain.UserDTO;
 import com.project.compagnoserver.service.UserService;
-import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.CurrentTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@Slf4j
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
+@Controller
 public class UserController {
 
     @Autowired
@@ -21,42 +26,31 @@ public class UserController {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    LocalDateTime localDateTime = LocalDateTime.now();
+    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
+
+
     @PostMapping("/signUp")
     public ResponseEntity create(@RequestBody User vo) {
-
         User user = User.builder()
-                        .userId(vo.getUserId())
-                        .userPwd(passwordEncoder.encode(vo.getPassword()))
-                        .userName(vo.getUsername())
-                        .userNickname(vo.getUserNickname())
-                        .userEmail(vo.getUserEmail())
-                        .userPhone(vo.getUserPhone())
-                        .userRole("ROLE_USER")
-                        .build();
+                .userId(vo.getUserId())
+                .userPwd(passwordEncoder.encode(vo.getUserPwd()))
+                .userPersonName(vo.getUserPersonName())
+                .userNickname(vo.getUserNickname())
+                .userEmail(vo.getUserEmail())
+                .userPhone(vo.getUserPhone())
+                .userEnrollDate(nowDate)
+                .userStatus("n")
+                .userRole("ROLE_USER")
+                .build();
 
         User result = userService.create(user);
-        UserDTO responseDTO = UserDTO.builder()
-                                        .userId(result.getUserId())
-                                        .userName(result.getUsername())
-                                        .build();
+        UserDTO dto = UserDTO.builder()
+                .userId(result.getUserId())
+                .userPersonName(result.getUserPersonName())
+                .build();
 
-        return ResponseEntity.ok().body(responseDTO);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity login(@RequestBody User vo) {
-        User user = userService.login(vo.getUserId(), vo.getUserPwd(), passwordEncoder);
-        if(user!=null) {
-            log.info("컨트롤러의 user : " + user);
-            UserDTO responseDTO = UserDTO.builder()
-                                .userId(user.getUserNickname())
-                    .userName(user.getUsername())
-                    .build();
-
-            return ResponseEntity.ok().body(responseDTO);
-        }
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(dto);
     }
 
 }

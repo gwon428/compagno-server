@@ -5,12 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
+
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDTO {
 
     private String userId;
-    private String userName;
+    private String userPersonName;
 }

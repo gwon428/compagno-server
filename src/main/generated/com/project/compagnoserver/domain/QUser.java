@@ -19,19 +19,17 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
-    public final NumberPath<Integer> userCode = createNumber("userCode", Integer.class);
-
     public final StringPath userEmail = createString("userEmail");
 
-    public final DateTimePath<java.sql.Timestamp> userEnrollDate = createDateTime("userEnrollDate", java.sql.Timestamp.class);
+    public final DateTimePath<java.util.Date> userEnrollDate = createDateTime("userEnrollDate", java.util.Date.class);
 
     public final StringPath userId = createString("userId");
 
     public final StringPath userImg = createString("userImg");
 
-    public final StringPath userName = createString("userName");
-
     public final StringPath userNickname = createString("userNickname");
+
+    public final StringPath userPersonName = createString("userPersonName");
 
     public final StringPath userPhone = createString("userPhone");
 
@@ -39,7 +37,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath userPwd = createString("userPwd");
 
-    public final DateTimePath<java.sql.Timestamp> userQuitDate = createDateTime("userQuitDate", java.sql.Timestamp.class);
+    public final DateTimePath<java.util.Date> userQuitDate = createDateTime("userQuitDate", java.util.Date.class);
 
     public final StringPath userRole = createString("userRole");
 

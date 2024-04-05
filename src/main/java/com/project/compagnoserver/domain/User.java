@@ -1,41 +1,39 @@
 package com.project.compagnoserver.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.boot.autoconfigure.task.TaskExecutionProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.beans.ConstructorProperties;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 @Entity
+@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
-@Builder
 public class User implements UserDetails {
 
     @Id
-    @Column(name = "user_code")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userCode;
+    @Column(name = "user_id")
+    private String userId;
 
-    @Column(name = "user_name")
-    private String userName;
+    @Column(name = "user_person_name")
+    private String userPersonName;
 
     @Column(name = "user_phone")
     private String userPhone;
-
-    @Column(name = "user_id")
-    private String userId;
 
     @Column(name = "user_pwd")
     private String userPwd;
@@ -50,10 +48,10 @@ public class User implements UserDetails {
     private String userStatus;
 
     @Column(name = "user_enroll_date")
-    private Timestamp userEnrollDate;
+    private Date userEnrollDate;
 
     @Column(name = "user_quit_date")
-    private Timestamp userQuitDate;
+    private Date userQuitDate;
 
     @Column(name = "user_role")
     private String userRole;
