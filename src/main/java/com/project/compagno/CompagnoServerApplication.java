@@ -1,4 +1,4 @@
-package com.project.compagnoserver;
+package com.project.compagno;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
