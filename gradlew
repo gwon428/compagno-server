@@ -47,7 +47,7 @@
 #       problems, so this is (mostly) avoided, by progressively accumulating
 #       options in "$@", and eventually passing that to Java.
 #
-#       Where the inherited environment variables (DEFAULT_JVM_OPTS, JAVA_OPTS,
+#       Where the inherited environment variables (DEFAULTJVMOPTS, JAVAOPTS,
 #       and GRADLE_OPTS) rely on word-splitting, this is performed explicitly;
 #       see the in-line comments for details.
 #
