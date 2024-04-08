@@ -43,6 +43,6 @@ public class Note {
     @Column(name="deleted_by_receiver")
     private Boolean deletedByReceiver;
 
-    @OneToMany(mappedBy = "note_code")
+    @OneToMany(mappedBy = "noteCode")
     private List<NoteFIle> files;
 }

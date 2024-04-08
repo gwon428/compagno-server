@@ -23,7 +23,7 @@ public class NoteFIle {
     @ManyToOne
     @JoinColumn(name="note_code")
     @JsonIgnore
-    private int noteCode;
+    private Note noteCode;
 
     @Column(name="note_file_url")
     private String noteFileUrl;
