@@ -1,9 +1,9 @@
-package com.project.compagnoserver.entity;
+package com.project.compagnoserver.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Generated;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -44,5 +44,5 @@ public class Note {
     private Boolean deletedByReceiver;
 
     @OneToMany(mappedBy = "note_code")
-    private List<Note> files;
+    private List<NoteFIle> files;
 }
