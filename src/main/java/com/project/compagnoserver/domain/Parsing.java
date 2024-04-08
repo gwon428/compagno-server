@@ -65,9 +65,6 @@ public class Parsing {
     private String url;
 
     @Column
-    private Date holyday;
-
-    @Column
     private String parking;
 
     @Column

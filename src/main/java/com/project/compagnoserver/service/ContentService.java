@@ -33,4 +33,8 @@ public class ContentService {
     public Optional<Parsing> findById(int code){
         return dao.findById(code);
     }
+
+    public List<Parsing> findByMainCateReg(int code, int reg){
+        return dao.findByMainCateReg(code, reg);
+    }
 }

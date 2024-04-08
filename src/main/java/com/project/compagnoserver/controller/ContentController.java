@@ -34,9 +34,7 @@ public class ContentController {
     // 메인카테고리별
     @GetMapping("/view/mainCate/{code}")
     public ResponseEntity<List<Parsing>> viewMain(@PathVariable(name="code") int code){
-        log.info("controller " + code);
         List<Parsing> list = service.findByMainCateCode(code);
-        log.info("list : "  + list);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
@@ -59,5 +57,11 @@ public class ContentController {
     public ResponseEntity<Optional<Parsing>> view(@PathVariable(name="code") int code){
         Optional<Parsing> vo = service.findById(code);
         return ResponseEntity.status(HttpStatus.OK).body(vo);
+    }
+
+    @GetMapping("/view/{code}/{reg}")
+    public ResponseEntity<List<Parsing>> viewMainReg(@PathVariable(name="code") int code, @PathVariable(name="reg") int reg){
+        List<Parsing> list = service.findByMainCateReg(code, reg);
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 }
