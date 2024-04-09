@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -22,11 +23,14 @@ public class AnimalBoard {
     private int aBoardCode;  //자유게시판 코드
 
     @ManyToOne
-    @Column(name = "animal_category_code")
+    @JoinColumn(name = "animal_category_code")
     private AnimalCategory animalCategory; // 동물 카테고리 코드로 카테고리 가져오기
 
     @Column(name = "a_main_image")
     private String aMainImage; // 게시글 썸네일
+
+    @OneToMany(mappedBy = "animal_board")
+    private List<AnimalBoardImage> images;
 
     @Column(name = "a_board_title")
     private String aBoardTitle; // 게시글 제목

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +20,6 @@ public class AnimalBoardDTO {
     private String aBoardContent;
     private int aBoardView;
     private Date aBoardDate;
-    private MultipartFile file; // 여기에 사진이 담김
+    private List<MultipartFile> files; // 여기에 사진이 담김
     private int animalCategoryCode; // 얘를 통해서 타입을 가져옴
 }
