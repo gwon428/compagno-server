@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @Slf4j
 public class NoteService {
@@ -69,7 +71,10 @@ public class NoteService {
         //return vo;
     }
 
-    // [검색 기능] - 받은 사, 보낸 사람, 제목, 날짜
+    // [검색 기능] - 특정 검색 따른 쪽지 조회
+    public Page<Note> findBySearch(String sender, String receiver, String noteTitle, Date noteRegiDate, Pageable pageable){
+        return noteDAO.findBySearch(sender, receiver, noteTitle, noteRegiDate, pageable);
+    }
 
 
 }

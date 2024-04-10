@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.lang.annotation.Repeatable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -115,6 +116,10 @@ public class NoteController {
 
     }
 
+    // 검색 쪽지함
+
+
+
     // view(한개 보기)
     @GetMapping("/note/{noteCode}")
     public ResponseEntity<Note> view(@PathVariable("noteCode")int noteCode){
@@ -151,6 +156,7 @@ public class NoteController {
     }
 
 
+    // [검색 기능] - 특정 검색 따른 쪽지 조회
 
 
 }
