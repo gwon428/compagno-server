@@ -12,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 public class NoteDTO {
 
-    private String title;
-    private String content;
+    private String noteTitle;
+    private String noteContent;
     private String sender;
     private String receiver;
     private boolean deletedSender;

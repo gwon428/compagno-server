@@ -61,11 +61,15 @@ public class NoteService {
 
     // [삭제] ------------------------------------------------------------------------------
     // delete(삭제) : controller에서 각 update 안에 추가!
-    public Note delete(int noteCode){
+    public void delete(int noteCode){
         Note vo = noteDAO.findById(noteCode).orElse(null);
         if(vo!=null){
             noteDAO.delete(vo);
         }
-        return vo;
+        //return vo;
     }
+
+    // [검색 기능] - 받은 사, 보낸 사람, 제목, 날짜
+
+
 }

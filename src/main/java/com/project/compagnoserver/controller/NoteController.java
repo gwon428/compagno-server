@@ -44,8 +44,8 @@ public class NoteController {
     @PostMapping("/note")
     public ResponseEntity<Note> create(NoteDTO dto) throws IOException {
        Note note = new Note();
-       note.setNoteTitle(dto.getTitle());
-       note.setNoteContent(dto.getContent());
+       note.setNoteTitle(dto.getNoteTitle());
+       note.setNoteContent(dto.getNoteContent());
        note.setSender(dto.getSender());
        note.setReceiver(dto.getReceiver());
 
@@ -72,9 +72,10 @@ public class NoteController {
     }
 
     // 보기 ------------------------------------
-    // viewAll(전체보기)
+    // viewAll(전체보기) - 전체쪽지함
     @GetMapping("/note")
     public ResponseEntity<List<Note>> viewAll(@RequestParam(name="page", defaultValue = "1") int page){
+        Sort sort = Sort.by("noteCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10);
         Page<Note> list = service.viewAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
@@ -100,7 +101,7 @@ public class NoteController {
     // viewReceiveBox(받은 쪽지함)
     @GetMapping("/note/receiveBox/{receiver}")
     public ResponseEntity<List<Note>> viewReceiveBox(@PathVariable("receiver")String receiver, @RequestParam(name="page", defaultValue = "1")int page){
-        Sort sort = Sort.by("notecode").descending();
+        Sort sort = Sort.by("noteCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QNote qNote = QNote.note;
@@ -126,25 +127,30 @@ public class NoteController {
     @DeleteMapping("/note/sender/{noteCode}")
     public ResponseEntity<Note> deletedSender(@PathVariable(name="noteCode")int noteCode){
         Note note = service.updateDeleteSender(noteCode);
-        Note result = null;
+
         if(note.getDeletedBySender() && note.getDeletedByReceiver()){
-            result = service.delete(noteCode);
+            service.delete(noteCode);
         }
-        return (result!=null)?
-                ResponseEntity.status(HttpStatus.ACCEPTED).body(result):
+
+        return (note!=null)?
+                ResponseEntity.status(HttpStatus.ACCEPTED).body(note):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     // 받은 이가 삭제 원함(수정+조건삭제)
     @DeleteMapping("/note/receiver/{noteCode}")
     public ResponseEntity<Note> deletedReceiver(@PathVariable(name="noteCode")int noteCode){
-        Note note = service.updateDeleteSender(noteCode);
-        Note result = null;
+        Note note = service.updateDeleteReceiver(noteCode);
+
         if(note.getDeletedBySender() && note.getDeletedByReceiver()){
-            result = service.delete(noteCode);
+            service.delete(noteCode);
         }
-        return (result!=null)?
-                ResponseEntity.status(HttpStatus.ACCEPTED).body(result):
+        return (note!=null)?
+                ResponseEntity.status(HttpStatus.ACCEPTED).body(note):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+
+
+
 }
