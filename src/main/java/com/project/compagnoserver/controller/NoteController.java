@@ -3,7 +3,6 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.Note;
 import com.project.compagnoserver.domain.NoteDTO;
 import com.project.compagnoserver.domain.NoteFIle;
-//import com.project.compagnoserver.domain.QNote;
 import com.project.compagnoserver.domain.QNote;
 import com.project.compagnoserver.service.NoteService;
 import com.querydsl.core.BooleanBuilder;
@@ -185,7 +184,7 @@ public class NoteController {
     }
 
 
-    // [검색 기능] - 특정 검색 따른 쪽지 조회
+
 
 
 }

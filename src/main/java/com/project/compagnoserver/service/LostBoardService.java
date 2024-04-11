@@ -37,6 +37,10 @@ public class LostBoardService {
         }
         return null;
     }
+    public LostBoardImage update(LostBoardImage image){
+        return imagesDAO.save(image);
+    }
+
 
     // 삭제
     public void delete(int lostBoardCode){
