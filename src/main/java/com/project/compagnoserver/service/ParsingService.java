@@ -1,11 +1,9 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.Parsing;
-import com.project.compagnoserver.domain.ParsingDAO;
+import com.project.compagnoserver.repo.ParsingDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ParsingService {
