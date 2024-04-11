@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,22 +52,22 @@ public class NoteController {
        note.setReceiver(dto.getReceiver());
 
        Note result = service.create(note);
+        if(dto.getFiles()!=null) {
+            for (MultipartFile file : dto.getFiles()) {
+                NoteFIle files = new NoteFIle();
 
-       for(MultipartFile file : dto.getFiles()){
-           NoteFIle files = new NoteFIle();
+                String fileName = file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString();
 
-           String fileName = file.getOriginalFilename();
-           String uuid = UUID.randomUUID().toString();
+                String saveName = uploadPath + File.separator + "note" + File.separator + uuid + "_" + fileName;
+                Path savePath = Paths.get(saveName);
+                file.transferTo(savePath);
 
-           String saveName = uploadPath + File.separator + "note" + File.separator + uuid + "_" + fileName;
-           Path savePath = Paths.get(saveName);
-           file.transferTo(savePath);
-
-           files.setNoteFileUrl(saveName);
-           files.setNoteCode(result);
-           service.createFile(files);
-       }
-
+                files.setNoteFileUrl(saveName);
+                files.setNoteCode(result);
+                service.createFile(files);
+            }
+        }
         return result!=null?
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -117,7 +118,35 @@ public class NoteController {
     }
 
     // 검색 쪽지함
+    @GetMapping("/note/search")
+    public ResponseEntity<List<Note>> findBySearch(@RequestParam(name="page", defaultValue = "1")int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date noteRegiDate){
 
+        Pageable pageable = PageRequest.of(page-1, 10);
+    log.info("sender : " + sender);
+        QNote qNote = QNote.note;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = null;
+        if(sender!=null){
+            expression = qNote.sender.contains(sender);
+            builder.and(expression);
+        }
+
+        if(receiver!=null){
+            expression = qNote.receiver.contains(receiver);
+            builder.and(expression);
+        }
+        if(noteTitle!=null){
+            expression = qNote.noteTitle.eq(noteTitle);
+            builder.and(expression);
+        }
+        if(noteRegiDate!=null){
+            expression = qNote.noteRegiDate.eq(noteRegiDate);
+            builder.and(expression);
+        }
+        log.info("builder : " + builder);
+        Page<Note> list = service.findBySearch(pageable, builder);
+        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+    }
 
 
     // view(한개 보기)

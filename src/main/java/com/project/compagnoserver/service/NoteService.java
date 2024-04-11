@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -39,6 +40,12 @@ public class NoteService {
 
     // view(보기 : 개별 쪽지 내용 확인)
     public Note view(int noteCode) {return noteDAO.findById(noteCode).orElse(null);}
+
+    // [검색 기능] - 특정 검색 따른 쪽지 조회
+    public Page<Note> findBySearch(Pageable pageable, BooleanBuilder builder){
+        return noteDAO.findAll(builder, pageable);
+    }
+
 
     // [수정] ------------------------------------------------------------------------------
     // update(수정) : 보낸 이가 삭제 원할 때 deletedSender을 true로 변경
@@ -71,10 +78,7 @@ public class NoteService {
         //return vo;
     }
 
-    // [검색 기능] - 특정 검색 따른 쪽지 조회
-    public Page<Note> findBySearch(String sender, String receiver, String noteTitle, Date noteRegiDate, Pageable pageable){
-        return noteDAO.findBySearch(sender, receiver, noteTitle, noteRegiDate, pageable);
-    }
+
 
 
 }

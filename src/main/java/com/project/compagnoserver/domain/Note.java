@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,7 @@ public class Note {
     @Column
     private String receiver;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name="note_regi_date")
     private Date noteRegiDate;
 
