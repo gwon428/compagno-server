@@ -65,6 +65,7 @@ public class ProductBoardService {
     }
 
     // 이미지 삭제
+    @Transactional
     public void deleteImage(int code) {
         queryFactory.delete(qProductBoardImage)
                 .where(qProductBoardImage.productBoard.productBoardCode.eq(code))
@@ -72,16 +73,11 @@ public class ProductBoardService {
     }
 
     // 게시판 수정
-    public void updateBoard(ProductBoard vo) {
+    public ProductBoard updateBoard(ProductBoard vo) {
         if(board.existsById(vo.getProductBoardCode())) {
-            board.save(vo);
+            return board.save(vo);
         }
-    }
-
-    // 이미지 수정
-    public void updateImage(ProductBoardImage vo) {
-        deleteImage(vo.getProductBoard().getProductBoardCode());
-        createImage(vo);
+        return null;
     }
 
     // 게시판 북마크
@@ -89,13 +85,12 @@ public class ProductBoardService {
         Integer checkBookmark = queryFactory.selectOne()
                 .from(qProductBoardBookmark)
                 .where(qProductBoardBookmark.productBoardCode.eq(vo.getProductBoardCode()))
-                //.where(qProductBoardBookmark.user.userId.eq(vo.getUser().getUserId()))
+                .where(qProductBoardBookmark.userId.eq(vo.getUserId()))
                 .fetchFirst();
         if(checkBookmark==null) {
             bookmark.save(vo);
         } else {
             bookmark.deleteById(checkBookmark);
-            bookmark.save(vo);
         }
     }
 
@@ -104,13 +99,12 @@ public class ProductBoardService {
         Integer checkRecommend = queryFactory.selectOne()
                 .from(qProductBoardRecommend)
                 .where(qProductBoardRecommend.productBoardCode.eq(vo.getProductBoardCode()))
-                //.where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
+                .where(qProductBoardRecommend.userId.eq(vo.getUserId()))
                 .fetchFirst();
         if(checkRecommend==null) {
             recommend.save(vo);
         } else {
             recommend.deleteById(checkRecommend);
-            recommend.save(vo);
         }
     }
 

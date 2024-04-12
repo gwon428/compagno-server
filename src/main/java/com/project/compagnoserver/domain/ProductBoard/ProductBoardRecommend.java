@@ -1,7 +1,6 @@
 package com.project.compagnoserver.domain.ProductBoard;
 
 
-import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,7 +27,6 @@ public class ProductBoardRecommend {
     @Column(name = "product_recommend_date")
     private Date productRecommendDate;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private String userId;
 }
