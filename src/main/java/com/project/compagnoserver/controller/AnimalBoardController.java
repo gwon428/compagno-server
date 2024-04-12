@@ -2,8 +2,8 @@ package com.project.compagnoserver.controller;
 
 
 import com.project.compagnoserver.domain.Animal.*;
-import com.project.compagnoserver.domain.AnimalBoard;
-import com.project.compagnoserver.domain.AnimalBoardDTO;
+import com.project.compagnoserver.domain.Animal.AnimalBoard;
+import com.project.compagnoserver.domain.Animal.AnimalBoardDTO;
 import com.project.compagnoserver.service.AnimalBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
