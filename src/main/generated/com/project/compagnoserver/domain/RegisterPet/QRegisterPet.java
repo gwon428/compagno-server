@@ -1,8 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.RegisterPet;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -16,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QRegisterPet extends EntityPathBase<RegisterPet> {
 
-    private static final long serialVersionUID = 1663980741L;
+    private static final long serialVersionUID = -581822541L;
 
     public static final QRegisterPet registerPet = new QRegisterPet("registerPet");
 
