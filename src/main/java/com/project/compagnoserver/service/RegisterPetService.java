@@ -1,7 +1,7 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.RegisterPet;
-import com.project.compagnoserver.repo.RegisterPetDAO;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
+import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

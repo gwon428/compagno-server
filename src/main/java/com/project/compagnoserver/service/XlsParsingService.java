@@ -1,7 +1,7 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.RegisterPet;
-import com.project.compagnoserver.repo.RegisterPetDAO;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
+import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;

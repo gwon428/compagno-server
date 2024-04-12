@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.RegisterPet;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

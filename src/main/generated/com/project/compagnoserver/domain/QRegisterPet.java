@@ -2,6 +2,7 @@ package com.project.compagnoserver.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
