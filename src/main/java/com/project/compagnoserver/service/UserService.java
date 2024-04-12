@@ -1,7 +1,7 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.User;
-import com.project.compagnoserver.repo.UserDAO;
+import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.repo.user.UserDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,6 +1,6 @@
 package com.project.compagnoserver.config;
 
-import com.project.compagnoserver.domain.User;
+import com.project.compagnoserver.domain.user.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,6 @@
 package com.project.compagnoserver.config;
 
-import com.project.compagnoserver.domain.User;
+import com.project.compagnoserver.domain.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

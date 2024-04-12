@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
