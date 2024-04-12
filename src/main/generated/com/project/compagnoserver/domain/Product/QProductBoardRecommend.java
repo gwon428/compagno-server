@@ -28,7 +28,7 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public final DateTimePath<java.util.Date> productRecommendDate = createDateTime("productRecommendDate", java.util.Date.class);
 
-    public final com.project.compagnoserver.domain.QUser user;
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QProductBoardRecommend(String variable) {
         this(ProductBoardRecommend.class, forVariable(variable), INITS);
@@ -48,7 +48,7 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public QProductBoardRecommend(Class<? extends ProductBoardRecommend> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

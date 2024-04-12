@@ -26,7 +26,7 @@ public class QProductBoardBookmark extends EntityPathBase<ProductBoardBookmark> 
 
     public final NumberPath<Integer> productBookmarkCode = createNumber("productBookmarkCode", Integer.class);
 
-    public final com.project.compagnoserver.domain.QUser user;
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QProductBoardBookmark(String variable) {
         this(ProductBoardBookmark.class, forVariable(variable), INITS);
@@ -46,7 +46,7 @@ public class QProductBoardBookmark extends EntityPathBase<ProductBoardBookmark> 
 
     public QProductBoardBookmark(Class<? extends ProductBoardBookmark> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

@@ -34,7 +34,7 @@ public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
     public final NumberPath<Integer> noticeBoardViewCount = createNumber("noticeBoardViewCount", Integer.class);
 
-    public final com.project.compagnoserver.domain.QUser user;
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QNoticeBoard(String variable) {
         this(NoticeBoard.class, forVariable(variable), INITS);
@@ -54,7 +54,7 @@ public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
     public QNoticeBoard(Class<? extends NoticeBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }
