@@ -100,28 +100,55 @@ public class QnaQBoardController {
     public ResponseEntity<QnaQBoard> update(QnaQBoardDTO dto) throws IOException {
         QnaQBoard vo = new QnaQBoard();
         vo.setQnaQBoardCode(dto.getQnaQBoardCode());
-//        vo.setUserId(dto.getUserId());
         vo.setUserNickname(dto.getUserNickname());
         vo.setQnaQTitle(dto.getQnaQTitle());
         vo.setQnaQContent(dto.getQnaQContent());
 
-
+        // 해당 게시판 수정 전 file 리스트
         List<QnaQBoardImage> prev = service.view(dto.getQnaQBoardCode()).getFiles();
+
         if(prev == null){
             // 기존 사진이 없고, 추가할 사진이 있는 경우
             if(!dto.getFiles().isEmpty()){
-                String fileName = dto.getFiles().toString();
-                String uuid = UUID.randomUUID().toString();
-                String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
-                Path savePath = Paths.get(saveName);
+                for(MultipartFile file : dto.getFiles()) {
+                    QnaQBoardImage image = new QnaQBoardImage();
 
-                QnaQBoardImage image = new QnaQBoardImage();
-                image.setQnaQBoardUrl(saveName);
-                service.createImg(image);
+                    String fileName = dto.getFiles().toString();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
 
-            } else {
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
 
+                    image.setQnaQBoardUrl(saveName);
+//                    image.setQnaQBoardCode(vo);
+
+                    log.info("service + 기존 사진 x, 추가 사진 o - image : " + image);
+                    service.createImg(image);
+                }
             }
+        } else {
+            if(dto.getFiles().isEmpty()){
+                // 기존 사진이 있고, 추가하는 사진이 없는 경우
+                vo.setFiles(prev);
+            } else if(!dto.getFiles().isEmpty()) {
+                // 기존 사진 있고, 추가할 사진이 있는 경우
+                for(MultipartFile file : dto.getFiles()){
+                    QnaQBoardImage image = new QnaQBoardImage();
+
+                    String fileName = dto.getFiles().toString();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
+
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
+
+                    image.setQnaQBoardUrl(saveName);
+                    image.setQnaQBoardCode(vo);
+                }
+
+            } QnaQBoard target = service.update(vo);
+            return (target != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(target) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return null;
     }
