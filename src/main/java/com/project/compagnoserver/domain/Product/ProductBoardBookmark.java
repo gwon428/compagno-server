@@ -1,5 +1,6 @@
 package com.project.compagnoserver.domain.Product;
 
+import com.project.compagnoserver.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

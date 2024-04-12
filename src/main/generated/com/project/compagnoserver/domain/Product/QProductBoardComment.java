@@ -1,8 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Product;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.project.compagnoserver.domain.Product.ProductBoardComment;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -17,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QProductBoardComment extends EntityPathBase<ProductBoardComment> {
 
-    private static final long serialVersionUID = -637602959L;
+    private static final long serialVersionUID = 548398802L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -37,7 +36,7 @@ public class QProductBoardComment extends EntityPathBase<ProductBoardComment> {
 
     public final NumberPath<Integer> productParentCode = createNumber("productParentCode", Integer.class);
 
-    public final QUser user;
+    public final com.project.compagnoserver.domain.QUser user;
 
     public QProductBoardComment(String variable) {
         this(ProductBoardComment.class, forVariable(variable), INITS);
@@ -58,7 +57,7 @@ public class QProductBoardComment extends EntityPathBase<ProductBoardComment> {
     public QProductBoardComment(Class<? extends ProductBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.parent = inits.isInitialized("parent") ? new QProductBoardComment(forProperty("parent"), inits.get("parent")) : null;
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
     }
 
 }

@@ -1,9 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Product;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.project.compagnoserver.domain.Product.ProductBoard;
-import com.project.compagnoserver.domain.Product.ProductBoardImage;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -18,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QProductBoard extends EntityPathBase<ProductBoard> {
 
-    private static final long serialVersionUID = -1555683570L;
+    private static final long serialVersionUID = -1271148851L;
 
     public static final QProductBoard productBoard = new QProductBoard("productBoard");
 

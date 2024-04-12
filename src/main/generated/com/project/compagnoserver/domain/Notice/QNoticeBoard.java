@@ -1,9 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Notice;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.project.compagnoserver.domain.Notice.NoticeBoard;
-import com.project.compagnoserver.domain.Notice.NoticeBoardImage;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -18,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
-    private static final long serialVersionUID = -1207377865L;
+    private static final long serialVersionUID = -311747761L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -36,7 +34,7 @@ public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
     public final NumberPath<Integer> noticeBoardViewCount = createNumber("noticeBoardViewCount", Integer.class);
 
-    public final QUser user;
+    public final com.project.compagnoserver.domain.QUser user;
 
     public QNoticeBoard(String variable) {
         this(NoticeBoard.class, forVariable(variable), INITS);
@@ -56,7 +54,7 @@ public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
     public QNoticeBoard(Class<? extends NoticeBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
     }
 
 }

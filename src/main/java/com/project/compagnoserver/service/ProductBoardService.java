@@ -1,10 +1,6 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.*;
-import com.project.compagnoserver.domain.Product.ProductBoard;
-import com.project.compagnoserver.domain.Product.ProductBoardBookmark;
-import com.project.compagnoserver.domain.Product.ProductBoardImage;
-import com.project.compagnoserver.domain.Product.ProductBoardRecommend;
+import com.project.compagnoserver.domain.Product.*;
 import com.project.compagnoserver.repo.ProductBoardBookmarkDAO;
 import com.project.compagnoserver.repo.ProductBoardDAO;
 import com.project.compagnoserver.repo.ProductBoardImageDAO;
@@ -93,7 +89,7 @@ public class ProductBoardService {
         Integer checkBookmark = queryFactory.selectOne()
                 .from(qProductBoardBookmark)
                 .where(qProductBoardBookmark.productBoardCode.eq(vo.getProductBoardCode()))
-                .where(qProductBoardBookmark.user.userId.eq(vo.getUser().getUserId()))
+                //.where(qProductBoardBookmark.user.userId.eq(vo.getUser().getUserId()))
                 .fetchFirst();
         if(checkBookmark==null) {
             bookmark.save(vo);
@@ -108,7 +104,7 @@ public class ProductBoardService {
         Integer checkRecommend = queryFactory.selectOne()
                 .from(qProductBoardRecommend)
                 .where(qProductBoardRecommend.productBoardCode.eq(vo.getProductBoardCode()))
-                .where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
+                //.where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
                 .fetchFirst();
         if(checkRecommend==null) {
             recommend.save(vo);

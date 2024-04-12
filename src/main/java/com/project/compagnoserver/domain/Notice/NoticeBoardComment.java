@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.Notice;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
