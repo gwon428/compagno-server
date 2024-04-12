@@ -24,8 +24,8 @@ public class LostBoardComment {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private String userId;
-    // private User user; -> 커밋 후 변경
+    //private String userId;
+    private User user; //-> 커밋 후 변경
 
     @Column(name="user_img")
     private String userImg;

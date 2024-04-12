@@ -1,8 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Notice;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.project.compagnoserver.domain.Notice.NoticeBoardComment;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -17,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNoticeBoardComment extends EntityPathBase<NoticeBoardComment> {
 
-    private static final long serialVersionUID = -1552266712L;
+    private static final long serialVersionUID = -1639193584L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -37,7 +36,7 @@ public class QNoticeBoardComment extends EntityPathBase<NoticeBoardComment> {
 
     public final QNoticeBoardComment parent;
 
-    public final QUser user;
+    public final com.project.compagnoserver.domain.QUser user;
 
     public QNoticeBoardComment(String variable) {
         this(NoticeBoardComment.class, forVariable(variable), INITS);
@@ -58,7 +57,7 @@ public class QNoticeBoardComment extends EntityPathBase<NoticeBoardComment> {
     public QNoticeBoardComment(Class<? extends NoticeBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.parent = inits.isInitialized("parent") ? new QNoticeBoardComment(forProperty("parent"), inits.get("parent")) : null;
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
     }
 
 }

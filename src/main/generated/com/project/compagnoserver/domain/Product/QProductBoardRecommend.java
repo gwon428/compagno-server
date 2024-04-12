@@ -1,8 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Product;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
-import com.project.compagnoserver.domain.Product.ProductBoardRecommend;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -17,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend> {
 
-    private static final long serialVersionUID = -366864050L;
+    private static final long serialVersionUID = 1214494831L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -29,7 +28,7 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public final DateTimePath<java.util.Date> productRecommendDate = createDateTime("productRecommendDate", java.util.Date.class);
 
-    public final QUser user;
+    public final com.project.compagnoserver.domain.QUser user;
 
     public QProductBoardRecommend(String variable) {
         this(ProductBoardRecommend.class, forVariable(variable), INITS);
@@ -49,7 +48,7 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public QProductBoardRecommend(Class<? extends ProductBoardRecommend> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
     }
 
 }
