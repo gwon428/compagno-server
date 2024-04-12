@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain.Product;
+package com.project.compagnoserver.domain.ProductBoard;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

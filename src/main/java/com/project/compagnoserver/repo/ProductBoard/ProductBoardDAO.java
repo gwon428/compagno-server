@@ -1,6 +1,6 @@
-package com.project.compagnoserver.repo;
+package com.project.compagnoserver.repo.ProductBoard;
 
-import com.project.compagnoserver.domain.Product.ProductBoard;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 

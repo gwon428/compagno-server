@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain.Notice;
+package com.project.compagnoserver.domain.NoticeBoard;
 
 
 import com.project.compagnoserver.domain.user.User;
