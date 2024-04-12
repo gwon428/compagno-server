@@ -32,6 +32,10 @@ public class QnaQBoardService {
         return dao.findAll(builder, pageable);
     }
 
+    public QnaQBoardImage viewImg(QnaQBoardImage vo){
+        return image.findById(vo.getQnaQBoardImgCode()).orElse(null);
+    }
+
     public QnaQBoard view(int code){
         return dao.findById(code).orElse(null);
     }
@@ -50,6 +54,10 @@ public class QnaQBoardService {
             dao.delete(target);
         }
         return target;
+    }
+
+    public void deleteImg(int code){
+        image.deleteById(code);
     }
 }
 

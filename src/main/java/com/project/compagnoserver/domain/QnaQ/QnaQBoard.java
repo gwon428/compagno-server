@@ -1,12 +1,15 @@
 package com.project.compagnoserver.domain.QnaQ;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -34,12 +37,14 @@ public class QnaQBoard {
     @Column(name="qna_q_content")
     private String qnaQContent;
 
+    @CreationTimestamp
     @Column(name="qna_q_date")
-    private Date qnaQDate;
+    private Timestamp qnaQDate;
 
     @Column(name="qna_q_status")
     private String qnaQStatus;
 
     @OneToMany(mappedBy = "qnaQBoardCode")
+    @JsonIgnore
     private List<QnaQBoardImage> files;
 }

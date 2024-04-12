@@ -1,6 +1,6 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.QQnaQBoard;
+import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardDTO;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
@@ -22,13 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/qna/*")
+@RequestMapping("/compagno/*")
 @Slf4j
 public class QnaQBoardController {
     @Autowired
@@ -105,38 +106,17 @@ public class QnaQBoardController {
         vo.setQnaQContent(dto.getQnaQContent());
 
         // 해당 게시판 수정 전 file 리스트
-        List<QnaQBoardImage> prev = service.view(dto.getQnaQBoardCode()).getFiles();
-
-        if(prev == null){
+        List<MultipartFile> prev = dto.getFiles();
+        log.info("dto.getfile이 비어있어?" + dto.getFiles().isEmpty());
+        log.info("prev.getfile이 비어있어? " + prev.isEmpty());
+        if(!prev.isEmpty()){
             // 기존 사진이 없고, 추가할 사진이 있는 경우
-            if(!dto.getFiles().isEmpty()){
+            if(dto.getFiles().isEmpty()){
+                log.info("기존사진이없고추가하는사진이잇어");
                 for(MultipartFile file : dto.getFiles()) {
                     QnaQBoardImage image = new QnaQBoardImage();
 
-                    String fileName = dto.getFiles().toString();
-                    String uuid = UUID.randomUUID().toString();
-                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
-
-                    Path savePath = Paths.get(saveName);
-                    file.transferTo(savePath);
-
-                    image.setQnaQBoardUrl(saveName);
-//                    image.setQnaQBoardCode(vo);
-
-                    log.info("service + 기존 사진 x, 추가 사진 o - image : " + image);
-                    service.createImg(image);
-                }
-            }
-        } else {
-            if(dto.getFiles().isEmpty()){
-                // 기존 사진이 있고, 추가하는 사진이 없는 경우
-                vo.setFiles(prev);
-            } else if(!dto.getFiles().isEmpty()) {
-                // 기존 사진 있고, 추가할 사진이 있는 경우
-                for(MultipartFile file : dto.getFiles()){
-                    QnaQBoardImage image = new QnaQBoardImage();
-
-                    String fileName = dto.getFiles().toString();
+                    String fileName = file.getOriginalFilename();
                     String uuid = UUID.randomUUID().toString();
                     String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
 
@@ -145,11 +125,53 @@ public class QnaQBoardController {
 
                     image.setQnaQBoardUrl(saveName);
                     image.setQnaQBoardCode(vo);
-                }
 
+                    service.createImg(image);
+                }
+            }
+        } else {
+            if(dto.getFiles().isEmpty()){
+                // 기존 사진이 있고, 추가하는 사진이 없는 경우
+                log.info("기존사진이잇고추가하는사진이없엉");
+                QnaQBoard previ = service.view(dto.getQnaQBoardCode());
+                List<QnaQBoardImage> list = previ.getFiles();
+                for(QnaQBoardImage img : list){
+                    service.deleteImg(img.getQnaQBoardImgCode());
+                }
+            } else if(!dto.getFiles().isEmpty()) {
+                // 기존 사진 있고, 추가할 사진이 있는 경우
+                log.info("기존사진이잇고추가하는사진도잇어");
+                QnaQBoard previ = service.view(dto.getQnaQBoardCode());
+                List<QnaQBoardImage> list = previ.getFiles();
+                for(QnaQBoardImage img : list){
+                    service.deleteImg(img.getQnaQBoardImgCode());
+                }
+                for(MultipartFile file : dto.getFiles()){
+                    QnaQBoardImage image = new QnaQBoardImage();
+
+                    String fileName = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
+
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
+
+                    image.setQnaQBoardUrl(saveName);
+                    image.setQnaQBoardCode(previ);
+                    service.createImg(image);
+                }
             } QnaQBoard target = service.update(vo);
             return (target != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(target) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return null;
+    }
+
+    @DeleteMapping("/question/{code}")
+    public ResponseEntity<QnaQBoard> delete(@PathVariable(name="code") int code){
+        QnaQBoard prev = service.view(code);
+        if (prev.getFiles() != null){
+            QnaQBoard target = service.delete(code);
+        }
+        return (prev != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(prev) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
