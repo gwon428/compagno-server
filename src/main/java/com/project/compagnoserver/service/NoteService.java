@@ -1,18 +1,16 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.Note;
-import com.project.compagnoserver.domain.NoteFIle;
-import com.project.compagnoserver.repo.NoteDAO;
-import com.project.compagnoserver.repo.NoteFileDAO;
+import com.project.compagnoserver.domain.Note.Note;
+import com.project.compagnoserver.domain.Note.NoteFIle;
+
+import com.project.compagnoserver.repo.Note.NoteDAO;
+import com.project.compagnoserver.repo.Note.NoteFileDAO;
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -27,6 +25,7 @@ public class NoteService {
     // [추가] ------------------------------------------------------------------------------
     public Note create(Note note) {return noteDAO.save(note);}
     public NoteFIle createFile(NoteFIle files){return fileDAO.save(files);}
+
 
     // [보기] -----------------------------------------------------------------------------
     // List_viewAll(전체보기 : 전체 쪽지 리스트 확인)

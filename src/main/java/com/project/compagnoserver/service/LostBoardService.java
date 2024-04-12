@@ -1,9 +1,9 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.LostBoard;
-import com.project.compagnoserver.domain.LostBoardImage;
-import com.project.compagnoserver.repo.LostBoardDAO;
-import com.project.compagnoserver.repo.LostBoardImageDAO;
+import com.project.compagnoserver.domain.LostBoard.LostBoard;
+import com.project.compagnoserver.domain.LostBoard.LostBoardImage;
+import com.project.compagnoserver.repo.LostBoard.LostBoardDAO;
+import com.project.compagnoserver.repo.LostBoard.LostBoardImageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

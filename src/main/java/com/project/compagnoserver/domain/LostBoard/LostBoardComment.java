@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.LostBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.user.User;

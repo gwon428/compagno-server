@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.LostBoard;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QLostBoard extends EntityPathBase<LostBoard> {
 
-    private static final long serialVersionUID = 423214507L;
+    private static final long serialVersionUID = 1947166079L;
 
     public static final QLostBoard lostBoard = new QLostBoard("lostBoard");
 

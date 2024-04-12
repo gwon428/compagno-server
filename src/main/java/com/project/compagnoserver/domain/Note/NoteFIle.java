@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Note;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -7,25 +7,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
-@Data
 @Entity
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @DynamicInsert
-@Table(name="lost_board_image")
-public class LostBoardImage {
+@Table(name="note_file")
+public class NoteFIle {
 
     @Id
-    @Column(name="lost_image_code")
+    @Column(name="note_file_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int lostImageCode;
+    private int noteFileCode;
 
     @ManyToOne
-    @JoinColumn(name="lost_board_code")
+    @JoinColumn(name="note_code")
     @JsonIgnore
-    private LostBoard lostBoardCode;
+    private Note noteCode;
 
-    @Column(name="lost_image")
-    private String lostImage;
-
+    @Column(name="note_file_url")
+    private String noteFileUrl;
 }
