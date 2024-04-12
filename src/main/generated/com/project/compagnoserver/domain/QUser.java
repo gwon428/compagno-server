@@ -19,9 +19,29 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final StringPath userEmail = createString("userEmail");
+
+    public final DateTimePath<java.util.Date> userEnrollDate = createDateTime("userEnrollDate", java.util.Date.class);
+
     public final StringPath userId = createString("userId");
 
+    public final StringPath userImg = createString("userImg");
+
     public final StringPath userNickname = createString("userNickname");
+
+    public final StringPath userPersonName = createString("userPersonName");
+
+    public final StringPath userPhone = createString("userPhone");
+
+    public final NumberPath<Integer> userPoint = createNumber("userPoint", Integer.class);
+
+    public final StringPath userPwd = createString("userPwd");
+
+    public final DateTimePath<java.util.Date> userQuitDate = createDateTime("userQuitDate", java.util.Date.class);
+
+    public final StringPath userRole = createString("userRole");
+
+    public final StringPath userStatus = createString("userStatus");
 
     public QUser(String variable) {
         super(User.class, forVariable(variable));
