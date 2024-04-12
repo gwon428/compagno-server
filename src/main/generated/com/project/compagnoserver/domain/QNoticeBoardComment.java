@@ -1,7 +1,8 @@
-package domain;
+package com.project.compagnoserver.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.project.compagnoserver.domain.Notice.NoticeBoardComment;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -16,7 +17,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNoticeBoardComment extends EntityPathBase<NoticeBoardComment> {
 
-    private static final long serialVersionUID = -789010149L;
+    private static final long serialVersionUID = -1552266712L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

@@ -1,4 +1,4 @@
-package domain;
+package com.project.compagnoserver.domain.Notice;
 
 
 import jakarta.persistence.*;
@@ -31,13 +31,13 @@ public class NoticeBoard {
     @Column(name = "notice_board_regi-date")
     private Date noticeBoardRegiDate;
 
-    @Column(name = "notice_board_hits")
-    private int noticeBoardHits;
+    @Column(name = "notice_board_view_count")
+    private int noticeBoardViewCount;
 
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "notice_board")
+    @OneToMany(mappedBy = "noticeBoard")
     private List<NoticeBoardImage> images;
 }

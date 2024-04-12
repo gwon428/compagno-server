@@ -1,7 +1,8 @@
-package domain;
+package com.project.compagnoserver.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.project.compagnoserver.domain.Product.ProductBoardBookmark;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -16,7 +17,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QProductBoardBookmark extends EntityPathBase<ProductBoardBookmark> {
 
-    private static final long serialVersionUID = -927879017L;
+    private static final long serialVersionUID = 21971556L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

@@ -1,4 +1,4 @@
-package domain;
+package com.project.compagnoserver.domain.Notice;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -39,7 +39,7 @@ public class NoticeBoardComment {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn (name = "notice_parent_code")
+    @JoinColumn (name = "notice_parent_code", referencedColumnName = "notice_comment_code", insertable = false, updatable = false)
     private NoticeBoardComment parent;
 
     @ManyToOne

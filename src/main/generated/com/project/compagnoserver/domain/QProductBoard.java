@@ -1,7 +1,9 @@
-package domain;
+package com.project.compagnoserver.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.project.compagnoserver.domain.Product.ProductBoard;
+import com.project.compagnoserver.domain.Product.ProductBoardImage;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -16,13 +18,11 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QProductBoard extends EntityPathBase<ProductBoard> {
 
-    private static final long serialVersionUID = 1793554497L;
-
-    private static final PathInits INITS = PathInits.DIRECT2;
+    private static final long serialVersionUID = -1555683570L;
 
     public static final QProductBoard productBoard = new QProductBoard("productBoard");
 
-    public final QAnimalCategory animalCategory;
+    public final NumberPath<Integer> animalCategoryCode = createNumber("animalCategoryCode", Integer.class);
 
     public final ListPath<ProductBoardImage, QProductBoardImage> images = this.<ProductBoardImage, QProductBoardImage>createList("images", ProductBoardImage.class, QProductBoardImage.class, PathInits.DIRECT2);
 
@@ -32,11 +32,11 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public final NumberPath<Float> productBoardGrade = createNumber("productBoardGrade", Float.class);
 
-    public final NumberPath<Integer> productBoardHits = createNumber("productBoardHits", Integer.class);
-
     public final DateTimePath<java.util.Date> productBoardRegiDate = createDateTime("productBoardRegiDate", java.util.Date.class);
 
     public final StringPath productBoardTitle = createString("productBoardTitle");
+
+    public final NumberPath<Integer> productBoardViewCount = createNumber("productBoardViewCount", Integer.class);
 
     public final StringPath productCategory = createString("productCategory");
 
@@ -46,28 +46,18 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public final NumberPath<Integer> productPrice = createNumber("productPrice", Integer.class);
 
-    public final QUser user;
+    public final StringPath userId = createString("userId");
 
     public QProductBoard(String variable) {
-        this(ProductBoard.class, forVariable(variable), INITS);
+        super(ProductBoard.class, forVariable(variable));
     }
 
     public QProductBoard(Path<? extends ProductBoard> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QProductBoard(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QProductBoard(PathMetadata metadata, PathInits inits) {
-        this(ProductBoard.class, metadata, inits);
-    }
-
-    public QProductBoard(Class<? extends ProductBoard> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.animalCategory = inits.isInitialized("animalCategory") ? new QAnimalCategory(forProperty("animalCategory")) : null;
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        super(ProductBoard.class, metadata);
     }
 
 }

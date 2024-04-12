@@ -1,6 +1,7 @@
-package domain;
+package com.project.compagnoserver.domain.Notice;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.Notice.NoticeBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +26,5 @@ public class NoticeBoardImage {
     @ManyToOne
     @JoinColumn(name="notice_board_code")
     @JsonIgnore
-    private int noticeBoardCode;
+    private NoticeBoard noticeBoard;
 }

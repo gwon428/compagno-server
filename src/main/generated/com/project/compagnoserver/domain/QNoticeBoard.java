@@ -1,7 +1,9 @@
-package domain;
+package com.project.compagnoserver.domain;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import com.project.compagnoserver.domain.Notice.NoticeBoard;
+import com.project.compagnoserver.domain.Notice.NoticeBoardImage;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
@@ -16,7 +18,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
-    private static final long serialVersionUID = -1792074588L;
+    private static final long serialVersionUID = -1207377865L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -28,11 +30,11 @@ public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
     public final StringPath noticeBoardContent = createString("noticeBoardContent");
 
-    public final NumberPath<Integer> noticeBoardHits = createNumber("noticeBoardHits", Integer.class);
-
     public final DateTimePath<java.util.Date> noticeBoardRegiDate = createDateTime("noticeBoardRegiDate", java.util.Date.class);
 
     public final StringPath noticeBoardTitle = createString("noticeBoardTitle");
+
+    public final NumberPath<Integer> noticeBoardViewCount = createNumber("noticeBoardViewCount", Integer.class);
 
     public final QUser user;
 

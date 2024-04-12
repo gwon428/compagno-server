@@ -1,6 +1,7 @@
-package domain;
+package com.project.compagnoserver.domain.Product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.Product.ProductBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,6 @@ public class ProductBoardImage {
     @ManyToOne
     @JoinColumn(name="product_board_code")
     @JsonIgnore
-    private int productBoardCode;
+    private ProductBoard productBoard;
 
 }

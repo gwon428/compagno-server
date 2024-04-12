@@ -1,7 +1,8 @@
-package domain;
+package com.project.compagnoserver.domain.Product;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
+@Builder
 @Table(name="product_board")
 public class ProductBoard {
 
@@ -43,20 +45,18 @@ public class ProductBoard {
     @Column(name = "product_board_content")
     private String productBoardContent;
 
-    @Column(name = "product_board_regi-date")
+    @Column(name = "product_board_regi_date")
     private Date productBoardRegiDate;
 
-    @Column(name = "product_board_hits")
-    private int productBoardHits;
+    @Column(name = "product_board_view_count")
+    private int productBoardViewCount;
 
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user;
+    @Column
+    private String userId;
 
-    @ManyToOne
-    @JoinColumn(name="animal_category_code")
-    private AnimalCategory animalCategory;
+    @Column(name="animal_category_code")
+    private int animalCategoryCode;
 
-    @OneToMany(mappedBy = "product_board")
+    @OneToMany(mappedBy = "productBoard")
     private List<ProductBoardImage> images;
 }

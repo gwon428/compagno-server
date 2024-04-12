@@ -1,4 +1,4 @@
-package domain;
+package com.project.compagnoserver.domain.Product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -39,7 +39,7 @@ public class ProductBoardComment {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn (name = "product_parent_code")
+    @JoinColumn (name = "product_parent_code", referencedColumnName = "product_comment_code", insertable = false, updatable = false)
     private ProductBoardComment parent;
 
     @ManyToOne
