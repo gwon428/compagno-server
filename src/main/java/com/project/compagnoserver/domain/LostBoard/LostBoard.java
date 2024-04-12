@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 import java.sql.Timestamp;
@@ -48,6 +49,7 @@ public class LostBoard {
     @Column(name="lost_animal_name")
     private String lostAnimalName;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name="lost_date")
     private Date lostDate;
 

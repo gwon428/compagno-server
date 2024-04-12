@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class LostBoardService {
 
@@ -30,10 +32,11 @@ public class LostBoardService {
 
     // 수정
     public LostBoard update(LostBoard vo) {
-        if(boardDAO.existsById(vo.getLostBoardCode())){
-            return boardDAO.save(vo);
-        }
-        return null;
+//        if(boardDAO.existsById(vo.getLostBoardCode())){
+//            return boardDAO.save(vo);
+//        }
+//        return null;
+        return boardDAO.save(vo);
     }
     public LostBoardImage update(LostBoardImage image){
         return imagesDAO.save(image);
@@ -46,6 +49,14 @@ public class LostBoardService {
         if(vo!=null){
             boardDAO.delete(vo);
         }
+    }
+
+    public void imageDelete(int lostBoardCode){
+        List<LostBoardImage> list = imagesDAO.findByCode(lostBoardCode);
+        if(list!=null){
+            imagesDAO.deleteAll(list);
+        }
+
     }
 
 }

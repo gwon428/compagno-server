@@ -39,6 +39,7 @@ public class LostBoardController {
     // 추가 ----------------------------------------
     @PostMapping("/lostBoard")
     public ResponseEntity<LostBoard> create(LostBoardDTO dto) throws IOException {
+
         LostBoard lost = new LostBoard();
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
@@ -97,6 +98,7 @@ public class LostBoardController {
     // 수정 ----------------------------------------
     @PutMapping("/lostBoard")
     public ResponseEntity<LostBoard> update(LostBoardDTO dto) throws IOException {
+        log.info("dto : " + dto);
         LostBoard lost = new LostBoard();
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
@@ -113,24 +115,44 @@ public class LostBoardController {
         lost.setLostAnimalFeature(dto.getLostAnimalFeature());
         lost.setLostAnimalRFID(dto.getLostAnimalRFID());
 
-        //LostBoard prev = service.view(dto.getLostBoardCode());
+        LostBoard prev = service.view(dto.getLostBoardCode());
         //LostBoard result = service.create(lost);
+
+        log.info("prev : " + prev.getLostTitle());
+
         LostBoard result = service.update(lost);
+        log.info("lsot : " + lost.getLostTitle());
+        log.info("result : " + result.getLostTitle());
         if(dto.getImages()!=null){
-            for(MultipartFile file : dto.getImages()){
-                LostBoardImage images = new LostBoardImage();
-
-                String fileName = file.getOriginalFilename();
-                String uuid = UUID.randomUUID().toString();
-                String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
-                Path savePath = Paths.get(saveName);
-                file.transferTo(savePath);
-
-                images.setLostImage(saveName);
-                images.setLostBoardCode(result);
-                service.update(images);
+            // 1) 추가 사진 O
+            if(prev.getImages()!=null){
+                // -> 기존 사진 O : 기존 사진 삭제 + 추가 사진 넣기
+                service.imageDelete(dto.getLostBoardCode());
+            } else{// -> 기존 사진 X : 추가 사진 넣기
             }
+                for(MultipartFile file : dto.getImages()){
+                    LostBoardImage images = new LostBoardImage();
+
+                    String fileName = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
+
+                    images.setLostImage(saveName);
+                    images.setLostBoardCode(result);
+                    service.update(images);
+                }
+
+        } else {// 2) 추가 사진 X
+            if(prev.getImages()!=null){
+                // -> 기존 사진 O : 기존 사진 남기기 (사진 처리X)
+            } else {
+                // -> 기존 사진 x : 사진 처리X
+            }
+
         }
+       // log.info("result : " + result.getLostTitle());
         return result!=null?
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -144,10 +166,10 @@ public class LostBoardController {
         LostBoard lost = service.view(lostBoardCode);
         if(lost!=null){
             service.delete(lostBoardCode);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
-        return (lost!=null)?
-                ResponseEntity.status(HttpStatus.ACCEPTED).body(lost):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
     }
 
 

@@ -3,6 +3,7 @@ package com.project.compagnoserver.domain.LostBoard;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
@@ -20,6 +21,7 @@ public class LostBoardDTO {
     private String lostTitle;
     private String lostAnimalImage;
     private String lostAnimalName;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date lostDate;
     private String lostLocation;
     private String lostAnimalKind;

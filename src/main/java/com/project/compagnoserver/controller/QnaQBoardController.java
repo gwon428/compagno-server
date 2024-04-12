@@ -1,6 +1,7 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.QQnaQBoard;
+//import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
+import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardDTO;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
