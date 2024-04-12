@@ -1,9 +1,9 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.QQnaQBoard;
-import com.project.compagnoserver.domain.QnaQBoard;
-import com.project.compagnoserver.domain.QnaQBoardDTO;
-import com.project.compagnoserver.domain.QnaQBoardImage;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoardDTO;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
 import com.project.compagnoserver.service.QnaQBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;

@@ -1,6 +1,6 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.Parsing;
+import com.project.compagnoserver.domain.Parsing.Parsing;
 import com.project.compagnoserver.service.ContentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

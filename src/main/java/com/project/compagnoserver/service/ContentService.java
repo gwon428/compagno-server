@@ -1,7 +1,7 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.Parsing;
-import com.project.compagnoserver.repo.ParsingDAO;
+import com.project.compagnoserver.domain.Parsing.Parsing;
+import com.project.compagnoserver.repo.Parsing.ParsingDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
