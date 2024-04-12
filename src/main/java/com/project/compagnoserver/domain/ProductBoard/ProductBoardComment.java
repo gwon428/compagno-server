@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain.Product;
+package com.project.compagnoserver.domain.ProductBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.User;

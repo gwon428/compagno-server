@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain.Notice;
+package com.project.compagnoserver.domain.NoticeBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.User;

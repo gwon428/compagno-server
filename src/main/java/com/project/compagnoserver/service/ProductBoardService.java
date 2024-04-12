@@ -1,10 +1,10 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.Product.*;
-import com.project.compagnoserver.repo.ProductBoardBookmarkDAO;
-import com.project.compagnoserver.repo.ProductBoardDAO;
-import com.project.compagnoserver.repo.ProductBoardImageDAO;
-import com.project.compagnoserver.repo.ProductBoardRecommendDAO;
+import com.project.compagnoserver.domain.ProductBoard.*;
+import com.project.compagnoserver.repo.ProductBoard.ProductBoardBookmarkDAO;
+import com.project.compagnoserver.repo.ProductBoard.ProductBoardDAO;
+import com.project.compagnoserver.repo.ProductBoard.ProductBoardImageDAO;
+import com.project.compagnoserver.repo.ProductBoard.ProductBoardRecommendDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

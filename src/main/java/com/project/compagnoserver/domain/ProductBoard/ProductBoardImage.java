@@ -1,7 +1,6 @@
-package com.project.compagnoserver.domain.Product;
+package com.project.compagnoserver.domain.ProductBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.compagnoserver.domain.Product.ProductBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

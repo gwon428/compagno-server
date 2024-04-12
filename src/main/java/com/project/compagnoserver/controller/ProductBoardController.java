@@ -1,8 +1,8 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.Product.ProductBoard;
-import com.project.compagnoserver.domain.Product.ProductBoardDTO;
-import com.project.compagnoserver.domain.Product.ProductBoardImage;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoard;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoardDTO;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoardImage;
 import com.project.compagnoserver.service.ProductBoardService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
