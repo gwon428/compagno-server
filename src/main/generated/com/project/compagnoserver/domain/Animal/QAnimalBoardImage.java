@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QAnimalBoardImage extends EntityPathBase<AnimalBoardImage> {
 
-    private static final long serialVersionUID = -424428152L;
+    private static final long serialVersionUID = 587556556L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -46,7 +46,7 @@ public class QAnimalBoardImage extends EntityPathBase<AnimalBoardImage> {
 
     public QAnimalBoardImage(Class<? extends AnimalBoardImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.animalBoard = inits.isInitialized("animalBoard") ? new QAnimalBoard(forProperty("animalBoard")) : null;
+        this.animalBoard = inits.isInitialized("animalBoard") ? new QAnimalBoard(forProperty("animalBoard"), inits.get("animalBoard")) : null;
     }
 
 }

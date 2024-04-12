@@ -1,20 +1,18 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
+import lombok.*;
+
 
 import java.util.Date;
 import java.util.List;
 
 @Entity
-@Data
-@DynamicInsert
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "animal_board")
+@AllArgsConstructor
+@Data
+@Table(name = "animal_board", uniqueConstraints = {@UniqueConstraint(columnNames={"animal_board_code"})})
 public class AnimalBoard {
 
     @Id
@@ -22,7 +20,10 @@ public class AnimalBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int animalBoardCode;
 
-    //private int animalCategoryCode; // 카테고리 테이블과 연결
+    @ManyToOne
+    @JoinColumn(name = "animal_category_code")
+    @JsonIgnore
+    private AnimalCategory animalCategory; // 카테고리 테이블과 연결
 
     @Column(name = "animal_main_image")
     private String animalMainImage;
@@ -41,12 +42,13 @@ public class AnimalBoard {
 
     @OneToMany(mappedBy = "animalBoard")
     private List<AnimalBoardImage> images;
+
     /*
     // 메모 : mappedBy = "animal_board"
-    *Collection 'com.project.compagnoserver.domain.AnimalBoard.images' is
+    *Collection 'com.project.compagnoserver.domain.Animal.AnimalBoard.images' is
     *'mappedBy' a property named 'animal_board'
     *which does not exist in the target entity
-    *'com.project.compagnoserver.domain.AnimalBoardImage'
+    *'com.project.compagnoserver.domain.Animal.AnimalBoardImage'
     *여기서 말하는 property name은 양방향성 관계의 주체 Entity에 명시된 animal_board의
     * 자바 형태의 컬럼명; animalBoard
     * */

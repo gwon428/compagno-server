@@ -1,6 +1,6 @@
-package com.project.compagnoserver.repo;
+package com.project.compagnoserver.repo.Animal;
 
-import com.project.compagnoserver.domain.AnimalBoard;
+import com.project.compagnoserver.domain.Animal.AnimalBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
