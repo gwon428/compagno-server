@@ -19,7 +19,7 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/signUp", "/login").permitAll()
+                        .requestMatchers("/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
