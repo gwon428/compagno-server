@@ -1,8 +1,7 @@
 package com.project.compagnoserver.domain;
 
-import jakarta.persistence.Entity;
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,12 +9,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.List;
 
-@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
-public class AnimalBoardDTO {
+@Data
+public class AnimalBoardUpdateDTO {
 
     private List<MultipartFile> files;
+    private int animalBoardCode;
     private String id; // 유저정보
     private String animalMainImage;
     private String animalBoardTitle;
@@ -24,5 +25,5 @@ public class AnimalBoardDTO {
     private Date animalBoardDate;
     private int animalCategoryCode;
 
-    // 자유게시판 글쓰기 DTO
+    // 자유게시판 수정DTO
 }
