@@ -18,8 +18,6 @@ public class QAnimalBoard extends EntityPathBase<AnimalBoard> {
 
     private static final long serialVersionUID = 383500179L;
 
-    private static final PathInits INITS = PathInits.DIRECT2;
-
     public static final QAnimalBoard animalBoard = new QAnimalBoard("animalBoard");
 
     public final NumberPath<Integer> animalBoardCode = createNumber("animalBoardCode", Integer.class);
@@ -32,31 +30,20 @@ public class QAnimalBoard extends EntityPathBase<AnimalBoard> {
 
     public final NumberPath<Integer> animalBoardView = createNumber("animalBoardView", Integer.class);
 
-    public final QAnimalCategory animalCategory;
-
     public final StringPath animalMainImage = createString("animalMainImage");
 
     public final ListPath<AnimalBoardImage, QAnimalBoardImage> images = this.<AnimalBoardImage, QAnimalBoardImage>createList("images", AnimalBoardImage.class, QAnimalBoardImage.class, PathInits.DIRECT2);
 
     public QAnimalBoard(String variable) {
-        this(AnimalBoard.class, forVariable(variable), INITS);
+        super(AnimalBoard.class, forVariable(variable));
     }
 
     public QAnimalBoard(Path<? extends AnimalBoard> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QAnimalBoard(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QAnimalBoard(PathMetadata metadata, PathInits inits) {
-        this(AnimalBoard.class, metadata, inits);
-    }
-
-    public QAnimalBoard(Class<? extends AnimalBoard> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.animalCategory = inits.isInitialized("animalCategory") ? new QAnimalCategory(forProperty("animalCategory")) : null;
+        super(AnimalBoard.class, metadata);
     }
 
 }
