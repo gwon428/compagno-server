@@ -1,7 +1,6 @@
-package com.project.compagnoserver.repo;
+package com.project.compagnoserver.repo.Parsing;
 
-import com.project.compagnoserver.domain.Parsing;
-import lombok.extern.slf4j.Slf4j;
+import com.project.compagnoserver.domain.Parsing.Parsing;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,7 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.QnaQ;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

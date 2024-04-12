@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.QnaQ;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QQnaQBoardImage extends EntityPathBase<QnaQBoardImage> {
 
-    private static final long serialVersionUID = 57190137L;
+    private static final long serialVersionUID = -1650186644L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
