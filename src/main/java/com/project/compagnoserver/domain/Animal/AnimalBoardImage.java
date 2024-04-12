@@ -1,6 +1,5 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

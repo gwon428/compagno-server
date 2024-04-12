@@ -1,9 +1,9 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.AnimalBoard;
-import com.project.compagnoserver.domain.AnimalBoardImage;
-import com.project.compagnoserver.repo.AnimalBoardDAO;
-import com.project.compagnoserver.repo.AnimalBoardImageDAO;
+import com.project.compagnoserver.domain.Animal.AnimalBoard;
+import com.project.compagnoserver.domain.Animal.AnimalBoardImage;
+import com.project.compagnoserver.repo.Animal.AnimalBoardDAO;
+import com.project.compagnoserver.repo.Animal.AnimalBoardImageDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,6 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;

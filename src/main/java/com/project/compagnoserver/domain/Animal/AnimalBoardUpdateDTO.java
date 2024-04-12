@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
 
 import lombok.AllArgsConstructor;

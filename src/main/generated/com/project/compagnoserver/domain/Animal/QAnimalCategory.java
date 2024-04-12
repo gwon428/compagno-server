@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QAnimalCategory extends EntityPathBase<AnimalCategory> {
 
-    private static final long serialVersionUID = -1319333583L;
+    private static final long serialVersionUID = 1037024117L;
 
     public static final QAnimalCategory animalCategory = new QAnimalCategory("animalCategory");
 

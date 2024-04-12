@@ -1,15 +1,12 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Animal;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -48,10 +45,10 @@ public class AnimalBoard {
 
     /*
     // 메모 : mappedBy = "animal_board"
-    *Collection 'com.project.compagnoserver.domain.AnimalBoard.images' is
+    *Collection 'com.project.compagnoserver.domain.Animal.AnimalBoard.images' is
     *'mappedBy' a property named 'animal_board'
     *which does not exist in the target entity
-    *'com.project.compagnoserver.domain.AnimalBoardImage'
+    *'com.project.compagnoserver.domain.Animal.AnimalBoardImage'
     *여기서 말하는 property name은 양방향성 관계의 주체 Entity에 명시된 animal_board의
     * 자바 형태의 컬럼명; animalBoard
     * */
