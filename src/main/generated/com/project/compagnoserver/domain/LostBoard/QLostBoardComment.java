@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.LostBoard;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QLostBoardComment extends EntityPathBase<LostBoardComment> {
 
-    private static final long serialVersionUID = 34546228L;
+    private static final long serialVersionUID = -1470577696L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -32,7 +32,7 @@ public class QLostBoardComment extends EntityPathBase<LostBoardComment> {
 
     public final QLostBoardComment lostParentCode;
 
-    public final QUser user;
+    public final com.project.compagnoserver.domain.QUser user;
 
     public final StringPath userImg = createString("userImg");
 
@@ -57,7 +57,7 @@ public class QLostBoardComment extends EntityPathBase<LostBoardComment> {
     public QLostBoardComment(Class<? extends LostBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.lostParentCode = inits.isInitialized("lostParentCode") ? new QLostBoardComment(forProperty("lostParentCode"), inits.get("lostParentCode")) : null;
-        this.user = inits.isInitialized("user") ? new QUser(forProperty("user")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.QUser(forProperty("user")) : null;
     }
 
 }

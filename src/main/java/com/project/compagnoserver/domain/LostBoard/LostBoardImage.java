@@ -1,12 +1,12 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.LostBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.LostBoard.LostBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.data.annotation.ReadOnlyProperty;
 
 @Data
 @Entity

@@ -1,14 +1,14 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.Note;
-import com.project.compagnoserver.domain.NoteDTO;
-import com.project.compagnoserver.domain.NoteFIle;
-import com.project.compagnoserver.domain.QNote;
+import com.project.compagnoserver.domain.Note.Note;
+import com.project.compagnoserver.domain.Note.NoteDTO;
+import com.project.compagnoserver.domain.Note.NoteFIle;
+
+import com.project.compagnoserver.domain.Note.QNote;
 import com.project.compagnoserver.service.NoteService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Repeatable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;

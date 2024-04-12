@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain;
+package com.project.compagnoserver.domain.Note;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNoteFIle extends EntityPathBase<NoteFIle> {
 
-    private static final long serialVersionUID = -1473571899L;
+    private static final long serialVersionUID = 1441436179L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
