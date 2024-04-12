@@ -24,7 +24,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/*")
+@RequestMapping("/compagno/*")
 public class AnimalBoardController {
 
     @Autowired
