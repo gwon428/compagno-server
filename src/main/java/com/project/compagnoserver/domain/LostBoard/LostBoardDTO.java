@@ -18,13 +18,14 @@ public class LostBoardDTO {
     private String userId;
     private String userImg;
     private String userPhone;
+    private String userNickname;
     private String lostTitle;
     private String lostAnimalImage;
     private String lostAnimalName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date lostDate;
     private String lostLocation;
-    private String lostAnimalKind;
+    private String lostAnimalKind;  // 강아지, 고양이, 그외
     private String lostAnimalColor;
     private String lostAnimalGender;
     private int lostAnimalAge;

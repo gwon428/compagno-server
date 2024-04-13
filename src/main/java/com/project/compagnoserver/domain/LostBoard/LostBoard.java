@@ -28,6 +28,9 @@ public class LostBoard {
     @Column(name="user_id")
     private String userId;
 
+    @Column(name="user_nickname")
+    private String userNickname;
+
     @Column(name="user_img")
     private String userImg;
 

@@ -54,6 +54,8 @@ public class QLostBoard extends EntityPathBase<LostBoard> {
 
     public final StringPath userImg = createString("userImg");
 
+    public final StringPath userNickname = createString("userNickname");
+
     public final StringPath userPhone = createString("userPhone");
 
     public QLostBoard(String variable) {
