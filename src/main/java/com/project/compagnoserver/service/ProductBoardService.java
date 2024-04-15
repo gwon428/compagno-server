@@ -85,7 +85,7 @@ public class ProductBoardService {
         Integer checkBookmark = queryFactory.selectOne()
                 .from(qProductBoardBookmark)
                 .where(qProductBoardBookmark.productBoardCode.eq(vo.getProductBoardCode()))
-                .where(qProductBoardBookmark.userId.eq(vo.getUserId()))
+                .where(qProductBoardBookmark.user.userId.eq(vo.getUser().getUserId()))
                 .fetchFirst();
         if(checkBookmark==null) {
             bookmark.save(vo);
@@ -99,7 +99,7 @@ public class ProductBoardService {
         Integer checkRecommend = queryFactory.selectOne()
                 .from(qProductBoardRecommend)
                 .where(qProductBoardRecommend.productBoardCode.eq(vo.getProductBoardCode()))
-                .where(qProductBoardRecommend.userId.eq(vo.getUserId()))
+                .where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
                 .fetchFirst();
         if(checkRecommend==null) {
             recommend.save(vo);

@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,6 +18,8 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     private static final long serialVersionUID = -313749435L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QProductBoardRecommend productBoardRecommend = new QProductBoardRecommend("productBoardRecommend");
 
     public final NumberPath<Integer> productBoardCode = createNumber("productBoardCode", Integer.class);
@@ -25,18 +28,27 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public final DateTimePath<java.util.Date> productRecommendDate = createDateTime("productRecommendDate", java.util.Date.class);
 
-    public final StringPath userId = createString("userId");
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QProductBoardRecommend(String variable) {
-        super(ProductBoardRecommend.class, forVariable(variable));
+        this(ProductBoardRecommend.class, forVariable(variable), INITS);
     }
 
     public QProductBoardRecommend(Path<? extends ProductBoardRecommend> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QProductBoardRecommend(PathMetadata metadata) {
-        super(ProductBoardRecommend.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QProductBoardRecommend(PathMetadata metadata, PathInits inits) {
+        this(ProductBoardRecommend.class, metadata, inits);
+    }
+
+    public QProductBoardRecommend(Class<? extends ProductBoardRecommend> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

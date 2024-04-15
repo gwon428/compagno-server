@@ -18,6 +18,8 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     private static final long serialVersionUID = -1568231881L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QProductBoard productBoard = new QProductBoard("productBoard");
 
     public final NumberPath<Integer> animalCategoryCode = createNumber("animalCategoryCode", Integer.class);
@@ -44,18 +46,27 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public final NumberPath<Integer> productPrice = createNumber("productPrice", Integer.class);
 
-    public final StringPath userId = createString("userId");
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QProductBoard(String variable) {
-        super(ProductBoard.class, forVariable(variable));
+        this(ProductBoard.class, forVariable(variable), INITS);
     }
 
     public QProductBoard(Path<? extends ProductBoard> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QProductBoard(PathMetadata metadata) {
-        super(ProductBoard.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QProductBoard(PathMetadata metadata, PathInits inits) {
+        this(ProductBoard.class, metadata, inits);
+    }
+
+    public QProductBoard(Class<? extends ProductBoard> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

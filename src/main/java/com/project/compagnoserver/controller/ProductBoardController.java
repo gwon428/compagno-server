@@ -1,6 +1,7 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.ProductBoard.*;
+import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.service.ProductBoardService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,7 +59,7 @@ public class ProductBoardController {
                 .productCategory(dto.getProductCategory())
                 .productBoardGrade(dto.getProductBoardGrade())
                 .productBoardContent(dto.getProductBoardContent())
-                .userId(dto.getUserId())
+                .user(userInfo())
                 .animalCategoryCode(dto.getAnimalCategoryCode())
                 .build();
         ProductBoard result = productBoard.createBoard(vo);
@@ -137,11 +141,11 @@ public class ProductBoardController {
         res.addCookie(cookie);
     }
 
-    // 게시판 수정
+    // 게시판 수정 (이미지 관련 수정 필요)
     @PutMapping("/productBoard")
     public ResponseEntity<ProductBoard> update(ProductBoardDTO dto) throws IOException {
 
-        // 기존 이미지 삭제
+        // 기존 메인 이미지 삭제
         ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
         if(prev.getProductMainImage()!=null) {
             File file = new File(prev.getProductMainImage());
@@ -176,7 +180,7 @@ public class ProductBoardController {
                 .productCategory(dto.getProductCategory())
                 .productBoardGrade(dto.getProductBoardGrade())
                 .productBoardContent(dto.getProductBoardContent())
-                .userId(dto.getUserId())
+                .user(userInfo())
                 .animalCategoryCode(dto.getAnimalCategoryCode())
                 .build();
         ProductBoard result = productBoard.updateBoard(vo);
@@ -204,7 +208,7 @@ public class ProductBoardController {
     // 게시판 추천, 추천 된 상태면 삭제
     @PostMapping("/productBoard/recommend")
     public ResponseEntity boardRecommend(@RequestBody ProductBoardRecommend vo) {
-        vo.setUserId("ghldud"); // 나중에 user 정보
+        vo.setUser(userInfo());
         productBoard.boardRecommend(vo);
 
         return ResponseEntity.ok().build();
@@ -213,9 +217,24 @@ public class ProductBoardController {
     // 게시판 북마크, 북마크 된 상태면 삭제
     @PostMapping("/productBoard/bookmark")
     public ResponseEntity boardBookmark(@RequestBody ProductBoardBookmark vo) {
-        vo.setUserId("ghldud"); // 나중에 user 정보
+        vo.setUser(userInfo());
         productBoard.boardBookmark(vo);
 
         return ResponseEntity.ok().build();
     }
+
+    // 로그인 정보
+    public User userInfo() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof User) {
+            User user = (User) principal;
+            log.info("유저" + user);
+            return user;
+        }
+        return null;
+    }
+
 }

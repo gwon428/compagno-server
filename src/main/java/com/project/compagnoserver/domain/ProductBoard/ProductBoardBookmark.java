@@ -22,6 +22,7 @@ public class ProductBoardBookmark {
     @Column(name = "product_board_code")
     private int productBoardCode;
 
-    @Column(name = "user_id")
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
 }
