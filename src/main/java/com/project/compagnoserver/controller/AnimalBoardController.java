@@ -25,6 +25,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/compagno/*")
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class AnimalBoardController {
 
     @Autowired
@@ -35,36 +36,42 @@ public class AnimalBoardController {
 
     // 자유게시판 글쓰기
     @PostMapping("/animal-board")
-    public ResponseEntity<AnimalBoard> write(AnimalBoardDTO dto) throws IOException {
+    public ResponseEntity<AnimalBoard> write(@RequestBody AnimalBoardDTO dto) throws IOException {
+
+        log.info("dto : " + dto);
+        log.info("content : " + dto.getAnimalBoardContent());
+
         // 글작성
         AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/ animalCateCode
-        vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
+     //   vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
         vo.setAnimalBoardContent(dto.getAnimalBoardContent());
-        AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
-        animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
-        vo.setAnimalCategory(animalCategory);
+       // log.info("client : " + vo);
+       // AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
+       // animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
+        //vo.setAnimalCategory(animalCategory);
         AnimalBoard writtenBoard = animalBoardService.write(vo);
-        log.info("vo : " + writtenBoard);
+        //log.info("vo : " + writtenBoard);
 
         // 글에 필요한 사진 넣기- 어떤 글의 사진? => animal_board_code 필요
-        for(MultipartFile file : dto.getFiles()){
-            log.info("file :" + file.getOriginalFilename());
+//        for(MultipartFile file : dto.getFiles()){
+//            log.info("file :" + file.getOriginalFilename());
+//
+//            String fileName =  file.getOriginalFilename();
+//            String uuid = UUID.randomUUID().toString();
+//            String saveName = uploadPath + File.separator + "animalBoard" + File.separator + uuid + "_" + fileName;
+//            Path savePath = Paths.get(saveName);
+//            file.transferTo(savePath);
+//
+//            AnimalBoardImage image = new AnimalBoardImage();
+//            image.setAnimalBoardImage(saveName);
+//            image.setAnimalBoard(writtenBoard);
+//            animalBoardService.writeImages(image);
 
-            String fileName =  file.getOriginalFilename();
-            String uuid = UUID.randomUUID().toString();
-            String saveName = uploadPath + File.separator + "animalBoard" + File.separator + uuid + "_" + fileName;
-            Path savePath = Paths.get(saveName);
-            file.transferTo(savePath);
-
-            AnimalBoardImage image = new AnimalBoardImage();
-            image.setAnimalBoardImage(saveName);
-            image.setAnimalBoard(writtenBoard);
-            animalBoardService.writeImages(image);
-
-        }
-        return writtenBoard !=null ? ResponseEntity.ok(writtenBoard) : ResponseEntity.badRequest().build();
+//        }
+        //return writtenBoard !=null ? ResponseEntity.ok(writtenBoard) : ResponseEntity.badRequest().build();
+        return ResponseEntity.ok().build();
     }
-    // 자유게시판 글 전체 보기 - 추후에 무한스크롤 페이징 처리가 필요
+    // 무한페이징 처리가 필요
     @GetMapping("/animal-board")
     public ResponseEntity<List<AnimalBoard>> viewAll(){
         List<AnimalBoard> list = animalBoardService.viewAll();
@@ -81,8 +88,8 @@ public class AnimalBoardController {
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
     public ResponseEntity<AnimalBoard> boardUpdate(AnimalBoardUpdateDTO dto) throws IOException {
-        log.info("dto : " + dto);
-        log.info("dto.code : " + dto.getAnimalBoardCode());
+//        log.info("dto : " + dto);
+//        log.info("dto.code : " + dto.getAnimalBoardCode());
 
         // 글 수정을 위한 글 객체 생성
         AnimalBoard board = new AnimalBoard();
@@ -122,7 +129,7 @@ public class AnimalBoardController {
 
         }
 
-       return null;
+       return board!=null ? ResponseEntity.ok(board) : ResponseEntity.badRequest().build();
 
     }
     // 자유게시판 - 글 삭제
