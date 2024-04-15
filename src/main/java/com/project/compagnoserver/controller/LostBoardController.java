@@ -1,9 +1,9 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.LostBoard.LostBoard;
-import com.project.compagnoserver.domain.LostBoard.LostBoardDTO;
-import com.project.compagnoserver.domain.LostBoard.LostBoardImage;
-import com.project.compagnoserver.domain.LostBoard.QLostBoard;
+import com.project.compagnoserver.domain.LostBoard.*;
+import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
+import com.project.compagnoserver.service.LostBoardCommentService;
 import com.project.compagnoserver.service.LostBoardService;
 
 import com.querydsl.core.BooleanBuilder;
@@ -21,6 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +43,9 @@ public class LostBoardController {
 
     @Autowired
     private LostBoardService service;
+
+    @Autowired
+    private LostBoardCommentService comment;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
@@ -117,7 +124,7 @@ public class LostBoardController {
                                                         @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
                                                         @RequestParam(name="lostLocation", required = false)String lostLocation,
                                                         @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
-                                                        @RequestParam(name="sort", required = false, defaultValue = "0")int sortNum){
+                                                        @RequestParam(name="sort", defaultValue = "0")int sortNum){
 
         QLostBoard qLostBoard = QLostBoard.lostBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -272,5 +279,46 @@ public class LostBoardController {
 
     }
 
+    //[댓글 관련 로직]---------------------------------------------
+    @PostMapping("/lostBoard/comment")
+    public ResponseEntity createComment(@RequestBody LostBoardComment vo){
+        // 시큐리티 담은 로그인한 사용자의 정보 가져오기
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof User){
+            User user = (User) principal;
+            vo.setUser(user);
+            return ResponseEntity.ok().body(comment.create(vo));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 나머지 공통 부분 빼기
+    public List<LostBoardCommentDTO> commentDetailList(List<LostBoardComment> comments, int lostBoardCode){
+        List<LostBoardCommentDTO> response = new ArrayList<>();
+        for(LostBoardComment item:comments){
+            List<LostBoardComment> replies = comment.bottomComments(item.getLostParentCode(), lostBoardCode);
+            List<LostBoardCommentDTO> repliesDTO = commentDetailList(replies, lostBoardCode);
+            LostBoardCommentDTO dto = commentDetail(item);
+            dto.setReplies(repliesDTO);
+            response.add(dto);
+        }
+        return response;
+    }
+
+    // builder.build 공통부분 빼기
+    public LostBoardCommentDTO commentDetail(LostBoardComment vo){
+        return LostBoardCommentDTO.builder()
+                .lostBoardCode(vo.getLostBoardCode())
+                .userImg(vo.getUserImg())
+                .userNickname(vo.getUserNickname())
+                .commentDate(vo.getCommentDate())
+                .commentContent(vo.getCommentContent())
+                .lostBoardCode(vo.getLostBoardCode())
+//                .user(UserDTO.builder().userId(vo.getUser().getUserId()).build())
+                .build();
+    }
 
 }

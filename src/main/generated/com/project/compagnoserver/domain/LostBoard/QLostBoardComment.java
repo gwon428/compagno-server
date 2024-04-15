@@ -30,7 +30,9 @@ public class QLostBoardComment extends EntityPathBase<LostBoardComment> {
 
     public final NumberPath<Integer> lostCommentCode = createNumber("lostCommentCode", Integer.class);
 
-    public final QLostBoardComment lostParentCode;
+    public final NumberPath<Integer> lostParentCode = createNumber("lostParentCode", Integer.class);
+
+    public final QLostBoardComment parent;
 
     public final com.project.compagnoserver.domain.user.QUser user;
 
@@ -56,7 +58,7 @@ public class QLostBoardComment extends EntityPathBase<LostBoardComment> {
 
     public QLostBoardComment(Class<? extends LostBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.lostParentCode = inits.isInitialized("lostParentCode") ? new QLostBoardComment(forProperty("lostParentCode"), inits.get("lostParentCode")) : null;
+        this.parent = inits.isInitialized("parent") ? new QLostBoardComment(forProperty("parent"), inits.get("parent")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
