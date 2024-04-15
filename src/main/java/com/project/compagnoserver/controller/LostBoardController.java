@@ -66,18 +66,22 @@ public class LostBoardController {
 
         LostBoard result = service.create(lost);
         if(dto.getImages()!=null){
+            log.info("getImages : " + dto.getImages());
             for(MultipartFile file : dto.getImages()){
-                LostBoardImage images = new LostBoardImage();
+                if(!file.getOriginalFilename().equals("")){
+                    log.info("originName: " + file.getOriginalFilename());
+                    LostBoardImage images = new LostBoardImage();
 
-                String fileName = file.getOriginalFilename();
-                String uuid = UUID.randomUUID().toString();
-                String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
-                Path savePath = Paths.get(saveName);
-                file.transferTo(savePath);
+                    String fileName = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
 
-                images.setLostImage(saveName);
-                images.setLostBoardCode(result);
-                service.createImages(images);
+                    images.setLostImage(saveName);
+                    images.setLostBoardCode(result);
+                    service.createImages(images);
+                }
             }
         }
         return result!=null?
@@ -249,6 +253,9 @@ public class LostBoardController {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
     }
+    // 기존 사진 있을 경우 글만 변경 원하고 추가 사진 없으며 기존 사진 삭제 원할 때
+    //if(!file.getOriginalFilename().equals("")) 해당 조건 사용하기!
+
 
     // 삭제 ------------------------------------------
     @DeleteMapping("/lostBoard/{lostBoardCode}")
