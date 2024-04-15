@@ -38,9 +38,9 @@ public class LostBoardService {
     }
     
     // 정렬 보기
-    public Page<LostBoard> viewBySort(Pageable pageable){
-        return boardDAO.findAll(pageable);
-    }
+//    public Page<LostBoard> viewBySort(Pageable pageable){
+//        return boardDAO.findAll(pageable);
+//    }
 
 
     // 수정 ---------------------------------------------------------

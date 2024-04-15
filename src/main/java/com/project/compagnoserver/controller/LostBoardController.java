@@ -107,7 +107,8 @@ public class LostBoardController {
 
     // 검색 보기 -----------------------
     // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
-    // lostAnimalKind / lostAnimalGender / userNickname / lostDate / lostLocation / lostAnimalName
+    // 정렬 보기 -----------------------
+    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
     @GetMapping("/lostBoard/search")
     public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
                                                         @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
@@ -115,9 +116,8 @@ public class LostBoardController {
                                                         @RequestParam(name="userNickname", required = false) String userNickname,
                                                         @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
                                                         @RequestParam(name="lostLocation", required = false)String lostLocation,
-                                                        @RequestParam(name="lostAnimalName", required = false)String lostAnimalName){
-        Sort sort = Sort.by("lostBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 9, sort);
+                                                        @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
+                                                        @RequestParam(name="sort", required = false, defaultValue = "0")int sortNum){
 
         QLostBoard qLostBoard = QLostBoard.lostBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -147,45 +147,45 @@ public class LostBoardController {
             builder.and(expression);
         }
 
-        Page<LostBoard> list = service.viewBySearch(pageable, builder);
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
-    }
 
-    // 정렬 보기 -----------------------
-    // 그 때의 sort가 무엇인지에 따라 다 다르게 GetMapping을 만들어야 하나?
-    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
-    @GetMapping("/lostBoard/sort")
-    public ResponseEntity<List<LostBoard>> viewBySort(@RequestParam(name="page", defaultValue = "1")int page){
-
-        // 분실 날짜 순(선입, 후입)
-        Sort lDate = Sort.by("lostDate");
-        Sort lDateD = Sort.by("lostDate").descending();
-
-        Pageable pageable = null;
-
-        pageable = PageRequest.of(page-1, 9, lDate);
-        pageable = PageRequest.of(page-1, 9, lDateD);
-
-        // 조회수순(낮은 순, 높은 순)
-        Sort lViewCount = Sort.by("lostViewCount");
-        Sort lViewCountD = Sort.by("lostViewCount").descending();
-
-        pageable = PageRequest.of(page-1, 9, lViewCount);
-        pageable = PageRequest.of(page-1, 9, lViewCountD);
+        Pageable pageable = PageRequest.of(page-1, 9);
 
         // 작성일 순(선입, 후입)
         Sort lRegiDate = Sort.by("lostRegiDate");
         Sort lRegiDateD = Sort.by("lostRegiDate").descending();
 
-        pageable = PageRequest.of(page-1, 9, lRegiDate);
-        pageable = PageRequest.of(page-1, 9, lRegiDateD);
+        if(sortNum==0){
+            pageable = PageRequest.of(page-1, 9, lRegiDateD);
+        }
+        if(sortNum==1){
+            pageable = PageRequest.of(page-1, 9, lRegiDate);
+        }
 
-        // 저장(찜, 하트) (낮은 순, 높은 순) -> 컬럼 추가 필요
 
-        Page<LostBoard> list = service.viewBySort(pageable);
+        // 분실 날짜 순(선입, 후입)
+        if(sortNum==2){
+            Sort lDate = Sort.by("lostDate");
+            pageable = PageRequest.of(page-1, 9, lDate);
+        }
+        if(sortNum==3){
+            Sort lDateD = Sort.by("lostDate").descending();
+            pageable = PageRequest.of(page-1, 9, lDateD);
+        }
+
+        // 조회수순(낮은 순, 높은 순)
+        Sort lViewCount = Sort.by("lostViewCount");
+        Sort lViewCountD = Sort.by("lostViewCount").descending();
+
+        if(sortNum==4){
+            pageable = PageRequest.of(page-1, 9, lViewCount);
+        }
+        if(sortNum==5){
+            pageable = PageRequest.of(page-1, 9, lViewCountD);
+        }
+
+        Page<LostBoard> list = service.viewBySearch(pageable, builder);
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }
-
 
 
     // 수정 ---------------------------------------------------------------------------------------
@@ -246,6 +246,9 @@ public class LostBoardController {
             // -> 기존 사진 x : 사진 처리X
             if(prev.getImages()!=null){} else {}
 
+            // 기존 사진 있을 경우 글만 변경 원하고 추가 사진 없으며 기존 사진 삭제 원할 때
+            //if(!file.getOriginalFilename().equals("")) 해당 조건 사용하기!
+
         }
        // log.info("result : " + result.getLostTitle());
         return result!=null?
@@ -253,8 +256,7 @@ public class LostBoardController {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
     }
-    // 기존 사진 있을 경우 글만 변경 원하고 추가 사진 없으며 기존 사진 삭제 원할 때
-    //if(!file.getOriginalFilename().equals("")) 해당 조건 사용하기!
+
 
 
     // 삭제 ------------------------------------------
