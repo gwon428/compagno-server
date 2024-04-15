@@ -290,10 +290,20 @@ public class LostBoardController {
         if(principal instanceof User){
             User user = (User) principal;
             vo.setUser(user);
+
             return ResponseEntity.ok().body(comment.create(vo));
         }
         return ResponseEntity.badRequest().build();
     }
+
+    // 게시물 1개 따른 댓글 조회
+    @GetMapping("/lostBoard/comment/{lostBoardCode}/comment")
+    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
+        List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
+        List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
+        return ResponseEntity.ok(response);
+    }
+
 
     // 나머지 공통 부분 빼기
     public List<LostBoardCommentDTO> commentDetailList(List<LostBoardComment> comments, int lostBoardCode){
@@ -310,6 +320,7 @@ public class LostBoardController {
 
     // builder.build 공통부분 빼기
     public LostBoardCommentDTO commentDetail(LostBoardComment vo){
+
         return LostBoardCommentDTO.builder()
                 .lostBoardCode(vo.getLostBoardCode())
                 .userImg(vo.getUserImg())
@@ -317,7 +328,9 @@ public class LostBoardController {
                 .commentDate(vo.getCommentDate())
                 .commentContent(vo.getCommentContent())
                 .lostBoardCode(vo.getLostBoardCode())
-//                .user(UserDTO.builder().userId(vo.getUser().getUserId()).build())
+                .user(UserDTO.builder()
+                        .userId(vo.getUser().getUserId())
+                        .build())
                 .build();
     }
 

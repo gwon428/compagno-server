@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.LostBoard;
 
 import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class LostBoardCommentDTO {
     private Timestamp commentDate;
     private String commentContent;
     private int lostBoardCode;
-    private User user;
+    private UserDTO user;
     private List<LostBoardCommentDTO> replies = new ArrayList<>();
 
 }
