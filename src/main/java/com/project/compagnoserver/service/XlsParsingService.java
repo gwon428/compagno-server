@@ -20,25 +20,15 @@ import java.util.*;
 @Slf4j
 public class XlsParsingService {
 
-    private String fileName = "동물등록 대행기관_240405.xls";
+    private String fileName = "동물등록 대행기관.xls";
 
     @Autowired
     private RegisterPetDAO dao;
 
     public void saveToDb() {
 
-
         try {
             List<Map<Object, Object>> excelData = readExcel(fileName);
-
-//            for(int i=0; i<excelData.size(); i++) {
-//                RegisterPet regiPet = new RegisterPet();
-//
-//                Set<Object> keySet = excelData.get(i).keySet();
-//                for(Object key : keySet) {
-//                    log.info(key + " : " + excelData.get(i).get(key));
-//                }
-//            }
 
             for(Map<Object, Object> rowMap : excelData) {
                 RegisterPet regiPet = new RegisterPet();
