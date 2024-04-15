@@ -1,15 +1,11 @@
-package domain;
+package com.project.compagnoserver.domain.OneDayClass;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -18,12 +14,14 @@ import java.util.Date;
 @NoArgsConstructor
 @Entity
 @DynamicInsert
-public class oneday_class_board {
+@Table(name="oneday_class_board")
+public class ClassBoard {
 
     // 원데이 클래스 등록시 코드
     @Id
     @Column(name = "odc_code")
-    private  int odcCode;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int odcCode;
 
     // 원데이 클래스 제목
     @Column(name = "odc_title")
@@ -50,6 +48,7 @@ public class oneday_class_board {
     private Date odcLastDate;
 
     // 사용자 ID
+    @ManyToOne
     @JoinColumn
     private String userId;
 

@@ -1,4 +1,4 @@
-package domain;
+package com.project.compagnoserver.domain.OneDayClass;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @DynamicInsert
 @Entity
 
-public class oneday_class_review_comment {
+public class ClassBoardReviewComment {
 
     @Id
     @Column(name = "odc_comment_code")
