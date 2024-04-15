@@ -46,7 +46,7 @@ public class QQnaQBoardImage extends EntityPathBase<QnaQBoardImage> {
 
     public QQnaQBoardImage(Class<? extends QnaQBoardImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.qnaQCode = inits.isInitialized("qnaQCode") ? new QQnaQBoard(forProperty("qnaQCode")) : null;
+        this.qnaQCode = inits.isInitialized("qnaQCode") ? new QQnaQBoard(forProperty("qnaQCode"), inits.get("qnaQCode")) : null;
     }
 
 }

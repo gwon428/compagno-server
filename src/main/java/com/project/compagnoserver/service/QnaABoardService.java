@@ -45,4 +45,11 @@ public class QnaABoardService {
          image.deleteById(code);
     }
 
+    public QnaABoard delete(int code) {
+        QnaABoard target = dao.findById(code).orElse(null);
+        if(target != null){
+            dao.delete(target);
+        }
+        return target;
+    }
 }

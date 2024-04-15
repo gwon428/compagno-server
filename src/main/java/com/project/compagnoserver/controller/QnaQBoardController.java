@@ -102,7 +102,7 @@ public class QnaQBoardController {
     // 질문 수정
     @PutMapping("/question")
     public ResponseEntity<QnaQBoard> update(QnaQBoardDTO dto) throws IOException {
-        // 해당 게시판 수정 전 file 리스트
+        // 해당 게시판 수정 전
         QnaQBoard prev = service.view(dto.getQnaQCode());
 
         QnaQBoard vo = new QnaQBoard();

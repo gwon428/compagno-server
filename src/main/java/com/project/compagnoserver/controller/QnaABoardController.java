@@ -3,7 +3,9 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.QnaA.QnaABoard;
 import com.project.compagnoserver.domain.QnaA.QnaABoardDTO;
 import com.project.compagnoserver.domain.QnaA.QnaABoardImage;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.service.QnaABoardService;
+import com.project.compagnoserver.service.QnaQBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +28,9 @@ import java.util.UUID;
 public class QnaABoardController {
     @Autowired
     private QnaABoardService service;
+
+    @Autowired
+    private QnaQBoardService questionService;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
@@ -39,6 +45,12 @@ public class QnaABoardController {
         vo.setUserId(dto.getUserId());
         vo.setQnaATitle(dto.getQnaATitle());
         vo.setQnaAContent(dto.getQnaAContent());
+
+        // 답변 등록 시 status 업데이트
+        QnaQBoard update = questionService.view(dto.getQnaQCode());
+//        update.setQnaQCode(dto.getQnaQCode());
+        update.setQnaQStatus('Y');
+        questionService.update(update);
 
         QnaABoard result = service.create(vo);
         if(dto.getFiles() != null){
@@ -63,10 +75,92 @@ public class QnaABoardController {
     }
 
     @PutMapping("/answer")
-    public ResponseEntity<QnaABoard> update(QnaABoardDTO dto){
+    public ResponseEntity<QnaABoard> update(QnaABoardDTO dto) throws IOException {
+        // 수정 전
         QnaABoard prev = service.view(dto.getQnaACode());
-
         QnaABoard vo = new QnaABoard();
-        return null;
+
+        vo.setQnaACode(dto.getQnaACode());
+        vo.setQnaQCode(dto.getQnaQCode());
+        vo.setUserId(dto.getUserId());
+        vo.setQnaATitle(dto.getQnaATitle());
+        vo.setQnaAContent(dto.getQnaAContent());
+
+        log.info("파일 확인 " + dto.getFiles().getFirst().getOriginalFilename());
+
+        if(dto.getFiles().getFirst().getOriginalFilename() != ""){
+            if(prev.getFiles() != null){
+                log.info("기존 사진 o, 추가 사진 o");
+                List<QnaABoardImage> list = prev.getFiles();
+
+                // 기존 사진 삭제
+                for(QnaABoardImage img : list){
+                   service.deleteImg(img.getQnaAImgCode());
+                }
+
+                // 후, 추가되는 사진 다시 리스트로 만들어서 저장
+                for(MultipartFile file : dto.getFiles()){
+                    QnaABoardImage image = new QnaABoardImage();
+
+                    String fileName = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
+
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
+
+                    image.setQnaAUrl(saveName);
+                    image.setQnaACode(prev);
+                    service.createImg(image);
+                }
+            } else {
+                log.info("기존 사진 x, 추가 사진 o");
+                // 추가되는 사진 리스트로 받아서 저장
+                for(MultipartFile file : dto.getFiles()){
+                    if(file.getOriginalFilename() != ""){
+                        QnaABoardImage image = new QnaABoardImage();
+
+                        String fileName = file.getOriginalFilename();
+                        String uuid = UUID.randomUUID().toString();
+                        String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
+
+                        Path savePath = Paths.get(saveName);
+                        file.transferTo(savePath);
+
+                        image.setQnaAUrl(saveName);
+                        image.setQnaACode(prev);
+                        service.createImg(image);
+                    }
+                }
+            }
+        } else {
+            // 추가되는 사진이 없을 때
+            if(prev.getFiles() == null){
+                log.info("기존 사진 x, 추가 사진 x");
+            } else {
+                log.info("기존 사진 o, 추가 사진 x");
+                // 추가 사진은 없지만 삭제를 원하지 않을 때
+
+
+                // 추가 사진 없이 삭제만 원할 때
+//                List<QnaABoardImage> list = prev.getFiles();
+//                for(QnaABoardImage img : list){
+//                    service.deleteImg(img.getQnaABoardImgCode());
+//                }
+            }
+        }
+        QnaABoard target = service.update(vo);
+        return (target != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(target) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+    // 답변 삭제
+    @DeleteMapping("/answer/{code}")
+    public ResponseEntity<QnaABoard> delete(@PathVariable(name="code") int code){
+        QnaABoard prev = service.view(code);
+        if(prev.getFiles() != null){
+            QnaABoard target = service.delete(code);
+        }
+        return (prev != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(prev) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 }

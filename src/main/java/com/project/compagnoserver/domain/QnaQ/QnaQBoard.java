@@ -46,7 +46,7 @@ public class QnaQBoard {
     private Timestamp qnaQDate;
 
     @Column(name="qna_q_status")
-    private String qnaQStatus;
+    private char qnaQStatus;
 
     @OneToMany(mappedBy = "qnaQCode")
     @JsonIgnore
