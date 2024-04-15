@@ -22,10 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -43,26 +43,29 @@ public class QnaQBoardController {
     public ResponseEntity<QnaQBoard> create(QnaQBoardDTO dto) throws IOException {
         QnaQBoard vo = new QnaQBoard();
 
-        vo.setQnaQBoardCode(dto.getQnaQBoardCode());
+        vo.setQnaQCode(dto.getQnaQCode());
         vo.setUserId(dto.getUserId());
         vo.setUserNickname(dto.getUserNickname());
         vo.setQnaQTitle(dto.getQnaQTitle());
         vo.setQnaQContent(dto.getQnaQContent());
 
         QnaQBoard result = service.create(vo);
+        if(dto.getFiles()!= null) {
+            for (MultipartFile file : dto.getFiles()) {
+                if(file.getOriginalFilename() != "") {
+                    QnaQBoardImage img = new QnaQBoardImage();
 
-        for(MultipartFile file : dto.getFiles()){
-            QnaQBoardImage img = new QnaQBoardImage();
+                    String fileName = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
 
-            String fileName = file.getOriginalFilename();
-            String uuid = UUID.randomUUID().toString();
-            String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
-
-            Path savePath = Paths.get(saveName);
-            file.transferTo(savePath);
-            img.setQnaQBoardUrl(saveName);
-            img.setQnaQBoardCode(result);
-            service.createImg(img);
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
+                    img.setQnaQUrl(saveName);
+                    img.setQnaQCode(result);
+                    service.createImg(img);
+                }
+            }
         }
         return result != null ? ResponseEntity.status(HttpStatus.CREATED).body(result) :
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -71,7 +74,7 @@ public class QnaQBoardController {
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
     @GetMapping("/question")
     public ResponseEntity<List<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
-        Sort sort = Sort.by("QnaQBoardCode").descending();
+        Sort sort = Sort.by("QnaQCode").descending();
         Pageable pageable = PageRequest.of(page-1, 5, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
@@ -99,53 +102,28 @@ public class QnaQBoardController {
     // 질문 수정
     @PutMapping("/question")
     public ResponseEntity<QnaQBoard> update(QnaQBoardDTO dto) throws IOException {
+        // 해당 게시판 수정 전 file 리스트
+        QnaQBoard prev = service.view(dto.getQnaQCode());
+
         QnaQBoard vo = new QnaQBoard();
-        vo.setQnaQBoardCode(dto.getQnaQBoardCode());
+        vo.setUserId(dto.getUserId());
+        vo.setQnaQCode(dto.getQnaQCode());
         vo.setUserNickname(dto.getUserNickname());
         vo.setQnaQTitle(dto.getQnaQTitle());
         vo.setQnaQContent(dto.getQnaQContent());
 
-        // 해당 게시판 수정 전 file 리스트
-        List<MultipartFile> prev = dto.getFiles();
-        log.info("dto.getfile이 비어있어?" + dto.getFiles().isEmpty());
-        log.info("prev.getfile이 비어있어? " + prev.isEmpty());
-        if(!prev.isEmpty()){
-            // 기존 사진이 없고, 추가할 사진이 있는 경우
-            if(dto.getFiles().isEmpty()){
-                log.info("기존사진이없고추가하는사진이잇어");
-                for(MultipartFile file : dto.getFiles()) {
-                    QnaQBoardImage image = new QnaQBoardImage();
+        log.info("파일비어잇어?" + (dto.getFiles().getFirst().getOriginalFilename() == ""));
 
-                    String fileName = file.getOriginalFilename();
-                    String uuid = UUID.randomUUID().toString();
-                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
+        if (dto.getFiles().getFirst().getOriginalFilename() == "") {
+            // 추가되는 사진이 있을 때
+            if (prev.getFiles() != null) {
+                log.info("기존 사진 o, 추가 사진 o");
+                List<QnaQBoardImage> list = prev.getFiles();
 
-                    Path savePath = Paths.get(saveName);
-                    file.transferTo(savePath);
-
-                    image.setQnaQBoardUrl(saveName);
-                    image.setQnaQBoardCode(vo);
-
-                    service.createImg(image);
-                }
-            }
-        } else {
-            if(dto.getFiles().isEmpty()){
-                // 기존 사진이 있고, 추가하는 사진이 없는 경우
-                log.info("기존사진이잇고추가하는사진이없엉");
-                QnaQBoard previ = service.view(dto.getQnaQBoardCode());
-                List<QnaQBoardImage> list = previ.getFiles();
                 for(QnaQBoardImage img : list){
-                    service.deleteImg(img.getQnaQBoardImgCode());
+                    service.deleteImg(img.getQnaQImgCode());
                 }
-            } else if(!dto.getFiles().isEmpty()) {
-                // 기존 사진 있고, 추가할 사진이 있는 경우
-                log.info("기존사진이잇고추가하는사진도잇어");
-                QnaQBoard previ = service.view(dto.getQnaQBoardCode());
-                List<QnaQBoardImage> list = previ.getFiles();
-                for(QnaQBoardImage img : list){
-                    service.deleteImg(img.getQnaQBoardImgCode());
-                }
+
                 for(MultipartFile file : dto.getFiles()){
                     QnaQBoardImage image = new QnaQBoardImage();
 
@@ -156,14 +134,47 @@ public class QnaQBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    image.setQnaQBoardUrl(saveName);
-                    image.setQnaQBoardCode(previ);
+                    image.setQnaQUrl(saveName);
+                    image.setQnaQCode(prev);
                     service.createImg(image);
                 }
-            } QnaQBoard target = service.update(vo);
-            return (target != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(target) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            } else {
+                log.info("기존 사진 x, 추가 사진 o");
+                for(MultipartFile file : dto.getFiles()) {
+                    if(!Objects.equals(file.getOriginalFilename(), "")) {
+                        QnaQBoardImage image = new QnaQBoardImage();
+
+                        String fileName = file.getOriginalFilename();
+                        String uuid = UUID.randomUUID().toString();
+                        String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
+
+                        Path savePath = Paths.get(saveName);
+                        file.transferTo(savePath);
+
+                        image.setQnaQUrl(saveName);
+                        image.setQnaQCode(vo);
+                        service.createImg(image);
+                    }
+                }
+            }
+        } else {
+            // 추가되는 사진이 없을 때
+            if (prev.getFiles()== null) {
+                log.info("기존 사진 x, 추가 사진 x");
+            } else {
+                log.info("기존 사진 o, 추가 사진 x");
+                // 추가 사진은 없지만 삭제를 원하지 않을 때
+
+
+                // 추가 사진 없이 삭제만 원할 때
+//                List<QnaQBoardImage> list = prev.getFiles();
+//                for(QnaQBoardImage img : list){
+//                    service.deleteImg(img.getQnaQBoardImgCode());
+//                }
+            }
         }
-        return null;
+        QnaQBoard target = service.update(vo);
+        return (target != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(target) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @DeleteMapping("/question/{code}")

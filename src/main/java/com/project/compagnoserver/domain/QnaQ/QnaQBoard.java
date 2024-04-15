@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.QnaQ;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.QnaA.QnaABoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -21,9 +21,13 @@ import java.util.List;
 @Builder
 @Table(name="qna_q_board")
 public class QnaQBoard {
-    @Id @Column(name="qna_q_board_code")
+    @Id @Column(name="qna_q_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int qnaQBoardCode;
+    private int qnaQCode;
+
+    @OneToOne
+    @JoinColumn(name="qna_a_code")
+    private QnaABoard qnaACode;
 
     @Column(name="user_id")
     private String userId;
@@ -44,7 +48,7 @@ public class QnaQBoard {
     @Column(name="qna_q_status")
     private String qnaQStatus;
 
-    @OneToMany(mappedBy = "qnaQBoardCode")
+    @OneToMany(mappedBy = "qnaQCode")
     @JsonIgnore
     private List<QnaQBoardImage> files;
 }

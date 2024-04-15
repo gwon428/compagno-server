@@ -22,11 +22,11 @@ public class QQnaQBoardImage extends EntityPathBase<QnaQBoardImage> {
 
     public static final QQnaQBoardImage qnaQBoardImage = new QQnaQBoardImage("qnaQBoardImage");
 
-    public final QQnaQBoard qnaQBoardCode;
+    public final QQnaQBoard qnaQCode;
 
-    public final NumberPath<Integer> qnaQBoardImgCode = createNumber("qnaQBoardImgCode", Integer.class);
+    public final NumberPath<Integer> qnaQImgCode = createNumber("qnaQImgCode", Integer.class);
 
-    public final StringPath qnaQBoardUrl = createString("qnaQBoardUrl");
+    public final StringPath qnaQUrl = createString("qnaQUrl");
 
     public QQnaQBoardImage(String variable) {
         this(QnaQBoardImage.class, forVariable(variable), INITS);
@@ -46,7 +46,7 @@ public class QQnaQBoardImage extends EntityPathBase<QnaQBoardImage> {
 
     public QQnaQBoardImage(Class<? extends QnaQBoardImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.qnaQBoardCode = inits.isInitialized("qnaQBoardCode") ? new QQnaQBoard(forProperty("qnaQBoardCode")) : null;
+        this.qnaQCode = inits.isInitialized("qnaQCode") ? new QQnaQBoard(forProperty("qnaQCode")) : null;
     }
 
 }

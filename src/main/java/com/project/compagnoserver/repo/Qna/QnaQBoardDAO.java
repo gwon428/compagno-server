@@ -1,4 +1,4 @@
-package com.project.compagnoserver.repo.QnaQ;
+package com.project.compagnoserver.repo.Qna;
 
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
