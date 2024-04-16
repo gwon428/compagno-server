@@ -20,9 +20,9 @@ public class AnimalBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int animalBoardCode;
 
+    //.TransientPropertyValueException 오류시 자식객체를 호출하는 부모객체쪽에 cascade = CascadeType.ALL추가
     @ManyToOne
     @JoinColumn(name = "animal_category_code")
-    @JsonIgnore
     private AnimalCategory animalCategory; // 카테고리 테이블과 연결
 
     @Column(name = "animal_main_image")

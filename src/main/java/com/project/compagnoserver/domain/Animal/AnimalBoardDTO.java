@@ -20,6 +20,7 @@ public class AnimalBoardDTO {
     private String animalBoardContent;
     private String animalBoardView;
     private Date animalBoardDate;
+    private int animalBoardCode;
     private int animalCategoryCode;
 
     // 자유게시판 글쓰기 DTO

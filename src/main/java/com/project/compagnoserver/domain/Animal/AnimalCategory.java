@@ -10,12 +10,10 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@DynamicInsert
 @Table(name = "animal_category")
 public class AnimalCategory {
     @Id
     @Column(name = "animal_category_code")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int animalCategoryCode;
 
     @Column(name = "animal_type")

@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class AnimalBoardUpdateDTO {
 
-    private List<MultipartFile> files;
+//    private List<MultipartFile> files;
     private int animalBoardCode;
     private String id; // 유저정보
     private String animalMainImage;

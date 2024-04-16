@@ -2,8 +2,12 @@ package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.Animal.AnimalBoard;
 import com.project.compagnoserver.domain.Animal.AnimalBoardImage;
+import com.project.compagnoserver.domain.Animal.QAnimalBoard;
+import com.project.compagnoserver.domain.Animal.QAnimalCategory;
+import com.project.compagnoserver.domain.user.QUser;
 import com.project.compagnoserver.repo.Animal.AnimalBoardDAO;
 import com.project.compagnoserver.repo.Animal.AnimalBoardImageDAO;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,13 @@ public class AnimalBoardService {
 
     @Autowired
     private AnimalBoardImageDAO animalBoardImageDAO;
+
+    @Autowired
+    private JPAQueryFactory queryFactory;
+
+    private final QAnimalBoard qAnimalBoard = QAnimalBoard.animalBoard;
+    private final QAnimalCategory qAnimalCategory = QAnimalCategory.animalCategory;
+    private final QUser qUser = QUser.user;
 
     // 자유게시판 글쓰기 - 1) 글쓰기
     public AnimalBoard write(AnimalBoard board){

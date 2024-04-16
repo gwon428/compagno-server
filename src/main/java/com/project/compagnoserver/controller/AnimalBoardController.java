@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,18 +37,22 @@ public class AnimalBoardController {
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
+
+    // 시간정보 넣기
+    LocalDateTime localDateTime = LocalDateTime.now();
+    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
+
     // 자유게시판 글쓰기
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> write(@RequestBody AnimalBoardDTO dto) throws IOException {
-
 //        log.info("dto : " + dto);
 //        log.info("content : " + dto.getAnimalBoardContent());
 
         // 글작성
-        AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/ animalCateCode
+        AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/
         vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
         vo.setAnimalBoardContent(dto.getAnimalBoardContent());
-       // log.info("client : " + vo);
+        vo.setAnimalBoardDate(nowDate);
         AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
         animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
         vo.setAnimalCategory(animalCategory);
@@ -86,8 +93,8 @@ public class AnimalBoardController {
     }
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
-    public ResponseEntity<AnimalBoard> boardUpdate(AnimalBoardUpdateDTO dto) throws IOException {
-//        log.info("dto : " + dto);
+    public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardUpdateDTO dto) throws IOException {
+        log.info("dto : " + dto);
 //        log.info("dto.code : " + dto.getAnimalBoardCode());
 
         // 글 수정을 위한 글 객체 생성
@@ -95,9 +102,12 @@ public class AnimalBoardController {
         board.setAnimalBoardCode(dto.getAnimalBoardCode());
         board.setAnimalBoardTitle(dto.getAnimalBoardTitle());
         board.setAnimalBoardContent(dto.getAnimalBoardContent());
+        board.setAnimalMainImage(dto.getAnimalMainImage());
+        board.setAnimalBoardDate(dto.getAnimalBoardDate());
         AnimalCategory animalCategory = new AnimalCategory();
         animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
         board.setAnimalCategory(animalCategory);
+        AnimalBoard updatedBoard = animalBoardService.boardUpdate(board);
 
         // 기존 데이터(사진) 가져오기 그리고 바로 삭제
 //        AnimalBoard writtenBoard= animalBoardService.viewDetail(dto.getAnimalBoardCode());
@@ -128,8 +138,7 @@ public class AnimalBoardController {
 //
 //        }
 
-       return board!=null ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
-
+       return  updatedBoard!=null ? ResponseEntity.ok(board) : ResponseEntity.badRequest().build();
     }
     // 자유게시판 - 글 삭제
 }
