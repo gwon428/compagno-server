@@ -24,6 +24,8 @@ public class TokenProvider {
                 .setClaims(Map.of(
                         "userId", user.getUserId(),
                         "userPersonName", user.getUserPersonName(),
+                        "userNickname", user.getUserNickname(), // LostBoardComment 확인 위해(닉네임, 이미지 추가)
+                        "userImg", user.getUserImg(),
                         "userRole", user.getUserRole()
                 ))
                 .setIssuedAt(new Date())
@@ -40,6 +42,8 @@ public class TokenProvider {
                 .userId((String) claims.get("userId"))
                 .userPersonName((String) claims.get("userPersonName"))
                 .userRole((String) claims.get("userRole"))
+                .userNickname((String)claims.get("userNickname"))
+                .userImg((String)claims.get("userImg"))
                 .build();
     }
 }

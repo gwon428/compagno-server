@@ -15,4 +15,8 @@ public class UserDTO {
     private String token;
     private String userId;
     private String userPersonName;
+
+    // LostBoardComment에 필요
+    private String userNickname;
+    private String userImg;
 }

@@ -44,6 +44,7 @@ public class UserController {
                 .userEnrollDate(nowDate)
                 .userStatus("n")
                 .userRole("ROLE_USER")
+                .userImg(vo.getUserImg()) // LostBoardComment 확인 위해
                 .build();
 
         User result = userService.create(user);

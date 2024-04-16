@@ -282,14 +282,21 @@ public class LostBoardController {
     //[댓글 관련 로직]---------------------------------------------
     @PostMapping("/lostBoard/comment")
     public ResponseEntity createComment(@RequestBody LostBoardComment vo){
+        log.info("vov : " + vo.getUserNickname());
+
         // 시큐리티 담은 로그인한 사용자의 정보 가져오기
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
 
+        log.info("principal : " + principal);
+
         if(principal instanceof User){
             User user = (User) principal;
+            log.info("user:닉네임 : " + user.getUserNickname());
             vo.setUser(user);
+            vo.setUserNickname(user.getUserNickname());
+            vo.setUserImg(user.getUserImg());
 
             return ResponseEntity.ok().body(comment.create(vo));
         }
@@ -297,7 +304,14 @@ public class LostBoardController {
     }
 
     // 게시물 1개 따른 댓글 조회
-    @GetMapping("/lostBoard/comment/{lostBoardCode}/comment")
+//    @GetMapping("/lostBoard/comment/{lostBoardCode}/comment")
+//    public ResponseEntity<List<LostBoardComment>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
+//        List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
+////        List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
+//        return ResponseEntity.ok(topList);
+//    }
+
+    @GetMapping("/lostBoard/{lostBoardCode}/comment")
     public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
         List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
         List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
@@ -308,11 +322,14 @@ public class LostBoardController {
     // 나머지 공통 부분 빼기
     public List<LostBoardCommentDTO> commentDetailList(List<LostBoardComment> comments, int lostBoardCode){
         List<LostBoardCommentDTO> response = new ArrayList<>();
-        for(LostBoardComment item:comments){
+//        log.info("response : " + response);
+        for(LostBoardComment item : comments){
+            log.info("item : " + item );
             List<LostBoardComment> replies = comment.bottomComments(item.getLostParentCode(), lostBoardCode);
             List<LostBoardCommentDTO> repliesDTO = commentDetailList(replies, lostBoardCode);
             LostBoardCommentDTO dto = commentDetail(item);
             dto.setReplies(repliesDTO);
+            log.info("dto : " + dto);
             response.add(dto);
         }
         return response;
@@ -320,18 +337,22 @@ public class LostBoardController {
 
     // builder.build 공통부분 빼기
     public LostBoardCommentDTO commentDetail(LostBoardComment vo){
-
+    log.info("vo : " + vo.getLostBoardCode());
         return LostBoardCommentDTO.builder()
                 .lostBoardCode(vo.getLostBoardCode())
-                .userImg(vo.getUserImg())
-                .userNickname(vo.getUserNickname())
+//                .userImg(vo.getUserImg())
+//                .userNickname(vo.getUserNickname())
                 .commentDate(vo.getCommentDate())
                 .commentContent(vo.getCommentContent())
                 .lostBoardCode(vo.getLostBoardCode())
                 .user(UserDTO.builder()
                         .userId(vo.getUser().getUserId())
+                        .userNickname(vo.getUserNickname())
+                        .userImg(vo.getUserImg())
                         .build())
                 .build();
     }
+
+
 
 }
