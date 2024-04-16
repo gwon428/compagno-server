@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AnimalBoardDTO {
 
-    private List<MultipartFile> files;
+//    private List<MultipartFile> files;
     private String id; // 유저정보
     private String animalMainImage;
     private String animalBoardTitle;

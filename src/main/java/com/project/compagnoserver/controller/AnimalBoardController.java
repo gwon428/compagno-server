@@ -38,17 +38,17 @@ public class AnimalBoardController {
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> write(@RequestBody AnimalBoardDTO dto) throws IOException {
 
-        log.info("dto : " + dto);
-        log.info("content : " + dto.getAnimalBoardContent());
+//        log.info("dto : " + dto);
+//        log.info("content : " + dto.getAnimalBoardContent());
 
         // 글작성
         AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/ animalCateCode
-     //   vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
+        vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
         vo.setAnimalBoardContent(dto.getAnimalBoardContent());
        // log.info("client : " + vo);
-       // AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
-       // animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
-        //vo.setAnimalCategory(animalCategory);
+        AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
+        animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
+        vo.setAnimalCategory(animalCategory);
         AnimalBoard writtenBoard = animalBoardService.write(vo);
         //log.info("vo : " + writtenBoard);
 
@@ -68,8 +68,7 @@ public class AnimalBoardController {
 //            animalBoardService.writeImages(image);
 
 //        }
-        //return writtenBoard !=null ? ResponseEntity.ok(writtenBoard) : ResponseEntity.badRequest().build();
-        return ResponseEntity.ok().build();
+        return writtenBoard !=null ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
     }
     // 무한페이징 처리가 필요
     @GetMapping("/animal-board")
@@ -101,35 +100,35 @@ public class AnimalBoardController {
         board.setAnimalCategory(animalCategory);
 
         // 기존 데이터(사진) 가져오기 그리고 바로 삭제
-        AnimalBoard writtenBoard= animalBoardService.viewDetail(dto.getAnimalBoardCode());
-        if(writtenBoard.getImages()!=null){
-            for(AnimalBoardImage image : writtenBoard.getImages()){
+//        AnimalBoard writtenBoard= animalBoardService.viewDetail(dto.getAnimalBoardCode());
+//        if(writtenBoard.getImages()!=null){
+//            for(AnimalBoardImage image : writtenBoard.getImages()){
+//
+//                for(MultipartFile file : dto.getFiles()){
+//                    if (file!=null && !image.equals(file)){
+//                        File filed = new File(String.valueOf(image));
+//                        filed.delete();
+//                        String fileName =  file.getOriginalFilename();
+//                        String uuid = UUID.randomUUID().toString();
+//                        String saveName = uploadPath + File.separator + "animalBoard" + File.separator + uuid + "_" + fileName;
+//                        Path savePath = Paths.get(saveName);
+//                        file.transferTo(savePath);
+//
+//                        AnimalBoardImage imageResult = new AnimalBoardImage();
+//                        imageResult.setAnimalBoardImage(saveName);
+//                        imageResult.setAnimalBoard(writtenBoard);
+//                        animalBoardService.writeImages(imageResult);
+//
+////                        board.setImages(imageResult);
+//                    }
+//                }
+//
+//            }
+//
+//
+//        }
 
-                for(MultipartFile file : dto.getFiles()){
-                    if (file!=null && !image.equals(file)){
-                        File filed = new File(String.valueOf(image));
-                        filed.delete();
-                        String fileName =  file.getOriginalFilename();
-                        String uuid = UUID.randomUUID().toString();
-                        String saveName = uploadPath + File.separator + "animalBoard" + File.separator + uuid + "_" + fileName;
-                        Path savePath = Paths.get(saveName);
-                        file.transferTo(savePath);
-
-                        AnimalBoardImage imageResult = new AnimalBoardImage();
-                        imageResult.setAnimalBoardImage(saveName);
-                        imageResult.setAnimalBoard(writtenBoard);
-                        animalBoardService.writeImages(imageResult);
-
-//                        board.setImages(imageResult);
-                    }
-                }
-
-            }
-
-
-        }
-
-       return board!=null ? ResponseEntity.ok(board) : ResponseEntity.badRequest().build();
+       return board!=null ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
 
     }
     // 자유게시판 - 글 삭제
