@@ -4,6 +4,7 @@ import com.project.compagnoserver.domain.QnaA.QnaABoard;
 import com.project.compagnoserver.domain.QnaA.QnaABoardDTO;
 import com.project.compagnoserver.domain.QnaA.QnaABoardImage;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.service.QnaABoardService;
 import com.project.compagnoserver.service.QnaQBoardService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,50 +39,73 @@ public class QnaABoardController {
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
+    public Object authentication(){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        return authentication.getPrincipal();
+    }
     // 답변 등록
     @PostMapping("/answer")
     public ResponseEntity<QnaABoard> create (QnaABoardDTO dto) throws IOException {
+        Object principal = authentication();
+
         QnaABoard vo = new QnaABoard();
 
-        vo.setQnaACode(dto.getQnaACode());
-        vo.setQnaQCode(dto.getQnaQCode());
-        vo.setUserId(dto.getUserId());
-        vo.setQnaATitle(dto.getQnaATitle());
-        vo.setQnaAContent(dto.getQnaAContent());
+        if(principal instanceof User) {
+            User user = (User) principal;
 
-        // 답변 등록 시 status 업데이트
-        QnaQBoard update = questionService.view(dto.getQnaQCode());
+            if(user.getUserRole().equals("ROLE_ADMIN")){
+
+            vo.setQnaACode(dto.getQnaACode());
+            vo.setQnaQCode(dto.getQnaQCode());
+            vo.setUserId(user.getUserId());
+            vo.setQnaATitle(dto.getQnaATitle());
+            vo.setQnaAContent(dto.getQnaAContent());
+
+            // 답변 등록 시 status 업데이트
+            QnaQBoard update = questionService.view(dto.getQnaQCode());
 //        update.setQnaQCode(dto.getQnaQCode());
-        update.setQnaQStatus('Y');
-        questionService.update(update);
+            update.setQnaQStatus("Y");
+            questionService.update(update);
 
-        QnaABoard result = service.create(vo);
-        if(dto.getFiles() != null){
-            for(MultipartFile file : dto.getFiles()){
-                if(file.getOriginalFilename() != "") {
-                    QnaABoardImage img = new QnaABoardImage();
+            QnaABoard result = service.create(vo);
+            if (dto.getFiles() != null) {
+                for (MultipartFile file : dto.getFiles()) {
+                    if (file.getOriginalFilename() != "") {
+                        QnaABoardImage img = new QnaABoardImage();
 
-                    String fileName = file.getOriginalFilename();
-                    String uuid = UUID.randomUUID().toString();
-                    String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
+                        String fileName = file.getOriginalFilename();
+                        String uuid = UUID.randomUUID().toString();
+                        String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
 
-                    Path savePath = Paths.get(saveName);
-                    file.transferTo(savePath);
-                    img.setQnaAUrl(saveName);
-                    img.setQnaACode(result);
-                    service.createImg(img);
+                        Path savePath = Paths.get(saveName);
+                        file.transferTo(savePath);
+                        img.setQnaAUrl(saveName);
+                        img.setQnaACode(result);
+                        service.createImg(img);
+                    }
                 }
             }
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
         }
-        return result != null ? ResponseEntity.status(HttpStatus.CREATED).body(result) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
     }
 
     @PutMapping("/answer")
     public ResponseEntity<QnaABoard> update(QnaABoardDTO dto) throws IOException {
         // 수정 전
         QnaABoard prev = service.view(dto.getQnaACode());
+
+        Object principal = authentication();
+
         QnaABoard vo = new QnaABoard();
+
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            if(user.getUserRole().equals("ROLE_ADMIN") && prev.getUserId().equals(user.getUserId())){
 
         vo.setQnaACode(dto.getQnaACode());
         vo.setQnaQCode(dto.getQnaQCode());
@@ -147,6 +174,8 @@ public class QnaABoardController {
 //                for(QnaABoardImage img : list){
 //                    service.deleteImg(img.getQnaABoardImgCode());
 //                }
+            }
+        }
             }
         }
         QnaABoard target = service.update(vo);

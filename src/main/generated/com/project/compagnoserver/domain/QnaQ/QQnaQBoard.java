@@ -32,7 +32,7 @@ public class QQnaQBoard extends EntityPathBase<QnaQBoard> {
 
     public final DateTimePath<java.sql.Timestamp> qnaQDate = createDateTime("qnaQDate", java.sql.Timestamp.class);
 
-    public final ComparablePath<Character> qnaQStatus = createComparable("qnaQStatus", Character.class);
+    public final StringPath qnaQStatus = createString("qnaQStatus");
 
     public final StringPath qnaQTitle = createString("qnaQTitle");
 
