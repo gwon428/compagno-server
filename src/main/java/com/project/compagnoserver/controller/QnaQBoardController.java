@@ -114,6 +114,35 @@ public class QnaQBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }
 
+    @GetMapping("/question/manage")
+    public ResponseEntity<List<QnaQBoard>> viewManage(@RequestParam (name="page", defaultValue = "1") int page){
+
+        Object principal = authentication();
+
+        QnaQBoard vo = new QnaQBoard();
+
+        if(principal instanceof User) {
+
+            User user = (User) principal;
+
+            Sort sort = Sort.by("QnaQCode").descending();
+            Pageable pageable = PageRequest.of(page - 1, 10, sort);
+
+            QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
+            BooleanBuilder builder = new BooleanBuilder();
+
+            if (user.getUserRole().equals("ROLE_ADMIN")) {
+                BooleanExpression expression = qQnaQBoard.qnaQStatus.eq("N");
+                builder.and(expression);
+            }
+
+            Page<QnaQBoard> list = service.viewAll(builder, pageable);
+
+            return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     // 질문 상세보기(질문 코드 통해서)
     @GetMapping("/question/{code}")
     public ResponseEntity<QnaQBoard> view(@PathVariable(name="code") int code){

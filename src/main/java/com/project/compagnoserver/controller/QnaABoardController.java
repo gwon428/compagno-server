@@ -4,6 +4,7 @@ import com.project.compagnoserver.domain.QnaA.QnaABoard;
 import com.project.compagnoserver.domain.QnaA.QnaABoardDTO;
 import com.project.compagnoserver.domain.QnaA.QnaABoardImage;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.service.QnaABoardService;
 import com.project.compagnoserver.service.QnaQBoardService;
@@ -53,8 +54,10 @@ public class QnaABoardController {
 
         if(principal instanceof User) {
             User user = (User) principal;
-
-            if(user.getUserRole().equals("ROLE_ADMIN")){
+            String status = questionService.view(dto.getQnaQCode()).getQnaQStatus();
+            log.info("status : " + status);
+            log.info("equals : " + status.equals("N"));
+            if(user.getUserRole().equals("ROLE_ADMIN") && status.equals("N")){
 
             vo.setQnaACode(dto.getQnaACode());
             vo.setQnaQCode(dto.getQnaQCode());
@@ -91,7 +94,6 @@ public class QnaABoardController {
         }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
     }
 
     @PutMapping("/answer")
@@ -108,11 +110,11 @@ public class QnaABoardController {
 
             if(user.getUserRole().equals("ROLE_ADMIN") && prev.getUserId().equals(user.getUserId())){
 
-        vo.setQnaACode(dto.getQnaACode());
-        vo.setQnaQCode(dto.getQnaQCode());
-        vo.setUserId(user.getUserId());
-        vo.setQnaATitle(dto.getQnaATitle());
-        vo.setQnaAContent(dto.getQnaAContent());
+            vo.setQnaACode(dto.getQnaACode());
+            vo.setQnaQCode(dto.getQnaQCode());
+            vo.setUserId(user.getUserId());
+            vo.setQnaATitle(dto.getQnaATitle());
+            vo.setQnaAContent(dto.getQnaAContent());
 
         log.info("파일 확인 " + dto.getFiles().getFirst().getOriginalFilename());
 
@@ -187,8 +189,23 @@ public class QnaABoardController {
     @DeleteMapping("/answer/{code}")
     public ResponseEntity<QnaABoard> delete(@PathVariable(name="code") int code){
         QnaABoard prev = service.view(code);
-        if(prev.getFiles() != null){
-            QnaABoard target = service.delete(code);
+
+        Object principal = authentication();
+
+        QnaABoard vo = new QnaABoard();
+
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            if (user.getUserRole().equals("ROLE_ADMIN") && prev.getUserId().equals(user.getUserId())) {
+
+                if (prev.getFiles() != null) {
+                    QnaABoard target = service.delete(code);
+                    QnaQBoard update = questionService.view(target.getQnaQCode());
+                    update.setQnaQStatus("N");
+                    questionService.update(update);
+                }
+            }
         }
         return (prev != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(prev) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
