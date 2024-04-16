@@ -62,13 +62,14 @@ public class QnaABoardController {
             vo.setQnaATitle(dto.getQnaATitle());
             vo.setQnaAContent(dto.getQnaAContent());
 
+            QnaABoard result = service.create(vo);
             // 답변 등록 시 status 업데이트
             QnaQBoard update = questionService.view(dto.getQnaQCode());
-//        update.setQnaQCode(dto.getQnaQCode());
+            update.setQnaACode(result);
             update.setQnaQStatus("Y");
+
             questionService.update(update);
 
-            QnaABoard result = service.create(vo);
             if (dto.getFiles() != null) {
                 for (MultipartFile file : dto.getFiles()) {
                     if (file.getOriginalFilename() != "") {
@@ -109,7 +110,7 @@ public class QnaABoardController {
 
         vo.setQnaACode(dto.getQnaACode());
         vo.setQnaQCode(dto.getQnaQCode());
-        vo.setUserId(dto.getUserId());
+        vo.setUserId(user.getUserId());
         vo.setQnaATitle(dto.getQnaATitle());
         vo.setQnaAContent(dto.getQnaAContent());
 

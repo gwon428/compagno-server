@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 @RequestMapping("/compagno/*")
 @Slf4j
 public class QnaQBoardController {
@@ -96,7 +97,7 @@ public class QnaQBoardController {
     @GetMapping("/question")
     public ResponseEntity<List<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
         Sort sort = Sort.by("QnaQCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
