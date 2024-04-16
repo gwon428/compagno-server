@@ -336,11 +336,9 @@ public class LostBoardController {
     log.info("vo : " + vo.getLostBoardCode());
         return LostBoardCommentDTO.builder()
                 .lostBoardCode(vo.getLostBoardCode())
-//                .userImg(vo.getUserImg())
-//                .userNickname(vo.getUserNickname())
                 .commentDate(vo.getCommentDate())
                 .commentContent(vo.getCommentContent())
-                .lostBoardCode(vo.getLostBoardCode())
+                .lostCommentCode(vo.getLostCommentCode())
                 .user(UserDTO.builder()
                         .userId(vo.getUser().getUserId())
                         .userNickname(vo.getUserNickname())
@@ -349,6 +347,34 @@ public class LostBoardController {
                 .build();
     }
 
+    // 수정
+    @PutMapping("/lostBoard/comment")
+    public ResponseEntity<LostBoardComment> updateComment(@RequestBody LostBoardCommentDTO dto){
+        log.info("dto : " + dto);
+        log.info("댓글번호 : " + dto.getLostCommentCode());
+        LostBoardComment vo = comment.viewComment(dto.getLostCommentCode());
+        log.info("vo : " + vo.getCommentContent());
+        vo.setCommentContent(dto.getCommentContent());
+//        LostBoardComment vo = new LostBoardComment();
+//        vo.setCommentContent(dto.getCommentContent());
+        LostBoardComment result = comment.update(vo);
+        return (result != null) ?
+                ResponseEntity.status(HttpStatus.ACCEPTED).body(result)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 
+    // 삭제
+    @DeleteMapping("/lostBoard/comment/{lostCommentCode}")
+    public ResponseEntity<LostBoardComment> deleteComment(@PathVariable(name="lostCommentCode") int lostCommentCode){
+    log.info("lostCommentCode : " + lostCommentCode);
+
+        LostBoardComment vo = comment.viewComment(lostCommentCode);
+        log.info("vo:" + vo.getCommentContent());
+        if(vo!=null){
+            comment.deleteComment(lostCommentCode);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 
 }

@@ -53,6 +53,25 @@ public class LostBoardCommentService {
     }
 
     // 댓글 수정
+    public LostBoardComment update(LostBoardComment vo){
+        LostBoardComment comment = dao.findById(vo.getLostCommentCode()).orElse(null);
+        if(comment!=null){
+            return dao.save(vo);
+        }
+        return null;
+    }
+
 
     // 댓글 삭제
+    public void deleteComment(int lostCommentCode){
+        LostBoardComment vo = dao.findById(lostCommentCode).orElse(null);
+        if(vo!=null){
+            dao.delete(vo);
+        }
+    }
+
+    // lostCommentCode로 댓글 찾기
+    public LostBoardComment viewComment(int lostCommentCode){
+        return dao.findById(lostCommentCode).orElse(null);
+    }
 }
