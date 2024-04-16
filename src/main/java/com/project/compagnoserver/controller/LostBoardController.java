@@ -5,14 +5,10 @@ import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.LostBoardCommentService;
 import com.project.compagnoserver.service.LostBoardService;
-
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import jakarta.persistence.PreUpdate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -325,7 +321,7 @@ public class LostBoardController {
 //        log.info("response : " + response);
         for(LostBoardComment item : comments){
             log.info("item : " + item );
-            List<LostBoardComment> replies = comment.bottomComments(item.getLostParentCode(), lostBoardCode);
+            List<LostBoardComment> replies = comment.bottomComments(item.getLostCommentCode(), lostBoardCode);
             List<LostBoardCommentDTO> repliesDTO = commentDetailList(replies, lostBoardCode);
             LostBoardCommentDTO dto = commentDetail(item);
             dto.setReplies(repliesDTO);
