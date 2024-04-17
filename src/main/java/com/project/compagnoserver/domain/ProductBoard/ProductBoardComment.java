@@ -33,7 +33,7 @@ public class ProductBoardComment {
     private Date productCommentRegiDate;
 
     @Column(name = "product_comment_delete")
-    private char productCommentDelete;
+    private Character productCommentDelete;
 
     @Column(name = "product_parent_code")
     private int productParentCode;

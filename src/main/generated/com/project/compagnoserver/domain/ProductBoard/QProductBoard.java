@@ -22,7 +22,7 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public static final QProductBoard productBoard = new QProductBoard("productBoard");
 
-    public final NumberPath<Integer> animalCategoryCode = createNumber("animalCategoryCode", Integer.class);
+    public final com.project.compagnoserver.domain.Animal.QAnimalCategory animalCategory;
 
     public final ListPath<ProductBoardImage, QProductBoardImage> images = this.<ProductBoardImage, QProductBoardImage>createList("images", ProductBoardImage.class, QProductBoardImage.class, PathInits.DIRECT2);
 
@@ -66,6 +66,7 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public QProductBoard(Class<? extends ProductBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.animalCategory = inits.isInitialized("animalCategory") ? new com.project.compagnoserver.domain.Animal.QAnimalCategory(forProperty("animalCategory")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 

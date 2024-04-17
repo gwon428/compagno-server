@@ -1,14 +1,23 @@
 package com.project.compagnoserver.controller;
 
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.ProductBoard.*;
 import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
+import com.project.compagnoserver.service.ProductBoardCommentService;
 import com.project.compagnoserver.service.ProductBoardService;
+import com.querydsl.core.Tuple;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,10 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/compagno/*")
@@ -33,6 +39,9 @@ public class ProductBoardController {
 
     @Autowired
     private ProductBoardService productBoard;
+
+    @Autowired
+    private ProductBoardCommentService comment;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath; // C:\\upload
@@ -60,7 +69,8 @@ public class ProductBoardController {
                 .productBoardGrade(dto.getProductBoardGrade())
                 .productBoardContent(dto.getProductBoardContent())
                 .user(userInfo())
-                .animalCategoryCode(dto.getAnimalCategoryCode())
+                .animalCategory(AnimalCategory.builder()
+                        .animalCategoryCode(dto.getAnimalCategoryCode()).build())
                 .build();
         ProductBoard result = productBoard.createBoard(vo);
 
@@ -181,7 +191,8 @@ public class ProductBoardController {
                 .productBoardGrade(dto.getProductBoardGrade())
                 .productBoardContent(dto.getProductBoardContent())
                 .user(userInfo())
-                .animalCategoryCode(dto.getAnimalCategoryCode())
+                .animalCategory(AnimalCategory.builder()
+                        .animalCategoryCode(dto.getAnimalCategoryCode()).build())
                 .build();
         ProductBoard result = productBoard.updateBoard(vo);
 
@@ -237,4 +248,71 @@ public class ProductBoardController {
         return null;
     }
 
+    // 게시판 검색, 조회
+    @GetMapping("/productBoard/search")
+    public ResponseEntity<Page<ProductBoard>> searchBoard(ProductBoardSearchDTO dto, @RequestParam(name = "page", defaultValue = "1") int page) {
+        Pageable pageable = PageRequest.of(page - 1, 10);
+        QProductBoard qProductBoard = QProductBoard.productBoard;
+
+        log.info("dto" + dto);
+
+        Page<ProductBoard> list = productBoard.searchProfuctBoard(dto, pageable);
+        return ResponseEntity.ok().body(list);
+    }
+
+    // 댓글 작성
+    @PostMapping("/productBoard/comment")
+    public ResponseEntity<ProductBoardComment> createComment(@RequestBody ProductBoardComment vo) {
+
+        vo.setUser(userInfo());
+        return ResponseEntity.ok(comment.create(vo));
+    }
+
+    // 댓글 수정
+    @PatchMapping("/productBoard/comment")
+    public ResponseEntity updateComment(@RequestBody ProductBoardComment vo) {
+        vo.setUser(userInfo());
+        comment.update(vo);
+        return ResponseEntity.ok().build();
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/productBoard/comment/{code}")
+    public ResponseEntity deleteComment(@PathVariable (name = "code") int code) {
+        comment.delete(code);
+        return ResponseEntity.ok().build();
+    }
+
+    // 댓글 조회
+    @GetMapping("/productBoard/comment/{code}")
+    public ResponseEntity<List<ProductBoardCommentDTO>> viewComment(@PathVariable (name = "code") int code) {
+        List<ProductBoardComment> list = comment.getTopLevelComments(code);
+        List<ProductBoardCommentDTO> response = new ArrayList<>();
+
+        for(ProductBoardComment item : list) {
+            List<ProductBoardComment> comments = comment.getBottomComments(item.getProductCommentCode() ,code);
+            List<ProductBoardCommentDTO> replies = new ArrayList<>();
+
+            for(ProductBoardComment comment : comments) {
+                ProductBoardCommentDTO dto = ProductBoardCommentDTO.builder()
+                        .productBoardCode(comment.getProductBoardCode())
+                        .productCommentCode(comment.getProductCommentCode())
+                        .productCommentContent(comment.getProductCommentContent())
+                        .productCommentRegiDate(comment.getProductCommentRegiDate())
+                        .user(comment.getUser())
+                        .build();
+                replies.add(dto);
+            }
+            ProductBoardCommentDTO dto = ProductBoardCommentDTO.builder()
+                    .productBoardCode(item.getProductBoardCode())
+                    .productCommentCode(item.getProductCommentCode())
+                    .productCommentContent(item.getProductCommentContent())
+                    .productCommentRegiDate(item.getProductCommentRegiDate())
+                    .replies(replies)
+                    .user(item.getUser())
+                    .build();
+            response.add(dto);
+        }
+        return ResponseEntity.ok(response);
+    }
 }

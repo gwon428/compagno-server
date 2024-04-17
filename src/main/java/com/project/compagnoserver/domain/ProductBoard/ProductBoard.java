@@ -1,5 +1,6 @@
 package com.project.compagnoserver.domain.ProductBoard;
 
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -56,8 +57,9 @@ public class ProductBoard {
     @JoinColumn(name="user_id")
     private User user;
 
-    @Column(name="animal_category_code")
-    private int animalCategoryCode;
+    @ManyToOne
+    @JoinColumn(name="animal_category_code")
+    private AnimalCategory animalCategory;
 
     @OneToMany(mappedBy = "productBoard")
     private List<ProductBoardImage> images;
