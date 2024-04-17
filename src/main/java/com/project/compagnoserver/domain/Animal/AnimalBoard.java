@@ -1,8 +1,10 @@
 package com.project.compagnoserver.domain.Animal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.mapping.ToOne;
 
 
 import java.util.Date;
@@ -12,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Table(name = "animal_board", uniqueConstraints = {@UniqueConstraint(columnNames={"animal_board_code"})})
+@Table(name = "animal_board")
 public class AnimalBoard {
 
     @Id
@@ -43,6 +45,9 @@ public class AnimalBoard {
     @OneToMany(mappedBy = "animalBoard")
     private List<AnimalBoardImage> images;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user; // 유저테이블과 연결
     /*
     // 메모 : mappedBy = "animal_board"
     *Collection 'com.project.compagnoserver.domain.Animal.AnimalBoard.images' is
@@ -53,18 +58,5 @@ public class AnimalBoard {
     * 자바 형태의 컬럼명; animalBoard
     * */
 
-    //private String userId; // 유저테이블과 연결
-}
 
-/*
-* CREATE TABLE animal_board(
-	a_board_code int PRIMARY KEY AUTO_INCREMENT,
-    animal_category_code INT,
-    a_main_image varchar(300),
-    a_board_title varchar(50),
-    a_board_content text,
-    a_board_view int DEFAULT 0,
-    a_board_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id VARCHAR(20)
-);
-* */
+}
