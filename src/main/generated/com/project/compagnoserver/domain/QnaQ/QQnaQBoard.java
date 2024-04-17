@@ -36,6 +36,8 @@ public class QQnaQBoard extends EntityPathBase<QnaQBoard> {
 
     public final StringPath qnaQTitle = createString("qnaQTitle");
 
+    public final StringPath secret = createString("secret");
+
     public final StringPath userId = createString("userId");
 
     public final StringPath userNickname = createString("userNickname");

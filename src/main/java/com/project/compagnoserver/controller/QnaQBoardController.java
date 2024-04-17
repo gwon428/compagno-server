@@ -67,6 +67,12 @@ public class QnaQBoardController {
             vo.setQnaQTitle(dto.getQnaQTitle());
             vo.setQnaQContent(dto.getQnaQContent());
 
+            // 비밀글의 경우
+            if(dto.getSecret() != null){
+                log.info("secret : " + dto.getSecret());
+                vo.setSecret(dto.getSecret());
+            }
+
             QnaQBoard result = service.create(vo);
 
             if(dto.getFiles()!= null) {
@@ -86,6 +92,8 @@ public class QnaQBoardController {
                     }
                 }
             }
+
+
 
             return result != null ? ResponseEntity.status(HttpStatus.CREATED).body(result) :
                     ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

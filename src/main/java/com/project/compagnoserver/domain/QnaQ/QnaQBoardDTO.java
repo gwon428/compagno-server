@@ -15,4 +15,5 @@ public class QnaQBoardDTO {
     private String userNickname;
     private String qnaQTitle;
     private String qnaQContent;
+    private String secret;
 }

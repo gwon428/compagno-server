@@ -51,4 +51,7 @@ public class QnaQBoard {
     @OneToMany(mappedBy = "qnaQCode")
     @JsonIgnore
     private List<QnaQBoardImage> files;
+
+    @Column
+    private String secret;
 }

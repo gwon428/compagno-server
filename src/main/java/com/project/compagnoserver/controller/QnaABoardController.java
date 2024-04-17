@@ -201,6 +201,7 @@ public class QnaABoardController {
 
                 if (prev.getFiles() != null) {
                     QnaABoard target = service.delete(code);
+
                     QnaQBoard update = questionService.view(target.getQnaQCode());
                     update.setQnaQStatus("N");
                     questionService.update(update);
