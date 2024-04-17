@@ -1,17 +1,16 @@
 package com.project.compagnoserver.domain.SitterBoard;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class SitterBoardDTO {
 
     private int sitterBoardCode;
@@ -26,6 +25,8 @@ public class SitterBoardDTO {
 
     private String userId;
 
-    private List<MultipartFile> sitterImages;
+    private Date sitterRegiDate;
+
+    private List<MultipartFile> files;
 
 }
