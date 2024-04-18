@@ -36,14 +36,17 @@ public class ProductBoardCommentService {
                     .set(qProductBoardComment.productCommentContent, vo.getProductCommentContent())
                     .where(qProductBoardComment.productCommentCode.eq(vo.getProductCommentCode()))
                     .execute();
-
         }
     }
 
     // 댓글 삭제
+    @Transactional
     public void delete(int code) {
         if(dao.existsById(code)) {
-            dao.deleteById(code);
+            queryFactory.update(qProductBoardComment)
+                    .set(qProductBoardComment.productCommentDelete, 'y')
+                    .where(qProductBoardComment.productCommentCode.eq(code))
+                    .execute();
         }
     }
 

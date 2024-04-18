@@ -7,6 +7,7 @@ import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.ProductBoardCommentService;
 import com.project.compagnoserver.service.ProductBoardService;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.OrderSpecifier;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -152,39 +153,21 @@ public class ProductBoardController {
     }
 
     // 게시판 수정 (이미지 관련 수정 필요)
-    @PutMapping("/productBoard")
+    @PatchMapping("/productBoard")
     public ResponseEntity<ProductBoard> update(ProductBoardDTO dto) throws IOException {
+
 
         // 기존 메인 이미지 삭제
         ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
-        if(prev.getProductMainImage()!=null) {
-            File file = new File(prev.getProductMainImage());
-            file.delete();
+            if((prev.getProductMainImage() != null && !prev.getProductMainImage().equals(dto.getMainImage()))) {
+                File file = new File(prev.getProductMainImage());
+                file.delete();
         }
 
-        // 나머지 이미지 삭제
-        List<ProductBoardImage> prevImage = productBoard.viewImage(dto.getProductBoardCode());
-        for(ProductBoardImage image : prevImage) {
-            File file = new File(image.getProductImage());
-            file.delete();
-            productBoard.deleteImage(dto.getProductBoardCode());
-        }
-
-        // 메인 이미지 업로드
-        String saveName = null;
-        if(!dto.getProductMainFile().isEmpty()) {
-            String fileName = dto.getProductMainFile().getOriginalFilename();
-            String uuid = UUID.randomUUID().toString();
-            saveName = uploadPath + File.separator + "productBoardMainImage" + File.separator + uuid + "_" + fileName;
-            Path savePath = Paths.get(saveName);
-            dto.getProductMainFile().transferTo(savePath);
-        }
-
-        // 게시판 작성
+        // 게시판 수정
         ProductBoard vo = ProductBoard.builder()
                 .productBoardCode(dto.getProductBoardCode())
                 .productBoardTitle(dto.getProductBoardTitle())
-                .productMainImage(saveName)
                 .productName(dto.getProductName())
                 .productPrice(dto.getProductPrice())
                 .productCategory(dto.getProductCategory())
@@ -194,23 +177,47 @@ public class ProductBoardController {
                 .animalCategory(AnimalCategory.builder()
                         .animalCategoryCode(dto.getAnimalCategoryCode()).build())
                 .build();
+        // 메인 이미지 업로드
+        if(!dto.getProductMainFile().isEmpty()) {
+            String fileName = dto.getProductMainFile().getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String saveName = uploadPath + File.separator + "productBoardMainImage" + File.separator + uuid + "_" + fileName;
+            Path savePath = Paths.get(saveName);
+            dto.getProductMainFile().transferTo(savePath);
+
+            vo.setProductMainImage(saveName);
+        }
+
         ProductBoard result = productBoard.updateBoard(vo);
 
+        // 나머지 이미지 삭제
+        List<ProductBoardImage> prevImage = productBoard.viewImage(dto.getProductBoardCode());
+        for(ProductBoardImage image : prevImage) {
+            if ((dto.getImages()!=null && !dto.getImages().contains(image.getProductImage())) || dto.getImages() == null) {
+                File file = new File(image.getProductImage());
+                file.delete();
+
+                productBoard.deleteImage(dto.getProductBoardCode());
+            }
+
+        }
         // 이미지 업로드
-        for (MultipartFile file : dto.getFiles()) {
-            String fileName = file.getOriginalFilename();
-            if(!fileName.isEmpty()) {
+        if (dto.getFiles() != null) {
+            for (MultipartFile file : dto.getFiles()) {
                 ProductBoardImage imgVo = new ProductBoardImage();
+
+                String fileName = file.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString();
-                saveName = uploadPath + File.separator + "productBoardImage" + File.separator + uuid + "_" + fileName;
+                String saveName = uploadPath + File.separator + "productBoardImage" + File.separator + uuid + "_" + fileName;
                 Path savePath = Paths.get(saveName);
                 file.transferTo(savePath);
 
                 imgVo.setProductBoard(result);
                 imgVo.setProductImage(saveName);
+
+                productBoard.createImage(imgVo);
             }
         }
-
         return result!=null ?
                 ResponseEntity.status(HttpStatus.CREATED).body(result) :
                 ResponseEntity.badRequest().build();
@@ -259,7 +266,6 @@ public class ProductBoardController {
         Page<ProductBoard> list = productBoard.searchProfuctBoard(dto, pageable);
         return ResponseEntity.ok().body(list);
     }
-
     // 댓글 작성
     @PostMapping("/productBoard/comment")
     public ResponseEntity<ProductBoardComment> createComment(@RequestBody ProductBoardComment vo) {

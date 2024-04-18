@@ -9,12 +9,15 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.jsonwebtoken.lang.Objects;
 import io.micrometer.common.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.stat.descriptive.summary.Product;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -144,6 +148,8 @@ public class ProductBoardService {
     // 검색, 전체보기
     public Page<ProductBoard> searchProfuctBoard(ProductBoardSearchDTO dto, Pageable pageable) {
 
+        String sort = dto.getSort();
+
         // 검색 필터
         BooleanBuilder builder = new BooleanBuilder();
         // 동물 카테고리
@@ -170,38 +176,52 @@ public class ProductBoardService {
         // 키워드 검색
         if (dto.getKeyword() != null && !dto.getKeyword().isEmpty()) {
             switch (dto.getSelect()) {
-                case "title":
+                case "title": // 제목 검색
                     builder.and(qProductBoard.productBoardTitle.contains(dto.getKeyword()));
                     break;
-                case "nickname":
+                case "nickname": // 닉네임 검색
                     builder.and(qProductBoard.user.userNickname.contains(dto.getKeyword()));
                     break;
-                case "content":
+                case "content": // 내용 검색
                     builder.and(qProductBoard.productBoardContent.contains(dto.getKeyword()));
                     break;
-                case "all":
+                case "all": // 제목 + 내용 검색
                     builder.and(qProductBoard.productBoardTitle.contains(dto.getKeyword()));
                     builder.or(qProductBoard.productBoardContent.contains(dto.getKeyword()));
                     break;
             }
         }
+
         // 게시판 리스트
         List<ProductBoard> list = queryFactory.select(qProductBoard)
                 .from(qProductBoard)
-                .where(builder)
+                .where(builder) // 필터 적용
+                .orderBy(productBoardSort(sort)) // 정렬
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // 게시판 리스트 카운트
+        // 게시판 수 카운트
         Long count =queryFactory.select(qProductBoard.count())
                 .from(qProductBoard)
                 .where(builder)
                 .fetchOne();
 
-        // 페이지 리턴
+        // 페이징 처리
         return new PageImpl<>(list, pageable, count);
     }
 
+    // 동적 정렬(조건 추가 필요)
+    private OrderSpecifier<?>[] productBoardSort (String sort) {
+
+        List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
+        if(sort.equals("view")) { // 조회수 순 DESC
+            orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardViewCount));
+        }
+
+        orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardRegiDate)); // 날짜 순 DESC
+
+        return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
+    }
 
 }
