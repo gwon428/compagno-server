@@ -1,11 +1,9 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.SitterBoard.QSitterBoard;
-import com.project.compagnoserver.domain.SitterBoard.QSitterBoardImage;
-import com.project.compagnoserver.domain.SitterBoard.SitterBoard;
-import com.project.compagnoserver.domain.SitterBoard.SitterBoardImage;
+import com.project.compagnoserver.domain.SitterBoard.*;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardImageDAO;
+import com.project.compagnoserver.repo.SitterBoard.SitterCommentDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +23,10 @@ public class SitterBoardService {
     @Autowired
     private SitterBoardImageDAO sitterBoardImageDAO;
     private final QSitterBoardImage qSitterBoardImage = QSitterBoardImage.sitterBoardImage;
+
+    @Autowired
+    private SitterCommentDAO sitterCommentDAO;
+    private final QSitterBoardComment qSitterBoardComment = QSitterBoardComment.sitterBoardComment;
 
 
     // 전체 보기
@@ -76,6 +78,37 @@ public class SitterBoardService {
                 .execute();
     }
 
+
+    // 댓글 추가
+    public SitterBoardComment sitterCreateComment(SitterBoardComment sitterBoardComment) {
+        return sitterCommentDAO.save(sitterBoardComment);
+    }
+
+    // 댓글 삭제
+    public void sitterCommentDelete(int commentCode) {
+        SitterBoardComment target = sitterCommentDAO.findById(commentCode).orElse(null);
+        if(target != null) {
+            sitterCommentDAO.delete(target);
+        }
+    }
+
+    // 원 댓글만 조회
+    public List<SitterBoardComment> getTopComments(int code) {
+        return queryFactory.selectFrom(qSitterBoardComment)
+                .where(qSitterBoardComment.sitterCommentParentCode.eq(0))
+                .where(qSitterBoardComment.sitterBoardCode.eq(code))
+                .orderBy(qSitterBoardComment.sitterCommentCode.desc())
+                .fetch();
+    }
+
+    // 대댓글만 조회
+    public List<SitterBoardComment> getReplyComments(int parent, int code) {
+        return queryFactory.selectFrom(qSitterBoardComment)
+                .where(qSitterBoardComment.sitterCommentParentCode.eq(parent))
+                .where(qSitterBoardComment.sitterBoardCode.eq(code))
+                .orderBy(qSitterBoardComment.sitterCommentRegiDate.asc())
+                .fetch();
+    }
 
 
 

@@ -1,6 +1,8 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.SitterBoard.*;
+import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.SitterBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
@@ -8,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -96,5 +102,73 @@ public class SitterBoardController {
 
         sitterBoardService.sitterDelete(code);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+
+    // 댓글 추가
+    @PostMapping("/sitter/comment")
+    public ResponseEntity sitterCreateComment(@RequestBody SitterBoardComment sitterBoardComment) {
+        Object principal = authentication();
+
+        if(principal instanceof User) {
+            User user = (User) principal;
+            sitterBoardComment.setUser(user);
+            return ResponseEntity.ok(sitterBoardService.sitterCreateComment(sitterBoardComment));
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/sitter/comment/{commentCode}")
+    public ResponseEntity<SitterBoardComment> sitterCommentDelete(@PathVariable("commentCode") int commentCode) {
+        sitterBoardService.sitterCommentDelete(commentCode);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 각 게시판에 대한 댓글 조회
+    @GetMapping("/sitter/{code}/comment")
+    public ResponseEntity<List<SitterCommentDTO>> sitterViewAllComment(@PathVariable(name = "code") int code) {
+        List<SitterBoardComment> topList = sitterBoardService.getTopComments(code);
+        List<SitterCommentDTO> response = new ArrayList<>();
+
+        for(SitterBoardComment top : topList) {
+            List<SitterBoardComment> replies = sitterBoardService.getReplyComments(top.getSitterCommentCode(), code);
+            List<SitterCommentDTO> repliesDTO = new ArrayList<>();
+
+            for(SitterBoardComment reply : replies) {
+                SitterCommentDTO dto = SitterCommentDTO.builder()
+                        .sitterBoardCode(reply.getSitterBoardCode())
+                        .sitterCommentCode(reply.getSitterCommentCode())
+                        .sitterCommentContent(reply.getSitterCommentContent())
+                        .sitterCommentRegiDate(reply.getSitterCommentRegiDate())
+                        .user(UserDTO.builder()
+                                .userId(reply.getUser().getUserId())
+                                .build())
+                        .build();
+                repliesDTO.add(dto);
+            }
+
+            SitterCommentDTO dto = SitterCommentDTO.builder()
+                    .sitterBoardCode(top.getSitterBoardCode())
+                    .sitterBoardCode(top.getSitterCommentCode())
+                    .sitterCommentContent(top.getSitterCommentContent())
+                    .sitterCommentRegiDate(top.getSitterCommentRegiDate())
+                    .user(UserDTO.builder()
+                            .userId(top.getUser().getUserId())
+                            .build())
+                    .sitterReplies(repliesDTO)
+                    .build();
+            response.add(dto);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    public Object authentication() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        return authentication.getPrincipal();
     }
 }
