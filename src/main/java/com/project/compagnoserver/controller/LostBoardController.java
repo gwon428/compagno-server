@@ -35,6 +35,7 @@ import java.util.UUID;
 @RestController
 @Slf4j
 @RequestMapping("/compagno/*")
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class LostBoardController {
 
     @Autowired
@@ -96,10 +97,11 @@ public class LostBoardController {
     @GetMapping("/lostBoard")
     public ResponseEntity<List<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page){
         Sort sort = Sort.by("lostBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 9, sort);
+        Pageable pageable = PageRequest.of(page-1, 12, sort);
         Page<LostBoard> list = service.viewAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }
+
 
     // 하나 보기 --------------------
     @GetMapping("/lostBoard/{lostBoardCode}")
