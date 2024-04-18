@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service @Slf4j
 public class QnaQBoardService {
 
@@ -32,8 +34,8 @@ public class QnaQBoardService {
         return dao.findAll(builder, pageable);
     }
 
-    public QnaQBoardImage viewImg(QnaQBoardImage vo){
-        return image.findById(vo.getQnaQImgCode()).orElse(null);
+    public List<QnaQBoardImage> viewImg(int code){
+        return image.findByqnaQCode(code);
     }
 
     public QnaQBoard view(int code){

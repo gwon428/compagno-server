@@ -27,7 +27,7 @@ public class QnaABoardService {
     }
 
     public QnaABoard view(int code){
-        return dao.findById(code).orElse(null);
+        return dao.findByqnaQCode(code);
     }
 
     public QnaABoardImage viewImg(QnaQBoardImage vo){

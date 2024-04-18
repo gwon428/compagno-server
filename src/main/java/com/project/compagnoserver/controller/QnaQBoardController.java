@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @RestController
@@ -68,8 +67,11 @@ public class QnaQBoardController {
             vo.setQnaQContent(dto.getQnaQContent());
 
             // 비밀글의 경우
-            if(dto.getSecret() != null){
-                log.info("secret : " + dto.getSecret());
+            if(dto.getSecret() == null || dto.getSecret().equals("")){
+                log.info("dto : " + dto);
+//                log.info("secret : " + dto.getSecret());
+//                log.info("vosecret : " + vo.getSecret());
+            } else {
                 vo.setSecret(dto.getSecret());
             }
 
@@ -161,6 +163,7 @@ public class QnaQBoardController {
     // 질문 수정
     @PutMapping("/question")
     public ResponseEntity<QnaQBoard> update(QnaQBoardDTO dto) throws IOException {
+        /*
         // 해당 게시판 수정 전
         QnaQBoard prev = service.view(dto.getQnaQCode());
         Object principal = authentication();
@@ -261,4 +264,49 @@ public class QnaQBoardController {
         }
             return ResponseEntity.badRequest().build();
         }
+
+         */
+        List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
+
+        for (QnaQBoardImage image : list) {
+            if ((dto.getImages() != null && !dto.getImages().contains(image.getQnaQUrl())) || dto.getImages() == null) {
+                File file = new File(image.getQnaQUrl());
+                file.delete();
+
+                service.deleteImg(image.getQnaQImgCode());
+
+            }
+        }
+
+        if (dto.getFiles() != null) {
+            for (MultipartFile file : dto.getFiles()) {
+                QnaQBoardImage img = new QnaQBoardImage();
+
+                String fileName = file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString();
+                String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
+
+                Path savePath = Paths.get(saveName);
+                file.transferTo(savePath);
+
+                img.setQnaQUrl(saveName);
+                img.setQnaQCode(
+                        QnaQBoard.builder()
+                                .qnaQCode(dto.getQnaQCode())
+                                .build()
+                );
+                service.createImg(img);
+            }
+
+            QnaQBoard vo = QnaQBoard.builder()
+                    .userId(dto.getUserId())
+                    .userNickname(dto.getUserNickname())
+                    .qnaQCode(dto.getQnaQCode())
+                    .qnaQTitle(dto.getQnaQTitle())
+                    .qnaQContent(dto.getQnaQContent())
+                    .build();
+            service.create(vo);
+        }
+        return ResponseEntity.ok().build();
+    }
 }

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 @RequestMapping("/compagno/*")
 @Slf4j
 public class QnaABoardController {
@@ -45,12 +46,36 @@ public class QnaABoardController {
         Authentication authentication = securityContext.getAuthentication();
         return authentication.getPrincipal();
     }
+
+    @GetMapping("/question/{code}/answer")
+    public ResponseEntity<QnaABoardDTO> select(@PathVariable(name="code") int code){
+        log.info("code : " + code);
+        QnaABoard vo = service.view(code);
+
+        if(vo != null){
+            log.info("vo : " + vo);
+
+            QnaABoardDTO dto = new QnaABoardDTO();
+            dto.setQnaACode(vo.getQnaACode());
+            dto.setQnaATitle(vo.getQnaATitle());
+            dto.setQnaQCode(vo.getQnaQCode());
+            dto.setQnaAContent(vo.getQnaAContent());
+            log.info("dto : " + dto);
+            return ResponseEntity.status(HttpStatus.OK).body(dto);
+        } else {
+            log.info("답변이 없엉ㅇ");
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+
+    }
     // 답변 등록
     @PostMapping("/answer")
     public ResponseEntity<QnaABoard> create (QnaABoardDTO dto) throws IOException {
         Object principal = authentication();
 
         QnaABoard vo = new QnaABoard();
+        log.info("등록?");
 
         if(principal instanceof User) {
             User user = (User) principal;
@@ -90,10 +115,16 @@ public class QnaABoardController {
                     }
                 }
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+            }
+            log.info("야!");
         }
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        
+        log.info("유저에걸려잇서?");
+        return vo!=null ?
+                ResponseEntity.status(HttpStatus.CREATED).body(vo) :
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PutMapping("/answer")
