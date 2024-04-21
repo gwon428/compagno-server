@@ -192,7 +192,7 @@ public class LostBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }
 
-
+    // 사진 수정(프론트에 맞춰 변경) 
     // 수정 ---------------------------------------------------------------------------------------
     @PutMapping("/lostBoard")
     public ResponseEntity<LostBoard> update(LostBoardDTO dto) throws IOException {
