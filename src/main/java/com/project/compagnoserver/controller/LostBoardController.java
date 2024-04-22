@@ -48,7 +48,7 @@ public class LostBoardController {
     private String uploadPath;
 
     // 추가 --------------------------------------------------------------------
-    @PostMapping("/lostBoard")
+    @PostMapping("/public/lostBoard")
     public ResponseEntity<LostBoard> create(LostBoardDTO dto) throws IOException {
 
         LostBoard lost = new LostBoard();
@@ -95,7 +95,8 @@ public class LostBoardController {
     }
     // 보기------------------------------------------------------------------------------
     // 전체 보기 -------------------
-    @GetMapping("/lostBoard")
+    @GetMapping("/public/lostBoard")
+
     public ResponseEntity<List<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page){
         Sort sort = Sort.by("lostBoardCode").descending();
         Pageable pageable = PageRequest.of(page-1, 12, sort);
@@ -105,7 +106,7 @@ public class LostBoardController {
 
 
     // 하나 보기 --------------------
-    @GetMapping("/lostBoard/{lostBoardCode}")
+    @GetMapping("/public/lostBoard/{lostBoardCode}")
     public ResponseEntity<LostBoard> view(@PathVariable(name="lostBoardCode")int lostBoardCode){
         LostBoard lost = service.view(lostBoardCode);
         return ResponseEntity.status(HttpStatus.OK).body(lost);
@@ -115,7 +116,7 @@ public class LostBoardController {
     // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
     // 정렬 보기 -----------------------
     // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
-    @GetMapping("/lostBoard/search")
+    @GetMapping("/public/lostBoard/search")
     public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
                                                         @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
                                                         @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
