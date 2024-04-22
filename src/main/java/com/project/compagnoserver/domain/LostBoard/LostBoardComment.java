@@ -40,10 +40,13 @@ public class LostBoardComment {
     @Column(name="comment_date")
     private Timestamp commentDate;
 
+    @Column(name="lost_parent_code")
+    private int lostParentCode;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="lost_parent_code", referencedColumnName = "lost_comment_code", insertable = false, updatable = false)
-    private LostBoardComment lostParentCode;
+    private LostBoardComment parent;
 
     @Column(name="lost_board_code")
     private int lostBoardCode;

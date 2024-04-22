@@ -16,9 +16,7 @@ public class UserDTO {
     private String userId;
     private String userPersonName;
 
-
-
-    // 임시 테스트용
+    // LostBoardComment에 필요
     private String userNickname;
     private String userImg;
 }

@@ -134,7 +134,7 @@ public class NoteController {
             builder.and(expression);
         }
         if(noteTitle!=null){
-            expression = qNote.noteTitle.eq(noteTitle);
+            expression = qNote.noteTitle.contains(noteTitle);
             builder.and(expression);
         }
         if(noteRegiDate!=null){
