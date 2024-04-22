@@ -1,5 +1,7 @@
 package com.project.compagnoserver.domain.ProductBoard;
 
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
+import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,11 +53,13 @@ public class ProductBoard {
     @Column(name = "product_board_view_count")
     private int productBoardViewCount;
 
-    @Column
-    private String userId;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
 
-    @Column(name="animal_category_code")
-    private int animalCategoryCode;
+    @ManyToOne
+    @JoinColumn(name="animal_category_code")
+    private AnimalCategory animalCategory;
 
     @OneToMany(mappedBy = "productBoard")
     private List<ProductBoardImage> images;

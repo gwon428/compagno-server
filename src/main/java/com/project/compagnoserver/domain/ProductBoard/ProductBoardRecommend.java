@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.ProductBoard;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,13 +23,14 @@ public class ProductBoardRecommend {
     @Column(name = "product_recommend_code")
     private int productRecommendCode;
 
-    @Column(name = "product_board_code")
-    private int productBoardCode;
-
     @Column(name = "product_recommend_date")
     private Date productRecommendDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name="user_id")
+    @JsonIgnore
     private User user;
+
+    @Column(name = "product_board_code")
+    private int productBoardCode;
 }

@@ -46,7 +46,7 @@ public class QProductBoardImage extends EntityPathBase<ProductBoardImage> {
 
     public QProductBoardImage(Class<? extends ProductBoardImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.productBoard = inits.isInitialized("productBoard") ? new QProductBoard(forProperty("productBoard")) : null;
+        this.productBoard = inits.isInitialized("productBoard") ? new QProductBoard(forProperty("productBoard"), inits.get("productBoard")) : null;
     }
 
 }

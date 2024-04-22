@@ -20,6 +20,7 @@ public class ProductBoardDTO {
     private String productBoardTitle;
 
     private MultipartFile productMainFile;
+    private String mainImage;
 
     private String productName;
 
@@ -35,6 +36,6 @@ public class ProductBoardDTO {
 
     private int animalCategoryCode;
 
-    @OneToMany(mappedBy = "productBoard")
     private List<MultipartFile> files;
+    private List<String> images;
 }
