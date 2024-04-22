@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,6 +56,13 @@ public class SitterBoardController {
     // 글 등록
     @PostMapping("/sitter")
     public ResponseEntity<SitterBoard> sitterCreate(SitterBoardDTO sitterBoardDTO) throws IOException {
+
+        Object principal = authentication();
+        if(principal == null || !(principal instanceof UserDetails)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+
         SitterBoard sitter = new SitterBoard();
         SitterCategory sitterCategory = new SitterCategory();
         sitterCategory.setSitterCategoryCode(sitterBoardDTO.getSitterBoardCode());
@@ -90,16 +99,17 @@ public class SitterBoardController {
     }
 
     // 글 삭제
+    @Transactional
     @DeleteMapping("/sitter/{code}")
     public ResponseEntity<SitterBoard> sitterDelete(@PathVariable("code") int code) {
         // 이미지 삭제
         List<SitterBoardImage> uploadedImg = sitterBoardService.sitterViewImg(code);
-        SitterBoard contents = sitterBoardService.sitterView(code);
         for(SitterBoardImage image : uploadedImg) {
+            sitterBoardService.sitterDeleteImg(image.getSitterImgCode()); // DB에서 삭제
             File file = new File(image.getSitterImg());
-            file.delete();
+            file.delete(); // 파일 삭제
         }
-
+        // 글 삭제
         sitterBoardService.sitterDelete(code);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -107,16 +117,23 @@ public class SitterBoardController {
 
     // 댓글 추가
     @PostMapping("/sitter/comment")
-    public ResponseEntity sitterCreateComment(@RequestBody SitterBoardComment sitterBoardComment) {
+    public ResponseEntity sitterCommentCreate(@RequestBody SitterBoardComment sitterBoardComment) {
         Object principal = authentication();
 
         if(principal instanceof User) {
             User user = (User) principal;
             sitterBoardComment.setUser(user);
-            return ResponseEntity.ok(sitterBoardService.sitterCreateComment(sitterBoardComment));
+            return ResponseEntity.ok(sitterBoardService.sitterCommentCreate(sitterBoardComment));
         }
 
         return ResponseEntity.badRequest().build();
+    }
+
+    // 댓글 수정
+    @PutMapping("/sitter/comment")
+    public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
+        sitterBoardService.sitterCommentUpdate(sitterBoardComment);
+        return ResponseEntity.ok().build();
     }
 
     // 댓글 삭제
@@ -169,6 +186,6 @@ public class SitterBoardController {
     public Object authentication() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
-        return authentication.getPrincipal();
+        return authentication != null ? authentication.getPrincipal() : null;
     }
 }

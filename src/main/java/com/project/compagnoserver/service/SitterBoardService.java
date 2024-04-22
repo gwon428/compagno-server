@@ -54,6 +54,7 @@ public class SitterBoardService {
         sitterBoardImageDAO.save(sitterImg);
     }
 
+
     // 글 수정
     public void sitterUpdate(SitterBoard sitter) {
         if(sitterBoardDAO.existsById(sitter.getSitterBoardCode())) {
@@ -64,6 +65,7 @@ public class SitterBoardService {
         sitterDeleteImg(sitterImg.getSitterBoard().getSitterBoardCode());
         sitterCreateImg(sitterImg);
     }
+
 
     // 글 삭제
     public void sitterDelete(int code) {
@@ -78,10 +80,18 @@ public class SitterBoardService {
                 .execute();
     }
 
+// ====================================== 댓글 ======================================
 
     // 댓글 추가
-    public SitterBoardComment sitterCreateComment(SitterBoardComment sitterBoardComment) {
+    public SitterBoardComment sitterCommentCreate(SitterBoardComment sitterBoardComment) {
         return sitterCommentDAO.save(sitterBoardComment);
+    }
+
+    // 댓글 수정
+    public void sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
+        if(sitterCommentDAO.existsById(sitterBoardComment.getSitterCommentCode())) {
+            sitterCommentDAO.save(sitterBoardComment);
+        }
     }
 
     // 댓글 삭제

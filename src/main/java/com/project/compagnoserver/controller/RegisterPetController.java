@@ -35,6 +35,7 @@ public class RegisterPetController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+
     // faq 등록
     @PostMapping("/faq")
     public ResponseEntity faqInsert(@RequestBody RegisterPetFaq faq) {

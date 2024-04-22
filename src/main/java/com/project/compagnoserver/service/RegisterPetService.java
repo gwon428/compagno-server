@@ -23,6 +23,7 @@ public class RegisterPetService {
         return dao.findAll();
     }
 
+
     // faq 등록
     public void faqInsert(RegisterPetFaq faq) {
         faqDao.save(faq);
