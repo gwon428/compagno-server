@@ -1,5 +1,6 @@
 package com.project.compagnoserver.controller;
 
+
 import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardDTO;
@@ -109,15 +110,16 @@ public class QnaQBoardController {
         Sort sort = Sort.by("QnaQCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
+
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
 
         if(!StringUtils.isEmpty(title)){
-            BooleanExpression expression = qQnaQBoard.qnaQTitle.contains(title);
-            builder.and(expression);
+         BooleanExpression expression = qQnaQBoard.qnaQTitle.contains(title);
+           builder.and(expression);
         } else if (!StringUtils.isEmpty(content)){
             BooleanExpression expression = qQnaQBoard.qnaQContent.contains(content);
-            builder.and(expression);
+           builder.and(expression);
         }
 
         Page<QnaQBoard> list = service.viewAll(builder, pageable);
