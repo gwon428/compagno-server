@@ -84,12 +84,17 @@ public class ProductBoardService {
         }
     }
 
-    // 이미지 삭제
+    // 게시판 한개 이미지 삭제
     @Transactional
     public void deleteImage(int code) {
         queryFactory.delete(qProductBoardImage)
                 .where(qProductBoardImage.productBoard.productBoardCode.eq(code))
                 .execute();
+    }
+
+    // 댓글 한개 삭제
+    public void deleteOneImage(int code) {
+        image.deleteById(code);
     }
 
     // 게시판 수정

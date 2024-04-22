@@ -153,16 +153,9 @@ public class ProductBoardController {
     }
 
     // 게시판 수정 (이미지 관련 수정 필요)
-    @PatchMapping("/productBoard")
+    @PutMapping("/productBoard")
     public ResponseEntity<ProductBoard> update(ProductBoardDTO dto) throws IOException {
 
-
-        // 기존 메인 이미지 삭제
-        ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
-            if((prev.getProductMainImage() != null && !prev.getProductMainImage().equals(dto.getMainImage()))) {
-                File file = new File(prev.getProductMainImage());
-                file.delete();
-        }
 
         // 게시판 수정
         ProductBoard vo = ProductBoard.builder()
@@ -177,6 +170,16 @@ public class ProductBoardController {
                 .animalCategory(AnimalCategory.builder()
                         .animalCategoryCode(dto.getAnimalCategoryCode()).build())
                 .build();
+
+        // 기존 메인 이미지 삭제
+        ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
+        if(prev.getProductMainImage() != null) {
+            if (!prev.getProductMainImage().equals(dto.getMainImage()) || !dto.getProductMainFile().isEmpty()) {
+                File file = new File(prev.getProductMainImage());
+                file.delete();
+            }
+        }
+
         // 메인 이미지 업로드
         if(!dto.getProductMainFile().isEmpty()) {
             String fileName = dto.getProductMainFile().getOriginalFilename();
@@ -184,11 +187,17 @@ public class ProductBoardController {
             String saveName = uploadPath + File.separator + "productBoardMainImage" + File.separator + uuid + "_" + fileName;
             Path savePath = Paths.get(saveName);
             dto.getProductMainFile().transferTo(savePath);
-
             vo.setProductMainImage(saveName);
         }
 
-        ProductBoard result = productBoard.updateBoard(vo);
+        if(prev.getProductMainImage() != null && dto.getProductMainFile().isEmpty()
+                && prev.getProductMainImage().equals(dto.getMainImage())){
+            String saveName = prev.getProductMainImage();
+            vo.setProductMainImage(saveName);
+        }
+
+            ProductBoard result = productBoard.updateBoard(vo);
+
 
         // 나머지 이미지 삭제
         List<ProductBoardImage> prevImage = productBoard.viewImage(dto.getProductBoardCode());
@@ -209,6 +218,7 @@ public class ProductBoardController {
                 String fileName = file.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString();
                 String saveName = uploadPath + File.separator + "productBoardImage" + File.separator + uuid + "_" + fileName;
+
                 Path savePath = Paths.get(saveName);
                 file.transferTo(savePath);
 
@@ -249,7 +259,6 @@ public class ProductBoardController {
 
         if(principal instanceof User) {
             User user = (User) principal;
-            log.info("유저" + user);
             return user;
         }
         return null;
@@ -258,7 +267,7 @@ public class ProductBoardController {
     // 게시판 검색, 조회
     @GetMapping("/productBoard/search")
     public ResponseEntity<Page<ProductBoard>> searchBoard(ProductBoardSearchDTO dto, @RequestParam(name = "page", defaultValue = "1") int page) {
-        Pageable pageable = PageRequest.of(page - 1, 10);
+        Pageable pageable = PageRequest.of(page - 1, 5);
         QProductBoard qProductBoard = QProductBoard.productBoard;
 
         log.info("dto" + dto);
