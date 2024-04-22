@@ -45,7 +45,7 @@ public class WalkiesBoardComment {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "walkies_com_parent_code")
-    private WalkiesBoardComment parent;
+    @JoinColumn(name = "walkies_com_parent_code", referencedColumnName = "walkies_comment_code", insertable = false, updatable = false)
+    private WalkiesBoardComment walkiesParent;
 
 }
