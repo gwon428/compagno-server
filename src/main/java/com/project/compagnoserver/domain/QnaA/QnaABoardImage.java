@@ -1,7 +1,6 @@
-package com.project.compagnoserver.domain.QnaQ;
+package com.project.compagnoserver.domain.QnaA;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,17 +12,17 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
-@Table(name="qna_q_board_image")
-public class QnaQBoardImage {
-    @Id @Column(name="qna_q_img_code")
+@Table(name="qna_a_board_image")
+public class QnaABoardImage {
+    @Id @Column(name="qna_a_img_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int qnaQImgCode;
+    private int qnaAImgCode;
 
-    @Column(name="qna_q_url")
-    private String qnaQUrl;
+    @Column(name="qna_a_url")
+    private String qnaAUrl;
 
     @ManyToOne
-    @JoinColumn(name="qna_q_code")
+    @JoinColumn(name="qna_a_code")
     @JsonIgnore
-    private QnaQBoard qnaQCode;
+    private QnaABoard qnaACode;
 }

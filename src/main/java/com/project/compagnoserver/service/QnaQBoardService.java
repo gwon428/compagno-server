@@ -2,14 +2,16 @@ package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
-import com.project.compagnoserver.repo.QnaQ.QnaQBoardDAO;
-import com.project.compagnoserver.repo.QnaQ.QnaQBoardImageDAO;
+import com.project.compagnoserver.repo.Qna.QnaQBoardDAO;
+import com.project.compagnoserver.repo.Qna.QnaQBoardImageDAO;
 import com.querydsl.core.BooleanBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service @Slf4j
 public class QnaQBoardService {
@@ -32,13 +34,17 @@ public class QnaQBoardService {
         return dao.findAll(builder, pageable);
     }
 
+    public List<QnaQBoardImage> viewImg(int code){
+        return image.findByqnaQCode(code);
+    }
+
     public QnaQBoard view(int code){
         return dao.findById(code).orElse(null);
     }
 
     public QnaQBoard update(QnaQBoard vo){
         // 수정할 해당 객체가 있는 경우
-        if(dao.existsById(vo.getQnaQBoardCode())){
+        if(dao.existsById(vo.getQnaQCode())){
             return dao.save(vo);
         }
         return null;
@@ -50,6 +56,10 @@ public class QnaQBoardService {
             dao.delete(target);
         }
         return target;
+    }
+
+    public void deleteImg(int code){
+        image.deleteById(code);
     }
 }
 

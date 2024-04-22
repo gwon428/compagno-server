@@ -18,34 +18,49 @@ public class QQnaQBoard extends EntityPathBase<QnaQBoard> {
 
     private static final long serialVersionUID = 805197871L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QQnaQBoard qnaQBoard = new QQnaQBoard("qnaQBoard");
 
     public final ListPath<QnaQBoardImage, QQnaQBoardImage> files = this.<QnaQBoardImage, QQnaQBoardImage>createList("files", QnaQBoardImage.class, QQnaQBoardImage.class, PathInits.DIRECT2);
 
-    public final NumberPath<Integer> qnaQBoardCode = createNumber("qnaQBoardCode", Integer.class);
+    public final com.project.compagnoserver.domain.QnaA.QQnaABoard qnaACode;
+
+    public final NumberPath<Integer> qnaQCode = createNumber("qnaQCode", Integer.class);
 
     public final StringPath qnaQContent = createString("qnaQContent");
 
-    public final DateTimePath<java.util.Date> qnaQDate = createDateTime("qnaQDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> qnaQDate = createDateTime("qnaQDate", java.sql.Timestamp.class);
 
     public final StringPath qnaQStatus = createString("qnaQStatus");
 
     public final StringPath qnaQTitle = createString("qnaQTitle");
+
+    public final StringPath secret = createString("secret");
 
     public final StringPath userId = createString("userId");
 
     public final StringPath userNickname = createString("userNickname");
 
     public QQnaQBoard(String variable) {
-        super(QnaQBoard.class, forVariable(variable));
+        this(QnaQBoard.class, forVariable(variable), INITS);
     }
 
     public QQnaQBoard(Path<? extends QnaQBoard> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QQnaQBoard(PathMetadata metadata) {
-        super(QnaQBoard.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QQnaQBoard(PathMetadata metadata, PathInits inits) {
+        this(QnaQBoard.class, metadata, inits);
+    }
+
+    public QQnaQBoard(Class<? extends QnaQBoard> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.qnaACode = inits.isInitialized("qnaACode") ? new com.project.compagnoserver.domain.QnaA.QQnaABoard(forProperty("qnaACode")) : null;
     }
 
 }
