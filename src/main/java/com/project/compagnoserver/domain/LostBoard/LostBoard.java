@@ -40,6 +40,7 @@ public class LostBoard {
 //    @Column(name="lost_title")
 //    private String lostTitle;
 
+
     @Column(name="lost_regi_date")
     private Timestamp lostRegiDate;
 
@@ -58,6 +59,9 @@ public class LostBoard {
 
     @Column(name="lost_location")
     private String lostLocation;
+
+    @Column(name="lost_location_detail")
+    private String lostLocationDetail;
 
     @Column(name="lost_animal_kind")
     private String lostAnimalKind;

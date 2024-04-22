@@ -61,6 +61,7 @@ public class LostBoardController {
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
         lost.setLostLocation(dto.getLostLocation());
+        lost.setLostLocationDetail(dto.getLostLocationDetail());
         lost.setLostAnimalKind(dto.getLostAnimalKind());
         lost.setLostAnimalColor(dto.getLostAnimalColor());
         lost.setLostAnimalGender(dto.getLostAnimalGender());
@@ -200,7 +201,7 @@ public class LostBoardController {
 
         LostBoard prev = service.view(dto.getLostBoardCode());
         LostBoard lost = service.view(dto.getLostBoardCode());
-//        LostBoard lost = new LostBoard();
+
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
         lost.setUserNickname(dto.getUserNickname());
@@ -210,16 +211,13 @@ public class LostBoardController {
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
         lost.setLostLocation(dto.getLostLocation());
+        lost.setLostLocationDetail(dto.getLostLocationDetail());
         lost.setLostAnimalKind(dto.getLostAnimalKind());
         lost.setLostAnimalColor(dto.getLostAnimalColor());
         lost.setLostAnimalGender(dto.getLostAnimalGender());
         lost.setLostAnimalAge(dto.getLostAnimalAge());
         lost.setLostAnimalFeature(dto.getLostAnimalFeature());
         lost.setLostAnimalRFID(dto.getLostAnimalRFID());
-
-//        LostBoard prev = service.view(dto.getLostBoardCode());
-        //LostBoard result = service.create(lost);
-
 
 
         LostBoard result = service.update(lost);

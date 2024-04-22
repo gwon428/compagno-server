@@ -25,6 +25,7 @@ public class LostBoardDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date lostDate;
     private String lostLocation;
+    private String lostLocationDetail;
     private String lostAnimalKind;  // 강아지, 고양이, 그외
     private String lostAnimalColor;
     private String lostAnimalGender;
