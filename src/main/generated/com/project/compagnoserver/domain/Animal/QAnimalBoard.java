@@ -38,6 +38,8 @@ public class QAnimalBoard extends EntityPathBase<AnimalBoard> {
 
     public final ListPath<AnimalBoardImage, QAnimalBoardImage> images = this.<AnimalBoardImage, QAnimalBoardImage>createList("images", AnimalBoardImage.class, QAnimalBoardImage.class, PathInits.DIRECT2);
 
+    public final com.project.compagnoserver.domain.user.QUser user;
+
     public QAnimalBoard(String variable) {
         this(AnimalBoard.class, forVariable(variable), INITS);
     }
@@ -57,6 +59,7 @@ public class QAnimalBoard extends EntityPathBase<AnimalBoard> {
     public QAnimalBoard(Class<? extends AnimalBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.animalCategory = inits.isInitialized("animalCategory") ? new QAnimalCategory(forProperty("animalCategory")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }
