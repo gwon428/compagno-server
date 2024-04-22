@@ -37,8 +37,8 @@ public class LostBoard {
     @Column(name="user_phone")
     private String userPhone;
 
-    @Column(name="lost_title")
-    private String lostTitle;
+//    @Column(name="lost_title")
+//    private String lostTitle;
 
     @Column(name="lost_regi_date")
     private Timestamp lostRegiDate;

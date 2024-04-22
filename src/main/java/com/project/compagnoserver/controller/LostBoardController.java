@@ -56,7 +56,7 @@ public class LostBoardController {
         lost.setUserImg(dto.getUserImg());
         lost.setUserNickname(dto.getUserNickname());
         lost.setUserPhone(dto.getUserPhone());
-        lost.setLostTitle(dto.getLostTitle());
+//        lost.setLostTitle(dto.getLostTitle());
         lost.setLostAnimalImage(dto.getLostAnimalImage());
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
@@ -205,7 +205,7 @@ public class LostBoardController {
         lost.setUserImg(dto.getUserImg());
         lost.setUserNickname(dto.getUserNickname());
         lost.setUserPhone(dto.getUserPhone());
-        lost.setLostTitle(dto.getLostTitle());
+//        lost.setLostTitle(dto.getLostTitle());
         lost.setLostAnimalImage(dto.getLostAnimalImage());
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
@@ -220,11 +220,10 @@ public class LostBoardController {
 //        LostBoard prev = service.view(dto.getLostBoardCode());
         //LostBoard result = service.create(lost);
 
-        log.info("prev.getLostTitle : " + prev.getLostTitle());
+
 
         LostBoard result = service.update(lost);
-        log.info("lost.getLostTitle : " + lost.getLostTitle());
-        log.info("result.getLostTitle : " + result.getLostTitle());
+
         if(dto.getImages()!=null){
             // 1) 추가 사진 O
             if(prev.getImages()!=null){
@@ -291,7 +290,6 @@ public class LostBoardController {
 
         if(principal instanceof User){
             User user = (User) principal;
-            log.info("user:닉네임 : " + user.getUserNickname());
             vo.setUser(user);
             vo.setUserNickname(user.getUserNickname());
             vo.setUserImg(user.getUserImg());
@@ -320,7 +318,7 @@ public class LostBoardController {
     // 나머지 공통 부분 빼기
     public List<LostBoardCommentDTO> commentDetailList(List<LostBoardComment> comments, int lostBoardCode){
         List<LostBoardCommentDTO> response = new ArrayList<>();
-//        log.info("response : " + response);
+
         for(LostBoardComment item : comments){
             log.info("item : " + item );
             List<LostBoardComment> replies = comment.bottomComments(item.getLostCommentCode(), lostBoardCode);

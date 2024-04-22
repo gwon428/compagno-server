@@ -19,7 +19,7 @@ public class LostBoardDTO {
     private String userImg;
     private String userPhone;
     private String userNickname;
-    private String lostTitle;
+//    private String lostTitle;
     private String lostAnimalImage;
     private String lostAnimalName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
