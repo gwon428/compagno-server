@@ -22,7 +22,7 @@ public class QAnimalBoardComment extends EntityPathBase<AnimalBoardComment> {
 
     public static final QAnimalBoardComment animalBoardComment = new QAnimalBoardComment("animalBoardComment");
 
-    public final QAnimalBoard animalBoardCode;
+    public final QAnimalBoard animalBoard;
 
     public final NumberPath<Integer> animalCommentCode = createNumber("animalCommentCode", Integer.class);
 
@@ -33,6 +33,8 @@ public class QAnimalBoardComment extends EntityPathBase<AnimalBoardComment> {
     public final QAnimalBoardComment animalParent;
 
     public final NumberPath<Integer> animalParentCode = createNumber("animalParentCode", Integer.class);
+
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QAnimalBoardComment(String variable) {
         this(AnimalBoardComment.class, forVariable(variable), INITS);
@@ -52,8 +54,9 @@ public class QAnimalBoardComment extends EntityPathBase<AnimalBoardComment> {
 
     public QAnimalBoardComment(Class<? extends AnimalBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.animalBoardCode = inits.isInitialized("animalBoardCode") ? new QAnimalBoard(forProperty("animalBoardCode"), inits.get("animalBoardCode")) : null;
+        this.animalBoard = inits.isInitialized("animalBoard") ? new QAnimalBoard(forProperty("animalBoard"), inits.get("animalBoard")) : null;
         this.animalParent = inits.isInitialized("animalParent") ? new QAnimalBoardComment(forProperty("animalParent"), inits.get("animalParent")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

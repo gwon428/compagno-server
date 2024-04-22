@@ -1,5 +1,6 @@
 package com.project.compagnoserver.domain.Animal;
 
+import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +18,11 @@ import java.util.List;
 public class AnimalBoardCommentDTO {
 
     private int animalBoardCode; // 어떤 글에 댓글?
+    private int animalCommentCode;
     private String animalCommentContent;
     private Date animalCommentDate;
-//    private int animalCommentCode; // postman 실험용
-    private String userId;
+    private int animalParentCode; // postman 실험용
+    private AnimalCategoryDTO animalCategory;
+    private UserDTO user;
     private List<AnimalBoardCommentDTO> replies = new ArrayList<>();
 }

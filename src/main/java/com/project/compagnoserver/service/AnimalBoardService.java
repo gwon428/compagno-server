@@ -11,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,6 +51,9 @@ public class AnimalBoardService {
 
     // 자유게시판 - 글 한개보기 = 상세페이지
     public AnimalBoard viewDetail(int animalBoardCode){
+
+        AnimalBoard board = animalBoardDAO.findById(animalBoardCode).orElse(null);
+//        log.info("board : " + board);
         return animalBoardDAO.findById(animalBoardCode).orElse(null);
     }
 
@@ -59,4 +63,14 @@ public class AnimalBoardService {
     }
 
     // 자유게시판 - 글 삭제
+
+    // 자유게시판 - 조회수
+    @Transactional
+    public void boardView(int animalBoardCode){
+        queryFactory.update(qAnimalBoard)
+                .set(qAnimalBoard.animalBoardView, qAnimalBoard.animalBoardView.add(1))
+                .where(qAnimalBoard.animalBoardCode.eq(animalBoardCode))
+                .execute();
+
+    }
 }

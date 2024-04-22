@@ -4,6 +4,7 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.Animal.*;
 import com.project.compagnoserver.domain.Animal.AnimalBoard;
 import com.project.compagnoserver.domain.Animal.AnimalBoardDTO;
+import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.AnimalBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +46,15 @@ public class AnimalBoardController {
     // 자유게시판 글쓰기
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> write(@RequestBody AnimalBoardDTO dto) throws IOException {
-//        log.info("dto : " + dto);
-//        log.info("content : " + dto.getAnimalBoardContent());
+        log.info("dto : " + dto);
+
 
         // 글작성
         AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/
         vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
         vo.setAnimalBoardContent(dto.getAnimalBoardContent());
         vo.setAnimalBoardDate(nowDate);
+//        vo.setAnimalBoardCode(dto.getAnimalCategoryCode());
         AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
         animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
         vo.setAnimalCategory(animalCategory);
@@ -75,7 +77,7 @@ public class AnimalBoardController {
 //            animalBoardService.writeImages(image);
 
 //        }
-        return writtenBoard !=null ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+        return writtenBoard !=null ? ResponseEntity.ok(writtenBoard) : ResponseEntity.badRequest().build();
     }
     // 무한페이징 처리가 필요
     @GetMapping("/animal-board")
@@ -87,13 +89,28 @@ public class AnimalBoardController {
 
     // 자유게시판 - 글 한개보기 = 게시판 상세보기
     @GetMapping("/animal-board/{animalBoardCode}")
-    public ResponseEntity<AnimalBoard> viewDetail(@PathVariable(name = "animalBoardCode")int animalBoardCode){
-        AnimalBoard board = animalBoardService.viewDetail(animalBoardCode);
-        return board!=null ? ResponseEntity.ok(board) : ResponseEntity.notFound().build();
+    public ResponseEntity<AnimalBoardDTO> viewDetail(@PathVariable(name = "animalBoardCode")int animalBoardCode){
+        animalBoardService.boardView(animalBoardCode);
+        AnimalBoard getBoard = animalBoardService.viewDetail(animalBoardCode);
+        AnimalBoardDTO getBoardDTO = AnimalBoardDTO.builder()
+                .animalBoardDate(getBoard.getAnimalBoardDate())
+                .animalBoardTitle(getBoard.getAnimalBoardTitle())
+                .animalBoardCode(getBoard.getAnimalBoardCode())
+                .animalBoardContent(getBoard.getAnimalBoardContent())
+                .animalBoardView(getBoard.getAnimalBoardView())
+                .animalMainImage(getBoard.getAnimalMainImage())
+//                .user(UserDTO.builder()
+//                        .userNickname(getBoard.getUser().getUserNickname())
+//                        .userImg(getBoard.getUser().getUserImg())
+//                        .build())
+                .animalCategory(getBoard.getAnimalCategory())
+                .build();
+//    log.info("getdto : " + getBoardDTO);
+        return getBoardDTO!=null ? ResponseEntity.ok(getBoardDTO) : ResponseEntity.notFound().build();
     }
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
-    public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardUpdateDTO dto) throws IOException {
+    public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardDTO dto) throws IOException {
         log.info("dto : " + dto);
 //        log.info("dto.code : " + dto.getAnimalBoardCode());
 
@@ -104,8 +121,9 @@ public class AnimalBoardController {
         board.setAnimalBoardContent(dto.getAnimalBoardContent());
         board.setAnimalMainImage(dto.getAnimalMainImage());
         board.setAnimalBoardDate(dto.getAnimalBoardDate());
+//        board.setAnimalCategoryCode(dto.getAnimalCategoryCode());
         AnimalCategory animalCategory = new AnimalCategory();
-        animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
+        animalCategory.setAnimalCategoryCode(dto.getAnimalCategory().getAnimalCategoryCode());
         board.setAnimalCategory(animalCategory);
         AnimalBoard updatedBoard = animalBoardService.boardUpdate(board);
 
@@ -141,4 +159,12 @@ public class AnimalBoardController {
        return  updatedBoard!=null ? ResponseEntity.ok(board) : ResponseEntity.badRequest().build();
     }
     // 자유게시판 - 글 삭제
+
+    // 조회수
+//    @GetMapping("/animal-board/view/{animalBoardCode}")
+//    public ResponseEntity boardView(@PathVariable(name = "animalBoardCode") int boardCode){
+//        log.info("pathCode : " + boardCode);
+//        animalBoardService.boardView(boardCode);
+//        return ResponseEntity.ok().build();
+//    }
 }

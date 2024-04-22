@@ -15,4 +15,10 @@ public class UserDTO {
     private String token;
     private String userId;
     private String userPersonName;
+
+
+
+    // 임시 테스트용
+    private String userNickname;
+    private String userImg;
 }

@@ -27,11 +27,11 @@ public class AnimalBoardComment {
 
     @ManyToOne
     @JoinColumn(name = "animal_board_code")
-    private AnimalBoard animalBoardCode;
+    private AnimalBoard animalBoard;
 
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "animal_comment_content")
     private String animalCommentContent;

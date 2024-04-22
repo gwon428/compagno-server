@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 @Table(name = "animal_board")
 public class AnimalBoard {
 
@@ -26,6 +27,9 @@ public class AnimalBoard {
     @ManyToOne
     @JoinColumn(name = "animal_category_code")
     private AnimalCategory animalCategory; // 카테고리 테이블과 연결
+
+//    @Column(name = "animal_category_code")
+//    private int animalCategoryCode;
 
     @Column(name = "animal_main_image")
     private String animalMainImage;
