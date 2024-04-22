@@ -33,8 +33,6 @@ public class QClassBoard extends EntityPathBase<ClassBoard> {
 
     public final StringPath odcTitle = createString("odcTitle");
 
-    public final StringPath userId = createString("userId");
-
     public QClassBoard(String variable) {
         super(ClassBoard.class, forVariable(variable));
     }
