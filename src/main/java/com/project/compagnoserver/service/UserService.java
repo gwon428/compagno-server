@@ -27,4 +27,9 @@ public class UserService {
         }
         return null;
     }
+
+    public User myPageInfo(String id) {
+        User user = userDao.findById(id).orElse(null);
+        return user;
+    }
 }

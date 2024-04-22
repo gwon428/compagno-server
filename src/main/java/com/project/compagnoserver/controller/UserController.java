@@ -48,7 +48,7 @@ public class UserController {
                 .userEnrollDate(nowDate)
                 .userStatus("n")
                 .userRole("ROLE_USER")
-                .userImg(vo.getUserImg()) // LostBoardComment 확인 위해
+                .userImg("defaultImage.jpg") // LostBoardComment 확인 위해
                 .build();
 
         User result = userService.create(user);
@@ -80,6 +80,11 @@ public class UserController {
 
         // 로그인 실패
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/myinfo/{id}")
+    public ResponseEntity myPageInfo(@PathVariable("id") String id) {
+        return ResponseEntity.ok(userService.myPageInfo(id));
     }
 
 }
