@@ -4,7 +4,9 @@ import com.project.compagnoserver.config.TokenProvider;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Slf4j
 @RestController
 @RequestMapping("/compagno/*")
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
@@ -23,6 +26,9 @@ public class UserController {
 
     @Autowired
     private TokenProvider tokenProvider;
+
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadPath;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -63,9 +69,12 @@ public class UserController {
             UserDTO responseDTO = UserDTO.builder()
                     .userId(user.getUserId())
                     .userPersonName(user.getUserPersonName())
+                    .userRole(user.getUserRole())
+                    .userImg(user.getUserImg())
+                    .userNickname(user.getUserNickname())
                     .token(token)
                     .build();
-
+            log.info("user : " + responseDTO);
             return ResponseEntity.ok().body(responseDTO);
         }
 
