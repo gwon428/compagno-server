@@ -26,7 +26,8 @@ public class TokenProvider {
                         "userPersonName", user.getUserPersonName(),
                         "userNickname", user.getUserNickname(),
                         "userImg", user.getUserImg(),
-                        "userRole", user.getUserRole()
+                        "userRole", user.getUserRole(),
+                        "userPhone", user.getUserPhone()
                 ))
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS))) // 로그인 토큰 유지기간 1일
@@ -44,6 +45,7 @@ public class TokenProvider {
                 .userNickname((String)claims.get("userNickname"))
                 .userImg((String)claims.get("userImg"))
                 .userRole((String) claims.get("userRole"))
+                .userPhone((String)claims.get("userPhone"))
                 .build();
     }
 }
