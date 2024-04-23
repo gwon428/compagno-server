@@ -131,8 +131,16 @@ public class SitterBoardController {
 
     // 댓글 수정
     @PutMapping("/sitter/comment")
-    public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
-        sitterBoardService.sitterCommentUpdate(sitterBoardComment);
+    public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterCommentDTO sitterCommentDTO) {
+        log.info("dto : " + sitterCommentDTO);
+        SitterBoardComment comment = sitterBoardService.sitterCommentview(sitterCommentDTO.getSitterCommentCode());
+
+        log.info("comment : " + comment);
+
+        comment.setSitterCommentCode(sitterCommentDTO.getSitterCommentCode());
+        comment.setSitterCommentContent(sitterCommentDTO.getSitterCommentContent());
+
+        sitterBoardService.sitterCommentUpdate(comment);
         return ResponseEntity.ok().build();
     }
 
@@ -146,11 +154,13 @@ public class SitterBoardController {
     // 각 게시판에 대한 댓글 조회
     @GetMapping("/sitter/{code}/comment")
     public ResponseEntity<List<SitterCommentDTO>> sitterViewAllComment(@PathVariable(name = "code") int code) {
+        log.info("code : " + code);
         List<SitterBoardComment> topList = sitterBoardService.getTopComments(code);
         List<SitterCommentDTO> response = new ArrayList<>();
 
         for(SitterBoardComment top : topList) {
             List<SitterBoardComment> replies = sitterBoardService.getReplyComments(top.getSitterCommentCode(), code);
+
             List<SitterCommentDTO> repliesDTO = new ArrayList<>();
 
             for(SitterBoardComment reply : replies) {
@@ -168,7 +178,7 @@ public class SitterBoardController {
 
             SitterCommentDTO dto = SitterCommentDTO.builder()
                     .sitterBoardCode(top.getSitterBoardCode())
-                    .sitterBoardCode(top.getSitterCommentCode())
+                    .sitterCommentCode(top.getSitterCommentCode())
                     .sitterCommentContent(top.getSitterCommentContent())
                     .sitterCommentRegiDate(top.getSitterCommentRegiDate())
                     .user(UserDTO.builder()

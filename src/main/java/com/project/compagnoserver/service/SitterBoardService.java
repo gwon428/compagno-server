@@ -5,12 +5,13 @@ import com.project.compagnoserver.repo.SitterBoard.SitterBoardDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardImageDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterCommentDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service @Slf4j
 public class SitterBoardService {
 
     @Autowired
@@ -82,6 +83,11 @@ public class SitterBoardService {
 
 // ====================================== 댓글 ======================================
 
+    // 댓글 하나 보기
+    public SitterBoardComment sitterCommentview(int code){
+        return sitterCommentDAO.findById(code).orElse(null);
+    }
+
     // 댓글 추가
     public SitterBoardComment sitterCommentCreate(SitterBoardComment sitterBoardComment) {
         return sitterCommentDAO.save(sitterBoardComment);
@@ -90,7 +96,13 @@ public class SitterBoardService {
     // 댓글 수정
     public void sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
         if(sitterCommentDAO.existsById(sitterBoardComment.getSitterCommentCode())) {
+
+            log.info("댓글 수정!!");
+            log.info("code : " + sitterBoardComment.getSitterCommentCode());
             sitterCommentDAO.save(sitterBoardComment);
+        } else {
+            log.info("메롱");
+            log.info("code : " + sitterBoardComment.getSitterCommentCode());
         }
     }
 
