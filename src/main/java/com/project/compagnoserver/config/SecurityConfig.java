@@ -26,6 +26,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/compagno/login").permitAll()
                         .requestMatchers("/compagno/signUp").permitAll()
+                        .requestMatchers("/compagno/signUp/**").permitAll()
+                        .requestMatchers("/compagno/public/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterAfter(jwtAuthenticationFilter, CorsFilter.class)

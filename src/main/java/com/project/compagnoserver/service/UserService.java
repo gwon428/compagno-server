@@ -32,4 +32,19 @@ public class UserService {
         User user = userDao.findById(id).orElse(null);
         return user;
     }
+
+    // ID 중복검사
+    public int checkUserId(String id) {
+    Integer checkIdResult = userDao.checkDuplicationId(id);
+    return checkIdResult;
+    }
+
+    // 닉네임 중복검사
+    public int checkUserNick(String nickname) {
+        Integer checkNickResult = userDao.checkDuplicationNick(nickname);
+        log.info("입력값 : " + nickname);
+        log.info("닉네임조회 결과 : " + checkNickResult);
+        return checkNickResult;
+    }
+
 }

@@ -35,7 +35,7 @@ public class UserController {
     LocalDateTime localDateTime = LocalDateTime.now();
     Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
 
-
+    // 회원가입
     @PostMapping("/signUp")
     public ResponseEntity create(@RequestBody User vo) {
         User user = User.builder()
@@ -48,7 +48,7 @@ public class UserController {
                 .userEnrollDate(nowDate)
                 .userStatus("n")
                 .userRole("ROLE_USER")
-                .userImg("defaultImage.jpg") // LostBoardComment 확인 위해
+                .userImg(uploadPath + vo.getUserImg()) // LostBoardComment 확인 위해
                 .build();
 
         User result = userService.create(user);
@@ -60,6 +60,7 @@ public class UserController {
         return ResponseEntity.ok().body(dto);
     }
 
+    // 로그인
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody User vo) {
         User user = userService.login(vo.getUserId(), vo.getPassword(), passwordEncoder);
@@ -82,9 +83,22 @@ public class UserController {
         return ResponseEntity.badRequest().build();
     }
 
+    // 마이페이지 내 정보 가져오기
     @GetMapping("/myinfo/{id}")
     public ResponseEntity myPageInfo(@PathVariable("id") String id) {
         return ResponseEntity.ok(userService.myPageInfo(id));
     }
+
+    // ID 중복검사
+    @GetMapping("/signUp/checkid/{id}")
+    public ResponseEntity checkUserId(@PathVariable("id") String id) {
+        return ResponseEntity.ok(userService.checkUserId(id));
+    }
+
+    // 닉네임 중복검사
+@GetMapping("/signUp/checknick/{nickname}")
+    public ResponseEntity checkUserNick(@PathVariable("nickname") String nickname) {
+        return ResponseEntity.ok(userService.checkUserNick(nickname));
+}
 
 }
