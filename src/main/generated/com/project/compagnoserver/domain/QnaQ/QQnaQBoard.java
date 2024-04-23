@@ -22,7 +22,7 @@ public class QQnaQBoard extends EntityPathBase<QnaQBoard> {
 
     public static final QQnaQBoard qnaQBoard = new QQnaQBoard("qnaQBoard");
 
-    public final ListPath<QnaQBoardImage, QQnaQBoardImage> files = this.<QnaQBoardImage, QQnaQBoardImage>createList("files", QnaQBoardImage.class, QQnaQBoardImage.class, PathInits.DIRECT2);
+    public final ListPath<QnaQBoardImage, QQnaQBoardImage> images = this.<QnaQBoardImage, QQnaQBoardImage>createList("images", QnaQBoardImage.class, QQnaQBoardImage.class, PathInits.DIRECT2);
 
     public final com.project.compagnoserver.domain.QnaA.QQnaABoard qnaACode;
 

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -42,6 +43,7 @@ public class QnaQBoard {
     private String qnaQContent;
 
     @CreationTimestamp
+//    @UpdateTimestamp
     @Column(name="qna_q_date")
     private Timestamp qnaQDate;
 
@@ -50,7 +52,7 @@ public class QnaQBoard {
 
     @OneToMany(mappedBy = "qnaQCode")
     @JsonIgnore
-    private List<QnaQBoardImage> files;
+    private List<QnaQBoardImage> images;
 
     @Column
     private String secret;

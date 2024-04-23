@@ -35,6 +35,7 @@ public class QnaQBoardService {
     }
 
     public List<QnaQBoardImage> viewImg(int code){
+        log.info("code : " + code);
         return image.findByqnaQCode(code);
     }
 

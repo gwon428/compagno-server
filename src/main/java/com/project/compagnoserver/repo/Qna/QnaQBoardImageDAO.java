@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface QnaQBoardImageDAO extends JpaRepository<QnaQBoardImage, Integer> {
 
-    @Query(value="SELECT * FROM qna_q_board WHERE qna_q_code= :code", nativeQuery = true)
+    @Query(value="SELECT * FROM qna_q_board_image WHERE qna_q_code= :code", nativeQuery = true)
     List<QnaQBoardImage> findByqnaQCode(@Param("code") Integer code);
 }
