@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/compagno/*")
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class RegisterPetController {
 
     @Autowired

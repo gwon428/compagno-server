@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain.WalkiesBoard;
+package com.project.compagnoserver.domain.NeighborBoard;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,20 +10,21 @@ import java.util.List;
 
 @Data @NoArgsConstructor @AllArgsConstructor
 @Builder
-public class WalkiesBoardDTO {
+public class NeighborBoardDTO {
 
-    private int walkiesBoardCode;
+    private int neighborBoardCode;
 
     private int animalCategoryCode;
 
-    private String walkiesLocation;
+    private String neighborLocation;
 
-    private String walkiesBoardTitle;
+    private String neighborBoardTitle;
 
-    private String walkiesBoardContent;
+    private String neighborBoardContent;
 
     private String userId;
 
     private List<MultipartFile> files;
     private List<String> images;
 }
+
