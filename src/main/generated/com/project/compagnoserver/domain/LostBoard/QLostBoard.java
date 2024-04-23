@@ -36,7 +36,7 @@ public class QLostBoard extends EntityPathBase<LostBoard> {
 
     public final StringPath lostAnimalName = createString("lostAnimalName");
 
-    public final NumberPath<Integer> lostAnimalRFID = createNumber("lostAnimalRFID", Integer.class);
+    public final StringPath lostAnimalRFID = createString("lostAnimalRFID");
 
     public final NumberPath<Integer> lostBoardCode = createNumber("lostBoardCode", Integer.class);
 

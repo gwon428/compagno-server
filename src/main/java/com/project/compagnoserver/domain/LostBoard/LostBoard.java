@@ -79,7 +79,7 @@ public class LostBoard {
     private String lostAnimalFeature;
 
     @Column(name="lost_animal_RFID")
-    private int lostAnimalRFID;
+    private String lostAnimalRFID;
 
     @OneToMany(mappedBy = "lostBoardCode")
     private List<LostBoardImage> images;

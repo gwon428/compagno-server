@@ -57,7 +57,7 @@ public class LostBoardController {
         lost.setUserNickname(dto.getUserNickname());
         lost.setUserPhone(dto.getUserPhone());
 //        lost.setLostTitle(dto.getLostTitle());
-        lost.setLostAnimalImage(dto.getLostAnimalImage());
+//        lost.setLostAnimalImage(dto.getLostAnimalImage());
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
         lost.setLostLocation(dto.getLostLocation());
@@ -72,9 +72,10 @@ public class LostBoardController {
         LostBoard result = service.create(lost);
         if(dto.getImages()!=null){
             log.info("getImages : " + dto.getImages());
+
             for(MultipartFile file : dto.getImages()){
                 if(!file.getOriginalFilename().equals("")){
-                    log.info("originName: " + file.getOriginalFilename());
+                    //log.info("originName: " + file.getOriginalFilename());
                     LostBoardImage images = new LostBoardImage();
 
                     String fileName = file.getOriginalFilename();
@@ -82,9 +83,15 @@ public class LostBoardController {
                     String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
-
+log.info("박");
+                    if(result.getLostAnimalImage() == null){
+                        result.setLostAnimalImage(saveName);
+                        log.info("result.대표사진 : ");
+                    }
+                    
                     images.setLostImage(saveName);
                     images.setLostBoardCode(result);
+                    
                     service.createImages(images);
                 }
             }
@@ -354,8 +361,6 @@ public class LostBoardController {
         LostBoardComment vo = comment.viewComment(dto.getLostCommentCode());
         log.info("vo : " + vo.getCommentContent());
         vo.setCommentContent(dto.getCommentContent());
-//        LostBoardComment vo = new LostBoardComment();
-//        vo.setCommentContent(dto.getCommentContent());
         LostBoardComment result = comment.update(vo);
         return (result != null) ?
                 ResponseEntity.status(HttpStatus.ACCEPTED).body(result)

@@ -31,7 +31,7 @@ public class LostBoardDTO {
     private String lostAnimalGender;
     private int lostAnimalAge;
     private String lostAnimalFeature;
-    private int lostAnimalRFID;
+    private String lostAnimalRFID;
 
 
     private List<MultipartFile> images;
