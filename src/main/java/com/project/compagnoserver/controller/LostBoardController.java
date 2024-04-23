@@ -48,7 +48,7 @@ public class LostBoardController {
     private String uploadPath;
 
     // 추가 --------------------------------------------------------------------
-    @PostMapping("/public/lostBoard")
+    @PostMapping("/lostBoard")
     public ResponseEntity<LostBoard> create(LostBoardDTO dto) throws IOException {
 
         LostBoard lost = new LostBoard();

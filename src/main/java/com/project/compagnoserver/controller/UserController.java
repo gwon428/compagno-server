@@ -72,6 +72,7 @@ public class UserController {
                     .userRole(user.getUserRole())
                     .userImg(user.getUserImg())
                     .userNickname(user.getUserNickname())
+                    .userPhone(user.getUserPhone())
                     .token(token)
                     .build();
             log.info("user : " + responseDTO);
