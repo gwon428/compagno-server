@@ -52,6 +52,7 @@ public class LostBoardController {
     public ResponseEntity<LostBoard> create(LostBoardDTO dto) throws IOException {
 
         LostBoard lost = new LostBoard();
+//        lost.setLostBoardCode(dto.getLostBoardCode());
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
         lost.setUserNickname(dto.getUserNickname());
@@ -70,6 +71,8 @@ public class LostBoardController {
         lost.setLostAnimalRFID(dto.getLostAnimalRFID());
 
         LostBoard result = service.create(lost);
+        log.info("dto : " + dto);
+        log.info("getImagessss : " + dto.getImages());
         if(dto.getImages()!=null){
             log.info("getImages : " + dto.getImages());
 
@@ -83,7 +86,7 @@ public class LostBoardController {
                     String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
-log.info("박");
+
                     if(result.getLostAnimalImage() == null){
                         result.setLostAnimalImage(saveName);
                         log.info("result.대표사진 : ");
