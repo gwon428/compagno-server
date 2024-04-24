@@ -1,6 +1,9 @@
 package com.project.compagnoserver.service;
 
+
+
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoardDTO;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
 import com.project.compagnoserver.repo.Qna.QnaQBoardDAO;
 import com.project.compagnoserver.repo.Qna.QnaQBoardImageDAO;
@@ -13,7 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service @Slf4j
+@Service
+@Slf4j
 public class QnaQBoardService {
 
     @Autowired
@@ -35,7 +39,6 @@ public class QnaQBoardService {
     }
 
     public List<QnaQBoardImage> viewImg(int code){
-        log.info("code : " + code);
         return image.findByqnaQCode(code);
     }
 

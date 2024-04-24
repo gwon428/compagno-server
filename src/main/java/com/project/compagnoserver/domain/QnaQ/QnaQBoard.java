@@ -43,16 +43,14 @@ public class QnaQBoard {
     private String qnaQContent;
 
     @CreationTimestamp
-//    @UpdateTimestamp
     @Column(name="qna_q_date")
     private Timestamp qnaQDate;
 
     @Column(name="qna_q_status")
     private String qnaQStatus;
 
-    @OneToMany(mappedBy = "qnaQCode")
-    @JsonIgnore
-    private List<QnaQBoardImage> images;
+//    @OneToMany(mappedBy = "qnaQCode")
+//    private List<QnaQBoardImage> images;
 
     @Column
     private String secret;

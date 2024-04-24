@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.DynamicInsert;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Data
@@ -15,7 +16,7 @@ import org.hibernate.annotations.DynamicInsert;
 @AllArgsConstructor
 @DynamicInsert
 @Table(name="qna_q_board_image")
-public class QnaQBoardImage {
+public class QnaQBoardImage  {
     @Id @Column(name="qna_q_img_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int qnaQImgCode;
@@ -23,8 +24,12 @@ public class QnaQBoardImage {
     @Column(name="qna_q_url")
     private String qnaQUrl;
 
-    @ManyToOne
-    @JoinColumn(name="qna_q_code")
-    @JsonIgnore
-    private QnaQBoard qnaQCode;
+    @Column(name="qna_q_code")
+    private int qnaQCode;
+
+
+//    @ManyToOne
+//    @JoinColumn(name="qna_q_code")
+//    @JsonIgnore
+//    private QnaQBoard qnaQCode;
 }
