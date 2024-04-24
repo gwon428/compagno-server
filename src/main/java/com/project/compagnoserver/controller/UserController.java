@@ -117,6 +117,8 @@ public class UserController {
     public ResponseEntity updateUser(@RequestBody User vo) {
         User user = User.builder()
                 .userEmail(vo.getUserEmail())
+                .userPhone(vo.getUserPhone())
+                .userPwd(passwordEncoder.encode(vo.getUserPwd()))
                 .userId(vo.getUserId())
                 .build();
 
