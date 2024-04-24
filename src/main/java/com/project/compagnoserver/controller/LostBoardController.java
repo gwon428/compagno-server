@@ -69,6 +69,7 @@ public class LostBoardController {
         lost.setLostAnimalAge(dto.getLostAnimalAge());
         lost.setLostAnimalFeature(dto.getLostAnimalFeature());
         lost.setLostAnimalRFID(dto.getLostAnimalRFID());
+        lost.setLostRegiDate(dto.getLostRegiDate());
 
         LostBoard result = service.create(lost);
         log.info("dto : " + dto);

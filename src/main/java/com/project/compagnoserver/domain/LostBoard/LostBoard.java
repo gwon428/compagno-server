@@ -42,7 +42,7 @@ public class LostBoard {
 
 
     @Column(name="lost_regi_date")
-    private Timestamp lostRegiDate;
+    private Date lostRegiDate;
 
     @Column(name="lost_view_count")
     private int lostViewCount;

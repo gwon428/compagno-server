@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,8 @@ public class LostBoardDTO {
     private int lostAnimalAge;
     private String lostAnimalFeature;
     private String lostAnimalRFID;
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date lostRegiDate;
 
     private List<MultipartFile> images;
 }
