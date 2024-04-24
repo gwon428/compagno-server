@@ -64,6 +64,32 @@ public class AnimalBoardCommentController {
 //    return ResponseEntity.badRequest().build();
     }
 
+    // 댓글 수정
+    @PutMapping("/animal-board/comment")
+    public ResponseEntity<AnimalBoardComment> updateComment(@RequestBody AnimalBoardCommentDTO dto){
+        log.info("dto : " + dto);
+        AnimalBoardComment updateComment = AnimalBoardComment.builder()
+                .animalCommentCode(dto.getAnimalCommentCode())
+                .animalParentCode(dto.getAnimalParentCode())
+                .animalCommentContent(dto.getAnimalCommentContent())
+                .animalCommentDate(dto.getAnimalCommentDate())
+                .animalBoard(AnimalBoard.builder()
+                        .animalBoardCode(dto.getAnimalBoardCode())
+                        .build())
+                .user((User.builder()
+                        .userId(dto.getUser().getUserId())
+                        .userNickname(dto.getUser().getUserNickname())
+                        .build()))
+                .build();
+        animalBoardCommentService.writeComment(updateComment);
+        return ResponseEntity.ok().build();
+    }
+    // 댓글삭제
+    @DeleteMapping("/animal-board/comment/{animalCommentCode}")
+    public ResponseEntity<?> deleteComment (@PathVariable(name = "animalCommentCode") int commentCode){
+        animalBoardCommentService.deleteComment(commentCode);
+        return ResponseEntity.ok().build();
+    }
     // 댓글 불러오기
     @GetMapping("/animal-board/{animalBoardCode}/comment")
     public ResponseEntity<List<AnimalBoardCommentDTO>> getAnimalBoardComments(@PathVariable(name = "animalBoardCode") int boardCode){
@@ -79,6 +105,7 @@ public class AnimalBoardCommentController {
                         .animalCommentCode(bottomReply.getAnimalCommentCode())
                         .animalCommentContent(bottomReply.getAnimalCommentContent())
                         .animalCommentDate(bottomReply.getAnimalCommentDate())
+                        .animalParentCode(bottomReply.getAnimalParentCode())
                         .user(UserDTO.builder()
                                 .userNickname(bottomReply.getUser().getUserNickname())
                                 .userImg(bottomReply.getUser().getUserImg())
@@ -99,7 +126,7 @@ public class AnimalBoardCommentController {
                     .build();
             comments.add(dto); //상위댓글DTO
         }
-//        log.info("comments : " + comments);
+        log.info("comments : " + comments);
         return ResponseEntity.ok(comments);
     }
 }
