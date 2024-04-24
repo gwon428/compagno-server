@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
 
     private String token;
+
     private String userId;
     private String userPersonName;
 
@@ -20,4 +21,9 @@ public class UserDTO {
     private String userNickname;
     private String userImg;
     private String userRole;
+
+    private String userPhone;
+    private String userEmail;
+
+    private String userStatus;
 }

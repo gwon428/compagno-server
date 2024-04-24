@@ -47,4 +47,12 @@ public class UserService {
         return checkNickResult;
     }
 
+    // 비밀번호 변경
+  public void updateUser(User user) {
+        log.info("서비스에서 입력값 : " + user.getUserEmail() + "  " + user.getUserId());
+
+        userDao.updateUserInfo(user.getUserEmail(), user.getUserId());
+  }
+
+
 }
