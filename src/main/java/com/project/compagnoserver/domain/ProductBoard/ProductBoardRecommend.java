@@ -31,6 +31,8 @@ public class ProductBoardRecommend {
     @JsonIgnore
     private User user;
 
-    @Column(name = "product_board_code")
-    private int productBoardCode;
+    @ManyToOne
+    @JoinColumn(name="product_board_code")
+    @JsonIgnore
+    private ProductBoard productBoard;
 }

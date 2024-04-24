@@ -63,4 +63,10 @@ public class ProductBoard {
 
     @OneToMany(mappedBy = "productBoard")
     private List<ProductBoardImage> images;
+
+    @OneToMany(mappedBy = "productBoard")
+    private List<ProductBoardRecommend> recommend;
+
+    @OneToMany(mappedBy = "productBoard")
+    private List<ProductBoardComment> comments;
 }

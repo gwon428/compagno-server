@@ -23,8 +23,10 @@ public class ProductBoardComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int productCommentCode;
 
-    @Column(name = "product_board_code")
-    private int productBoardCode;
+    @ManyToOne
+    @JoinColumn(name="product_board_code")
+    @JsonIgnore
+    private ProductBoard productBoard;
 
     @Column(name = "product_comment_content")
     private String productCommentContent;

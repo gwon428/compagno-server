@@ -127,7 +127,7 @@ public class ProductBoardService {
     public Integer checkRecommend (ProductBoardRecommend vo) {
         return queryFactory.select(qProductBoardRecommend.productRecommendCode)
                 .from(qProductBoardRecommend)
-                .where(qProductBoardRecommend.productBoardCode.eq(vo.getProductBoardCode()))
+                .where(qProductBoardRecommend.productBoard.productBoardCode.eq(vo.getProductBoard().getProductBoardCode()))
                 .where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
                 .fetchOne();
     }
@@ -220,7 +220,7 @@ public class ProductBoardService {
     private OrderSpecifier<?>[] productBoardSort (String sort) {
 
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
-        if(sort.equals("view")) { // 조회수 순 DESC
+        if(sort!= null && sort.equals("view")) { // 조회수 순 DESC
             orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardViewCount));
         }
 

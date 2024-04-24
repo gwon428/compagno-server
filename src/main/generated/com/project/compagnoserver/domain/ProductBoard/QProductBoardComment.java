@@ -24,7 +24,7 @@ public class QProductBoardComment extends EntityPathBase<ProductBoardComment> {
 
     public final QProductBoardComment parent;
 
-    public final NumberPath<Integer> productBoardCode = createNumber("productBoardCode", Integer.class);
+    public final QProductBoard productBoard;
 
     public final NumberPath<Integer> productCommentCode = createNumber("productCommentCode", Integer.class);
 
@@ -57,6 +57,7 @@ public class QProductBoardComment extends EntityPathBase<ProductBoardComment> {
     public QProductBoardComment(Class<? extends ProductBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.parent = inits.isInitialized("parent") ? new QProductBoardComment(forProperty("parent"), inits.get("parent")) : null;
+        this.productBoard = inits.isInitialized("productBoard") ? new QProductBoard(forProperty("productBoard"), inits.get("productBoard")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
