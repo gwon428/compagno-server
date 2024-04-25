@@ -55,7 +55,7 @@ public class UserController {
                 .userEnrollDate(nowDate)
                 .userStatus("n")
                 .userRole("ROLE_USER")
-                .userImg(uploadPath + File.separator + "user" + File.separator + "defaultImage.jpg") // LostBoardComment 확인 위해
+                .userImg("user" + File.separator + "defaultImage.png") // LostBoardComment 확인 위해
                 .build();
 
         User result = userService.create(user);
@@ -125,6 +125,13 @@ public class UserController {
        log.info("컨트롤러에서 입력값 : " + user);
         userService.updateUser(user);
         return ResponseEntity.status(HttpStatus.OK).build();
+   }
+
+    @Transactional
+    @PutMapping("/mypage/myinfo/{userId}/quit")
+    public ResponseEntity quitUser(@PathVariable("userId") String id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
    }
 
 }

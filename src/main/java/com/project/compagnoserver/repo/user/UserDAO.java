@@ -21,4 +21,9 @@ public interface UserDAO extends JpaRepository<User, String> {
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE user SET user_email = :email, user_phone = :phone, user_pwd = :password WHERE user_id = :id", nativeQuery = true)
     void updateUserInfo(@Param("email") String email, @Param("phone") String phone, @Param("password") String password , @Param("id") String id);
+
+    // 회원 탈퇴
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE user SET user_status = \"y\" , user_quit_date = CURRENT_TIMESTAMP WHERE user_id = :id", nativeQuery = true)
+    void deleteUserInfo(@Param("id") String id);
 }

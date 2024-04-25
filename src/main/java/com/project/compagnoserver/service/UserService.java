@@ -52,5 +52,9 @@ public class UserService {
         userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
   }
 
+  // 회원 탈퇴
+    public void deleteUser(String id) {
+        userDao.deleteUserInfo(id);
+    }
 
 }
