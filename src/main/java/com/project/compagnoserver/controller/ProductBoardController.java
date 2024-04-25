@@ -56,7 +56,7 @@ public class ProductBoardController {
         if(!dto.getProductMainFile().isEmpty()) {
             String fileName = dto.getProductMainFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
-            saveName = uploadPath + File.separator + "productBoardMainImage" + File.separator + uuid + "_" + fileName;
+            saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
             Path savePath = Paths.get(saveName);
             dto.getProductMainFile().transferTo(savePath);
         }
@@ -82,7 +82,7 @@ public class ProductBoardController {
             if(!fileName.isEmpty()) {
                 ProductBoardImage imgVo = new ProductBoardImage();
                 String uuid = UUID.randomUUID().toString();
-                saveName = uploadPath + File.separator + "productBoardImage" + File.separator + uuid + "_" + fileName;
+                saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
                 Path savePath = Paths.get(saveName);
                 file.transferTo(savePath);
 
@@ -96,12 +96,12 @@ public class ProductBoardController {
                 ResponseEntity.status(HttpStatus.CREATED).body(result) :
                 ResponseEntity.badRequest().build();
     }
-    
-    
+
+
     // 게시판 삭제
     @DeleteMapping("/productBoard/{code}")
     public ResponseEntity<ProductBoard> delete(@PathVariable(name="code") int code) {
-        
+
         // 메인 이미지 삭제
         ProductBoard prev = productBoard.viewBoard(code);
         if(prev.getProductMainImage()!=null) {
@@ -112,8 +112,8 @@ public class ProductBoardController {
         // 나머지 이미지 삭제
         List<ProductBoardImage> prevImage = productBoard.viewImage(code);
         for(ProductBoardImage image : prevImage) {
-             File file = new File(image.getProductImage());
-             file.delete();
+            File file = new File(image.getProductImage());
+            file.delete();
         }
 
         // 게시판 삭제
@@ -124,9 +124,9 @@ public class ProductBoardController {
 
 
     // 게시판 조회
-    @GetMapping("/productBoard/{code}")
+    @GetMapping("/public/productBoard/{code}")
     public ResponseEntity<?> view(@PathVariable(name="code") int code,
-                                             HttpServletRequest req, HttpServletResponse res) {
+                                  HttpServletRequest req, HttpServletResponse res) {
         ProductBoard result = productBoard.viewBoard(code);
         viewCountUp(code, req, res);
         return ResponseEntity.ok().body(result);
@@ -137,11 +137,11 @@ public class ProductBoardController {
         Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
 
         Cookie cookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals("productBoardView"))
+                .filter(c -> c.getName().equals("productBoard"))
                 .findFirst()
                 .orElseGet(() -> {
                     productBoard.viewCountUp(code);
-                    return new Cookie("productBoardView", "[" + code + "]");
+                    return new Cookie("productBoard", "[" + code + "]");
                 });
 
         if(!cookie.getValue().contains("[" + code + "]")) {
@@ -185,7 +185,7 @@ public class ProductBoardController {
         if(!dto.getProductMainFile().isEmpty()) {
             String fileName = dto.getProductMainFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
-            String saveName = uploadPath + File.separator + "productBoardMainImage" + File.separator + uuid + "_" + fileName;
+            String saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
             Path savePath = Paths.get(saveName);
             dto.getProductMainFile().transferTo(savePath);
             vo.setProductMainImage(saveName);
@@ -197,7 +197,7 @@ public class ProductBoardController {
             vo.setProductMainImage(saveName);
         }
 
-            ProductBoard result = productBoard.updateBoard(vo);
+        ProductBoard result = productBoard.updateBoard(vo);
 
 
         // 나머지 이미지 삭제
@@ -218,7 +218,7 @@ public class ProductBoardController {
 
                 String fileName = file.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString();
-                String saveName = uploadPath + File.separator + "productBoardImage" + File.separator + uuid + "_" + fileName;
+                String saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
 
                 Path savePath = Paths.get(saveName);
                 file.transferTo(savePath);
@@ -236,8 +236,12 @@ public class ProductBoardController {
 
     // 게시판 추천, 추천 된 상태면 삭제
     @PostMapping("/productBoard/recommend")
-    public ResponseEntity boardRecommend(@RequestBody ProductBoardRecommend vo) {
-        vo.setUser(userInfo());
+    public ResponseEntity boardRecommend(@RequestBody ProductBoardRecommendDTO dto) {
+        log.info("dto : " + dto);
+        ProductBoardRecommend vo = new ProductBoardRecommend();
+        vo.setUser(User.builder().userId(dto.getUserId()).build());
+        vo.setProductBoard(ProductBoard.builder().productBoardCode(dto.getProductBoardCode()).build());
+
         productBoard.boardRecommend(vo);
 
         return ResponseEntity.ok().build();
@@ -245,8 +249,11 @@ public class ProductBoardController {
 
     // 게시판 북마크, 북마크 된 상태면 삭제
     @PostMapping("/productBoard/bookmark")
-    public ResponseEntity boardBookmark(@RequestBody ProductBoardBookmark vo) {
-        vo.setUser(userInfo());
+    public ResponseEntity boardBookmark(@RequestBody ProductBoardBookmarkDTO dto) {
+        ProductBoardBookmark vo = new ProductBoardBookmark();
+        vo.setUser(User.builder().userId(dto.getUserId()).build());
+        vo.setProductBoard(ProductBoard.builder().productBoardCode(dto.getProductBoardCode()).build());
+        log.info("vo : " + vo);
         productBoard.boardBookmark(vo);
 
         return ResponseEntity.ok().build();
@@ -266,7 +273,7 @@ public class ProductBoardController {
     }
 
     // 게시판 검색, 조회
-    @GetMapping("/productBoard/search")
+    @GetMapping("/public/productBoard/search")
     public ResponseEntity<Page<ProductBoard>> searchBoard(ProductBoardSearchDTO dto, @RequestParam(name = "page", defaultValue = "1") int page) {
         Pageable pageable = PageRequest.of(page - 1, 12);
         QProductBoard qProductBoard = QProductBoard.productBoard;
@@ -277,7 +284,6 @@ public class ProductBoardController {
     // 댓글 작성
     @PostMapping("/productBoard/comment")
     public ResponseEntity<ProductBoardComment> createComment(@RequestBody ProductBoardComment vo) {
-
         vo.setUser(userInfo());
         return ResponseEntity.ok(comment.create(vo));
     }
@@ -298,7 +304,7 @@ public class ProductBoardController {
     }
 
     // 댓글 조회
-    @GetMapping("/productBoard/comment/{code}")
+    @GetMapping("/public/productBoard/comment/{code}")
     public ResponseEntity<List<ProductBoardCommentDTO>> viewComment(@PathVariable (name = "code") int code) {
         List<ProductBoardComment> list = comment.getTopLevelComments(code);
         List<ProductBoardCommentDTO> response = new ArrayList<>();
@@ -313,7 +319,7 @@ public class ProductBoardController {
                         .productCommentCode(comment.getProductCommentCode())
                         .productCommentContent(comment.getProductCommentContent())
                         .productCommentRegiDate(comment.getProductCommentRegiDate())
-                        .user(comment.getUser())
+                        .user(userInfo())
                         .build();
                 replies.add(dto);
             }
@@ -323,7 +329,7 @@ public class ProductBoardController {
                     .productCommentContent(item.getProductCommentContent())
                     .productCommentRegiDate(item.getProductCommentRegiDate())
                     .replies(replies)
-                    .user(item.getUser())
+                    .user(userInfo())
                     .build();
             response.add(dto);
         }

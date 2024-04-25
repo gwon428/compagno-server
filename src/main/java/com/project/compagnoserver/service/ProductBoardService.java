@@ -107,10 +107,11 @@ public class ProductBoardService {
     
     // 게시판 북마크 확인
     public Integer checkBookmark (ProductBoardBookmark vo) {
-        return queryFactory.selectFrom(qProductBoardBookmark)
+        return queryFactory.select(qProductBoardBookmark.productBookmarkCode)
+                .from(qProductBoardBookmark)
                 .where(qProductBoardBookmark.productBoard.productBoardCode.eq(vo.getProductBoard().getProductBoardCode()))
                 .where(qProductBoardBookmark.user.userId.eq(vo.getUser().getUserId()))
-                .fetch().size();
+                .fetchOne();
 
     }
     // 게시판 북마크
@@ -124,14 +125,17 @@ public class ProductBoardService {
 
     // 게시판 추천 확인
     public Integer checkRecommend (ProductBoardRecommend vo) {
-        return queryFactory.selectFrom(qProductBoardRecommend)
+
+        return queryFactory.select(qProductBoardRecommend.productRecommendCode)
+                .from(qProductBoardRecommend)
                 .where(qProductBoardRecommend.productBoard.productBoardCode.eq(vo.getProductBoard().getProductBoardCode()))
                 .where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
-                .fetch().size();
+                .fetchOne();
     }
 
     // 게시판 추천
     public void boardRecommend(ProductBoardRecommend vo) {
+        log.info("check : " + checkRecommend(vo));
         if(checkRecommend(vo)==null) {
             recommend.save(vo);
         } else {
