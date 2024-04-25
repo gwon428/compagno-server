@@ -86,6 +86,7 @@ public class LostBoardController {
                     String uuid = UUID.randomUUID().toString();
                     String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
+                    log.info("save : " + saveName);
                     file.transferTo(savePath);
 
                     if(result.getLostAnimalImage() == null){
@@ -246,6 +247,7 @@ public class LostBoardController {
 
                     String fileName = file.getOriginalFilename();
                     String uuid = UUID.randomUUID().toString();
+
                     String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
