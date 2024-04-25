@@ -47,7 +47,7 @@ public class QnaABoardController {
         return authentication.getPrincipal();
     }
 
-    @GetMapping("/question/{code}/answer")
+    @GetMapping("/public/question/{code}/answer")
     public ResponseEntity<QnaABoardDTO> select(@PathVariable(name="code") int code){
         log.info("code : " + code);
         QnaABoard vo = service.view(code);

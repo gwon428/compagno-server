@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -48,9 +49,8 @@ public class QnaQBoard {
     @Column(name="qna_q_status")
     private String qnaQStatus;
 
-    @OneToMany(mappedBy = "qnaQCode")
-    @JsonIgnore
-    private List<QnaQBoardImage> files;
+//    @OneToMany(mappedBy = "qnaQCode")
+//    private List<QnaQBoardImage> images;
 
     @Column
     private String secret;
