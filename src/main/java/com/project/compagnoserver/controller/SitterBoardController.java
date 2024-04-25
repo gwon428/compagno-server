@@ -137,6 +137,9 @@ public class SitterBoardController {
         res.addCookie(cookie);
     }
 
+
+//    ========================================== 댓글 ==========================================
+
     // 댓글 추가
     @PostMapping("sitter/comment")
     public ResponseEntity sitterCommentCreate(@RequestBody SitterBoardComment sitterBoardComment) {

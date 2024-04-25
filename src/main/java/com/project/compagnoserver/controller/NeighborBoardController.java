@@ -1,11 +1,9 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
-import com.project.compagnoserver.domain.NeighborBoard.NeighborBoard;
-import com.project.compagnoserver.domain.NeighborBoard.NeighborBoardDTO;
-import com.project.compagnoserver.domain.NeighborBoard.NeighborBoardImage;
-import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
+import com.project.compagnoserver.domain.NeighborBoard.*;
 import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.NeighborBoardService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,10 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/compagno/*")
@@ -61,6 +56,7 @@ public class NeighborBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(vo);
     }
 
+
     // 게시글 등록
     @PostMapping("neighbor")
     public ResponseEntity<NeighborBoard> neighborCreate(NeighborBoardDTO neighborBoardDTO) throws IOException {
@@ -92,6 +88,16 @@ public class NeighborBoardController {
         }
 
         return result!=null ? ResponseEntity.status(HttpStatus.CREATED).body(result) : ResponseEntity.badRequest().build();
+    }
+
+
+    // 게시글 북마크
+    @PostMapping("neighbor/bookmark")
+    public ResponseEntity neighborBookmark(@RequestBody NeighborBoardBookmark neighborBoardBookmarkVo) {
+        neighborBoardBookmarkVo.setUserId(userInfo());
+        neighborBoardService.neighborBookmark(neighborBoardBookmarkVo);
+
+        return ResponseEntity.ok().build();
     }
 
 
@@ -173,6 +179,89 @@ public class NeighborBoardController {
             return user;
         }
         return null;
+    }
+
+
+//    ========================================== 댓글 ==========================================
+
+    // 댓글 추가
+    @PostMapping("neighbor/comment")
+    public ResponseEntity neighborCommentCreate(@RequestBody NeighborBoardComment neighborBoardCommentVo) {
+        Object principal = authentication();
+
+        if(principal instanceof User) {
+            User user = (User) principal;
+            neighborBoardCommentVo.setUser(user);
+            return ResponseEntity.ok(neighborBoardService.neighborCommentCreate(neighborBoardCommentVo));
+        }
+
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 댓글 수정
+    @PutMapping("neighbor/comment")
+    public ResponseEntity<NeighborBoardComment> neighborCommentUpdate(NeighborBoardCommentDTO neighborBoardCommentDTO) {
+        NeighborBoardComment comment = neighborBoardService.neighborCommentview(neighborBoardCommentDTO.getNeighborCommentCode());
+
+        comment.setNeighborCommentCode(neighborBoardCommentDTO.getNeighborCommentCode());
+        comment.setNeighborCommentContent(neighborBoardCommentDTO.getNeighborCommentContent());
+
+        neighborBoardService.neighborCommentUpdate(comment);
+        return ResponseEntity.ok().build();
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("neighbor/comment/{commentCode}")
+    public ResponseEntity<NeighborBoardComment> neighborCommentDelete(@PathVariable("commentCode") int commentCode) {
+        neighborBoardService.neighborCommentDelete(commentCode);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 각 게시판에 대한 댓글 조회
+    @GetMapping("public/neighbor/{code}/comment")
+    public ResponseEntity<List<NeighborBoardCommentDTO>> neighborViewAllComment(@PathVariable(name = "code") int code) {
+        List<NeighborBoardComment> topList = neighborBoardService.getTopComments(code);
+        List<NeighborBoardCommentDTO> response = new ArrayList<>();
+
+        for(NeighborBoardComment top : topList) {
+            List<NeighborBoardComment> replies = neighborBoardService.getReplyComments(top.getNeighborCommentCode(), code);
+
+            List<NeighborBoardCommentDTO> repliesDTO = new ArrayList<>();
+
+            for(NeighborBoardComment reply : replies) {
+                NeighborBoardCommentDTO dto = NeighborBoardCommentDTO.builder()
+                        .neighborBoardCode(reply.getNeighborBoardCode())
+                        .neighborCommentCode(reply.getNeighborCommentCode())
+                        .neighborCommentContent(reply.getNeighborCommentContent())
+                        .neighborCommentRegiDate(reply.getNeighborCommentRegiDate())
+                        .user(UserDTO.builder()
+                                .userId(reply.getUser().getUserId())
+                                .build())
+                        .build();
+                repliesDTO.add(dto);
+            }
+
+            NeighborBoardCommentDTO dto = NeighborBoardCommentDTO.builder()
+                    .neighborBoardCode(top.getNeighborBoardCode())
+                    .neighborCommentCode(top.getNeighborCommentCode())
+                    .neighborCommentContent(top.getNeighborCommentContent())
+                    .neighborCommentRegiDate(top.getNeighborCommentRegiDate())
+                    .user(UserDTO.builder()
+                            .userId(top.getUser().getUserId())
+                            .build())
+                    .neighborReplies(repliesDTO)
+                    .build();
+            response.add(dto);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+
+    public Object authentication() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        return authentication != null ? authentication.getPrincipal() : null;
     }
 
 }

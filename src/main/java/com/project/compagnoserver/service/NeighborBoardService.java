@@ -1,7 +1,9 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.NeighborBoard.*;
+import com.project.compagnoserver.domain.SitterBoard.SitterBoardComment;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardBookmarkDAO;
+import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardCommentDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardImageDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -31,6 +33,10 @@ public class NeighborBoardService {
     private NeighborBoardBookmarkDAO neighborBoardBookmarkDAO;
     private final QNeighborBoardBookmark qNeighborBoardBookmark = QNeighborBoardBookmark.neighborBoardBookmark;
 
+    @Autowired
+    private NeighborBoardCommentDAO neighborBoardCommentDAO;
+    private final QNeighborBoardComment qNeighborBoardComment = QNeighborBoardComment.neighborBoardComment;
+
 
     // 전체 보기
     public List<NeighborBoard> neighborViewAll() {
@@ -39,6 +45,7 @@ public class NeighborBoardService {
     public List<NeighborBoardImage> neighborViewAllImg(int code) {
         return neighborBoardImageDAO.findByBoardCode(code);
     }
+
 
     // 상세 페이지
     public NeighborBoard neighborView(int code) {
@@ -50,14 +57,6 @@ public class NeighborBoardService {
                 .fetch();
     }
 
-    // 게시글 조회수
-    @Transactional
-    public void neighborViewCount(int code) {
-        queryFactory.update(qNeighborBoard)
-                .set(qNeighborBoard.neighborBoardViewCount, qNeighborBoard.neighborBoardViewCount.add(1))
-                .where(qNeighborBoard.neighborBoardCode.eq(code))
-                .execute();
-    }
 
     // 게시글 등록
     public NeighborBoard neighborCreate(NeighborBoard neighborBoardVo) {
@@ -67,6 +66,7 @@ public class NeighborBoardService {
         neighborBoardImageDAO.save(neighborBoardImageVo);
     }
 
+
     // 게시글 수정
     public NeighborBoard neighborUpdate(NeighborBoard neighborBoardVo) {
         if(neighborBoardDAO.existsById(neighborBoardVo.getNeighborBoardCode())) {
@@ -74,6 +74,7 @@ public class NeighborBoardService {
         }
         return null;
     }
+
 
     // 게시글 삭제
     public void neighborDeleteImg(int code) {
@@ -86,6 +87,83 @@ public class NeighborBoardService {
             neighborBoardDAO.deleteById(code);
         }
     }
+
+
+    // 게시글 조회수
+    @Transactional
+    public void neighborViewCount(int code) {
+        queryFactory.update(qNeighborBoard)
+                .set(qNeighborBoard.neighborBoardViewCount, qNeighborBoard.neighborBoardViewCount.add(1))
+                .where(qNeighborBoard.neighborBoardCode.eq(code))
+                .execute();
+    }
+
+
+    // 게시글 북마크 확인
+    public Integer neighborChkBookmark(NeighborBoardBookmark neighborBoardBookmarkVo) {
+        return queryFactory.select(qNeighborBoardBookmark.neighborBookmarkCode)
+                .from(qNeighborBoardBookmark)
+                .where(qNeighborBoardBookmark.neighborBoardCode.eq(neighborBoardBookmarkVo.getNeighborBoardCode()))
+                .where(qNeighborBoardBookmark.userId.userId.eq(neighborBoardBookmarkVo.getUserId().getUserId()))
+                .fetchOne();
+    }
+    // 게시글 북마크
+    public void neighborBookmark(NeighborBoardBookmark neighborBoardBookmarkVo) {
+        if(neighborChkBookmark(neighborBoardBookmarkVo)==null) {
+            neighborBoardBookmarkDAO.save(neighborBoardBookmarkVo);
+        } else {
+            neighborBoardBookmarkDAO.deleteById(neighborChkBookmark(neighborBoardBookmarkVo));
+        }
+    }
+
+
+//    ========================================== 댓글 ==========================================
+
+    // 댓글 하나 보기
+    public NeighborBoardComment neighborCommentview(int code){
+        return neighborBoardCommentDAO.findById(code).orElse(null);
+    }
+
+    // 댓글 추가
+    public NeighborBoardComment neighborCommentCreate(NeighborBoardComment neighborBoardCommentVo) {
+        return neighborBoardCommentDAO.save(neighborBoardCommentVo);
+    }
+
+    // 댓글 수정
+    public void neighborCommentUpdate(NeighborBoardComment neighborBoardCommentVo) {
+        if(neighborBoardCommentDAO.existsById(neighborBoardCommentVo.getNeighborCommentCode())) {
+            neighborBoardCommentDAO.save(neighborBoardCommentVo);
+        }
+    }
+
+    // 댓글 삭제
+    public void neighborCommentDelete(int commentCode) {
+        NeighborBoardComment target = neighborBoardCommentDAO.findById(commentCode).orElse(null);
+        if(target != null) {
+            neighborBoardCommentDAO.delete(target);
+        }
+    }
+
+    // 원 댓글만 조회
+    public List<NeighborBoardComment> getTopComments(int code) {
+        return queryFactory.selectFrom(qNeighborBoardComment)
+                .where(qNeighborBoardComment.neighborCommentParentCode.eq(0))
+                .where(qNeighborBoardComment.neighborBoardCode.eq(code))
+                .orderBy(qNeighborBoardComment.neighborCommentCode.desc())
+                .fetch();
+    }
+
+    // 대댓글만 조회
+    public List<NeighborBoardComment> getReplyComments(int parent, int code) {
+        return queryFactory.selectFrom(qNeighborBoardComment)
+                .where(qNeighborBoardComment.neighborCommentParentCode.eq(parent))
+                .where(qNeighborBoardComment.neighborBoardCode.eq(code))
+                .orderBy(qNeighborBoardComment.neighborCommentRegiDate.asc())
+                .fetch();
+    }
+
+
+
 
 
 }
