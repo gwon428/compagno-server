@@ -183,96 +183,117 @@ public class QnaQBoardController {
     @PutMapping("/public/question")
     public ResponseEntity update(QnaQBoardDTO dto) throws IOException {
 
-        log.info("dto 제목 : " + dto.getQnaQTitle());
-        log.info("dto 내용 : " + dto.getQnaQContent());
-        log.info("dto images : " + dto.getImages());
-        List<String> imagesList = dto.getImages().stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
+            log.info("dto 제목 : " + dto.getQnaQTitle());
+            log.info("dto 내용 : " + dto.getQnaQContent());
+            log.info("dto images : " + dto.getImages());
+            if (dto.getImages() != null) {
+                List<String> imagesList = dto.getImages()
+                        .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
+                log.info("imagesList : " + imagesList);
 
-        log.info("imagesList : " + imagesList);
 
-        List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
-        log.info("list :  " + list);
+                List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
+                log.info("list :  " + list);
 
-        // 이전 이미지 전체 삭제
-            for (QnaQBoardImage image : list) {
-                log.info("image : " + image);
-                log.info("image : " + image.getQnaQUrl());
-                log.info("getImages() : " + dto.getImages());
+                // 이전 이미지 전체 삭제
+                for (QnaQBoardImage image : list) {
+                    log.info("image : " + image);
+                    log.info("image : " + image.getQnaQUrl());
+                    log.info("getImages() : " + dto.getImages());
 //                log.info("compare  " + image.compareTo())
 
-                if((dto.getImages()!=null && !imagesList.contains(image.getQnaQUrl())) || (dto.getImages() == null)) {
-                    File file = new File(image.getQnaQUrl());
-                    file.delete();
+                    if ((dto.getImages() != null && !imagesList.contains(image.getQnaQUrl())) || (dto.getImages() == null)) {
+                        File file = new File(image.getQnaQUrl());
+                        file.delete();
 
-                    service.deleteImg(image.getQnaQImgCode());
-                    log.info("삭제!");
+                        service.deleteImg(image.getQnaQImgCode());
+                        log.info("삭제!");
+                    }
                 }
             }
 
-        if(dto.getFiles() != null){
-            for (MultipartFile file : dto.getFiles()) {
-                QnaQBoardImage img = new QnaQBoardImage();
+            if (dto.getFiles() != null) {
+                for (MultipartFile file : dto.getFiles()) {
+                    QnaQBoardImage img = new QnaQBoardImage();
 
-                String fileName = file.getOriginalFilename();
-                String uuid = UUID.randomUUID().toString();
-                String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
+                    String fileName = file.getOriginalFilename();
+                    String uuid = UUID.randomUUID().toString();
+                    String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
 
-                Path savePath = Paths.get(saveName);
-                file.transferTo(savePath);
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
 
-                img.setQnaQUrl(saveName.substring(27));
-                img.setQnaQCode(dto.getQnaQCode());
+                    img.setQnaQUrl(saveName.substring(27));
+                    img.setQnaQCode(dto.getQnaQCode());
 
-                service.createImg(img);
+                    service.createImg(img);
+                }
+            } else {
+                log.info("추가하는 이미지 없음");
             }
-        } else {
-            log.info("추가하는 이미지 없음");
-        }
 
 
-        // 추가하는 이미지가 비어있지 않을 때
-//        log.info("null?" + (dto.getFiles() == null));
+            // 추가하는 이미지가 비어있지 않을 때
+        log.info("null?" + (dto.getFiles() == null));
 //
-        QnaQBoard vo = QnaQBoard.builder()
-                .userId(dto.getUserId())
-                .userNickname(dto.getUserNickname())
-                .qnaQCode(dto.getQnaQCode())
-                .qnaQTitle(dto.getQnaQTitle())
-                .qnaQContent(dto.getQnaQContent())
-                .build();
-        log.info("update vo : " + vo);
-        log.info("=====================================");
-        service.update(vo);
+            QnaQBoard vo = QnaQBoard.builder()
+                    .userId(dto.getUserId())
+                    .userNickname(dto.getUserNickname())
+                    .qnaQCode(dto.getQnaQCode())
+                    .qnaQTitle(dto.getQnaQTitle())
+                    .qnaQContent(dto.getQnaQContent())
+                    .qnaQStatus("N")
+                    .build();
+            log.info("update vo : " + vo);
+            log.info("=====================================");
+            service.update(vo);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/question/{code}")
+    @DeleteMapping("/public/question/{code}")
     public ResponseEntity<QnaQBoardDTO> delete(@PathVariable(name="code") int code){
-        QnaQBoard result = service.view(code);
-        QnaQBoardDTO dto = QnaQBoardDTO.builder()
-                .qnaQCode(result.getQnaQCode())
-                .qnaQTitle(result.getQnaQTitle())
-                .qnaQContent(result.getQnaQContent())
-                .userId(result.getUserId())
-                .userNickname(result.getUserNickname())
-                .images(service.viewImg(code))
-                .build();
+        List<QnaQBoardImage> list = service.viewImg(code);
 
-        Object principal = authentication();
+        if(list != null){
+            for(QnaQBoardImage item : list){
+                File file = new File(item.getQnaQUrl());
+                file.delete();
 
-        if(principal instanceof User) {
-
-            User user = (User) principal;
-            if (user.getUserId().equals(dto.getUserId()) || user.getUserRole().equals("ROLE_ADMIN")) {
-                if(dto.getImages()!= null){
-//                if (prev.getImages() != null) {
-                    QnaQBoard target = service.delete(code);
-                    return (dto != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(dto) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-                }
+                service.deleteImg(item.getQnaQImgCode());
             }
+
         }
-        return ResponseEntity.badRequest().build();
+
+        service.delete(code);
+//        QnaQBoardDTO dto = QnaQBoardDTO.builder()
+//                .qnaQCode(result.getQnaQCode())
+//                .qnaQTitle(result.getQnaQTitle())
+//                .qnaQContent(result.getQnaQContent())
+//                .userId(result.getUserId())
+//                .userNickname(result.getUserNickname())
+//                .images(service.viewImg(code))
+//                .build();
+
+//        Object principal = authentication();
+
+//        if(principal instanceof User) {
+//
+//            User user = (User) principal;
+//            if (user.getUserId().equals(dto.getUserId()) || user.getUserRole().equals("ROLE_ADMIN")) {
+//                if(dto.getImages()!= null){
+////                if (prev.getImages() != null) {
+//                    QnaQBoard target = service.delete(code);
+//                    return (dto != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(dto) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//                }
+//            }
+//        }
+//        if(dto.getImages()!= null){
+////                if (prev.getImages() != null) {
+//            QnaQBoard target = service.delete(code);
+//            return (dto != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(dto) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
