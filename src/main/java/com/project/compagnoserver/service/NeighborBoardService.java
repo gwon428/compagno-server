@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -49,6 +50,14 @@ public class NeighborBoardService {
                 .fetch();
     }
 
+    // 게시글 조회수
+    @Transactional
+    public void neighborViewCount(int code) {
+        queryFactory.update(qNeighborBoard)
+                .set(qNeighborBoard.neighborBoardViewCount, qNeighborBoard.neighborBoardViewCount.add(1))
+                .where(qNeighborBoard.neighborBoardCode.eq(code))
+                .execute();
+    }
 
     // 게시글 등록
     public NeighborBoard neighborCreate(NeighborBoard neighborBoardVo) {
@@ -58,6 +67,13 @@ public class NeighborBoardService {
         neighborBoardImageDAO.save(neighborBoardImageVo);
     }
 
+    // 게시글 수정
+    public NeighborBoard neighborUpdate(NeighborBoard neighborBoardVo) {
+        if(neighborBoardDAO.existsById(neighborBoardVo.getNeighborBoardCode())) {
+            return neighborBoardDAO.save(neighborBoardVo);
+        }
+        return null;
+    }
 
     // 게시글 삭제
     public void neighborDeleteImg(int code) {

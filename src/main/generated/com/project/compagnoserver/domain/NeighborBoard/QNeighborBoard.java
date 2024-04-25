@@ -42,7 +42,7 @@ public class QNeighborBoard extends EntityPathBase<NeighborBoard> {
 
     public final StringPath neighborLocation = createString("neighborLocation");
 
-    public final com.project.compagnoserver.domain.user.QUser user;
+    public final com.project.compagnoserver.domain.user.QUser userId;
 
     public QNeighborBoard(String variable) {
         this(NeighborBoard.class, forVariable(variable), INITS);
@@ -63,7 +63,7 @@ public class QNeighborBoard extends EntityPathBase<NeighborBoard> {
     public QNeighborBoard(Class<? extends NeighborBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.animalCategoryCode = inits.isInitialized("animalCategoryCode") ? new com.project.compagnoserver.domain.Animal.QAnimalCategory(forProperty("animalCategoryCode")) : null;
-        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
+        this.userId = inits.isInitialized("userId") ? new com.project.compagnoserver.domain.user.QUser(forProperty("userId")) : null;
     }
 
 }

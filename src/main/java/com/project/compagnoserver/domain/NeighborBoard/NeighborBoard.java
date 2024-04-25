@@ -41,7 +41,7 @@ public class NeighborBoard {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User userId;
 
     @Column(name = "neighbor_view_count")
     private int neighborBoardViewCount;

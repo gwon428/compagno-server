@@ -41,21 +41,21 @@ public class SitterBoardController {
 
 
     // 전체 보기
-    @GetMapping("/sitter")
+    @GetMapping("public/sitter")
     public ResponseEntity<List<SitterBoard>> sitterViewAll() {
         List<SitterBoard> sitterList = sitterBoardService.sitterViewAll();
         return ResponseEntity.status(HttpStatus.OK).body(sitterList);
     }
 
     // 상세 보기
-    @GetMapping("/sitter/{code}")
+    @GetMapping("public/sitter/{code}")
     public ResponseEntity<SitterBoard> sitterView(@PathVariable("code") int code) {
         SitterBoard sitterBoard = sitterBoardService.sitterView(code);
         return ResponseEntity.status(HttpStatus.OK).body(sitterBoard);
     }
 
     // 글 등록
-    @PostMapping("/sitter")
+    @PostMapping("sitter")
     public ResponseEntity<SitterBoard> sitterCreate(SitterBoardDTO sitterBoardDTO) throws IOException {
 
         Object principal = authentication();
@@ -93,7 +93,7 @@ public class SitterBoardController {
     }
 
     // 글 수정
-    @PutMapping("/sitter")
+    @PutMapping("sitter")
     public ResponseEntity<SitterBoard> sitterUpdate(SitterBoard sitterBoard) {
         sitterBoardService.sitterUpdate(sitterBoard);
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -101,7 +101,7 @@ public class SitterBoardController {
 
     // 글 삭제
     @Transactional
-    @DeleteMapping("/sitter/{code}")
+    @DeleteMapping("sitter/{code}")
     public ResponseEntity<SitterBoard> sitterDelete(@PathVariable("code") int code) {
         // 이미지 삭제
         List<SitterBoardImage> uploadedImg = sitterBoardService.sitterViewImg(code);
@@ -138,7 +138,7 @@ public class SitterBoardController {
     }
 
     // 댓글 추가
-    @PostMapping("/sitter/comment")
+    @PostMapping("sitter/comment")
     public ResponseEntity sitterCommentCreate(@RequestBody SitterBoardComment sitterBoardComment) {
         Object principal = authentication();
 
@@ -152,7 +152,7 @@ public class SitterBoardController {
     }
 
     // 댓글 수정
-    @PutMapping("/sitter/comment")
+    @PutMapping("sitter/comment")
     public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterCommentDTO sitterCommentDTO) {
         log.info("dto : " + sitterCommentDTO);
         SitterBoardComment comment = sitterBoardService.sitterCommentview(sitterCommentDTO.getSitterCommentCode());
@@ -167,14 +167,14 @@ public class SitterBoardController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("/sitter/comment/{commentCode}")
+    @DeleteMapping("sitter/comment/{commentCode}")
     public ResponseEntity<SitterBoardComment> sitterCommentDelete(@PathVariable("commentCode") int commentCode) {
         sitterBoardService.sitterCommentDelete(commentCode);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 각 게시판에 대한 댓글 조회
-    @GetMapping("/sitter/{code}/comment")
+    @GetMapping("public/sitter/{code}/comment")
     public ResponseEntity<List<SitterCommentDTO>> sitterViewAllComment(@PathVariable(name = "code") int code) {
         log.info("code : " + code);
         List<SitterBoardComment> topList = sitterBoardService.getTopComments(code);

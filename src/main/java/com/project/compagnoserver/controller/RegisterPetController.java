@@ -44,42 +44,42 @@ public class RegisterPetController {
     }
 
     // faq 등록
-    @PostMapping("/register-pet/faq")
+    @PostMapping("register-pet/faq")
     public ResponseEntity faqInsert(@RequestBody RegisterPetFaq faq) {
         service.faqInsert(faq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // faq 전체 보기
-    @GetMapping("/register-pet/faq")
+    @GetMapping("public/register-pet/faq")
     public ResponseEntity<List<RegisterPetFaq>> faqSelect() {
         List<RegisterPetFaq> list = service.faqSelect();
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     // faq 한 개 보기
-    @GetMapping("/register-pet/faq/{faqCode}")
+    @GetMapping("public/register-pet/faq/{faqCode}")
     public ResponseEntity<RegisterPetFaq> faqSelect(@PathVariable("faqCode") int faqCode) {
         RegisterPetFaq faq = service.faqSelect(faqCode);
         return ResponseEntity.status(HttpStatus.OK).body(faq);
     }
 
     // faq 수정
-    @PutMapping("/register-pet/faq")
+    @PutMapping("register-pet/faq")
     public ResponseEntity faqUpdate(@RequestBody RegisterPetFaq faq) {
         service.faqUpdate(faq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // faq 삭제
-    @DeleteMapping("/register-pet/faq/{faqCode}")
+    @DeleteMapping("register-pet/faq/{faqCode}")
     public ResponseEntity faqDelete(@PathVariable("faqCode") int faqCode) {
         service.faqDelete(faqCode);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 //    // faq 공개글만 조회
-//    @GetMapping("/register-pet/faq")
+//    @GetMapping("register-pet/faq")
 //    public ResponseEntity<List<RegisterPetFaq>> getPublicFaq() {
 //        List<RegisterPetFaq> list = service.getPublicFaq();
 //        return ResponseEntity.status(HttpStatus.OK).body(list);
