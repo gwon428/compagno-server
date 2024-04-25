@@ -28,9 +28,10 @@ public class ProductBoardRecommend {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    @JsonIgnore
     private User user;
 
-    @Column(name = "product_board_code")
-    private int productBoardCode;
+    @ManyToOne
+    @JoinColumn(name="product_board_code")
+    @JsonIgnore
+    private ProductBoard productBoard;
 }

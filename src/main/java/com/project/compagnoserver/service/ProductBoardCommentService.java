@@ -54,7 +54,7 @@ public class ProductBoardCommentService {
     public List<ProductBoardComment> getTopLevelComments(int code) {
         return queryFactory.selectFrom(qProductBoardComment)
                 .where(qProductBoardComment.productParentCode.eq(0))
-                .where(qProductBoardComment.productBoardCode.eq(code))
+                .where(qProductBoardComment.productBoard.productBoardCode.eq(code))
                 .orderBy(qProductBoardComment.productCommentRegiDate.asc())
                 .fetch();
     }
@@ -64,7 +64,7 @@ public class ProductBoardCommentService {
 
         return queryFactory.selectFrom(qProductBoardComment)
                 .where(qProductBoardComment.productParentCode.eq(parent))
-                .where(qProductBoardComment.productBoardCode.eq(code))
+                .where(qProductBoardComment.productBoard.productBoardCode.eq(code))
                 .orderBy(qProductBoardComment.productCommentRegiDate.asc())
                 .fetch();
 

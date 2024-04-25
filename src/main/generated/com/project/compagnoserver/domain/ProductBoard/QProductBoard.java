@@ -24,6 +24,10 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public final com.project.compagnoserver.domain.Animal.QAnimalCategory animalCategory;
 
+    public final ListPath<ProductBoardBookmark, QProductBoardBookmark> bookmark = this.<ProductBoardBookmark, QProductBoardBookmark>createList("bookmark", ProductBoardBookmark.class, QProductBoardBookmark.class, PathInits.DIRECT2);
+
+    public final ListPath<ProductBoardComment, QProductBoardComment> comments = this.<ProductBoardComment, QProductBoardComment>createList("comments", ProductBoardComment.class, QProductBoardComment.class, PathInits.DIRECT2);
+
     public final ListPath<ProductBoardImage, QProductBoardImage> images = this.<ProductBoardImage, QProductBoardImage>createList("images", ProductBoardImage.class, QProductBoardImage.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> productBoardCode = createNumber("productBoardCode", Integer.class);
@@ -45,6 +49,8 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
     public final StringPath productName = createString("productName");
 
     public final NumberPath<Integer> productPrice = createNumber("productPrice", Integer.class);
+
+    public final ListPath<ProductBoardRecommend, QProductBoardRecommend> recommend = this.<ProductBoardRecommend, QProductBoardRecommend>createList("recommend", ProductBoardRecommend.class, QProductBoardRecommend.class, PathInits.DIRECT2);
 
     public final com.project.compagnoserver.domain.user.QUser user;
 
