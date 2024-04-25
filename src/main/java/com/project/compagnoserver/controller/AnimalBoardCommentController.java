@@ -101,7 +101,7 @@ public class AnimalBoardCommentController {
         return ResponseEntity.ok().build();
     }
     // 댓글 불러오기
-    @GetMapping("/animal-board/{animalBoardCode}/comment")
+    @GetMapping("/public/animal-board/{animalBoardCode}/comment")
     public ResponseEntity<List<AnimalBoardCommentDTO>> getAnimalBoardComments(@PathVariable(name = "animalBoardCode") int boardCode){
         List<AnimalBoardComment> topList = animalBoardCommentService.topLevelComments(boardCode);
         List<AnimalBoardCommentDTO> comments = new ArrayList<>();
