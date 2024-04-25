@@ -69,4 +69,7 @@ public class ProductBoard {
 
     @OneToMany(mappedBy = "productBoard")
     private List<ProductBoardComment> comments;
+
+    @OneToMany(mappedBy = "productBoard")
+    private List<ProductBoardBookmark> bookmark;
 }

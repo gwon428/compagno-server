@@ -24,6 +24,8 @@ public class QProductBoard extends EntityPathBase<ProductBoard> {
 
     public final com.project.compagnoserver.domain.Animal.QAnimalCategory animalCategory;
 
+    public final ListPath<ProductBoardBookmark, QProductBoardBookmark> bookmark = this.<ProductBoardBookmark, QProductBoardBookmark>createList("bookmark", ProductBoardBookmark.class, QProductBoardBookmark.class, PathInits.DIRECT2);
+
     public final ListPath<ProductBoardComment, QProductBoardComment> comments = this.<ProductBoardComment, QProductBoardComment>createList("comments", ProductBoardComment.class, QProductBoardComment.class, PathInits.DIRECT2);
 
     public final ListPath<ProductBoardImage, QProductBoardImage> images = this.<ProductBoardImage, QProductBoardImage>createList("images", ProductBoardImage.class, QProductBoardImage.class, PathInits.DIRECT2);
