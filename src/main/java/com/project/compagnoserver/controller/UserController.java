@@ -55,7 +55,7 @@ public class UserController {
                 .userEnrollDate(nowDate)
                 .userStatus("n")
                 .userRole("ROLE_USER")
-                .userImg(uploadPath + File.separator + "user" + File.separator + "defaultImage.jpg") // LostBoardComment 확인 위해
+                .userImg("user" + File.separator + "defaultImage.png") // LostBoardComment 확인 위해
                 .build();
 
         User result = userService.create(user);

@@ -116,7 +116,7 @@ public class AnimalBoardController {
     }
 
     // 자유게시판 - 글 한개보기 = 게시판 상세보기
-    @GetMapping("/public/animal-board/{animalBoardCode}")
+    @GetMapping("public/animal-board/{animalBoardCode}")
     public ResponseEntity<AnimalBoardDTO> viewDetail(@PathVariable(name = "animalBoardCode")int animalBoardCode){
         animalBoardService.boardView(animalBoardCode);
         AnimalBoard getBoard = animalBoardService.viewDetail(animalBoardCode);

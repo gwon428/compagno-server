@@ -30,16 +30,22 @@ public class AnimalBoardCommentController {
     @Autowired
     private AnimalBoardCommentService animalBoardCommentService;
 
-    // 게시글 댓글쓰기
+
+
+
+    public  Object Authentication(){
+        // 시큐리티에 담은 로그인한 사용자 정보 가져오기
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        return authentication.getPrincipal();
+    }
+    // 게시글 댓글쓰기 - 권한필요
     @PostMapping("/animal-board/comment")
     public ResponseEntity<AnimalBoardComment> writeComment(@RequestBody AnimalBoardCommentDTO dto) {
 
         log.info("dto : " + dto);
 
-        // 시큐리티에 담은 로그인한 사용자 정보 가져오기
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        Object principal = authentication.getPrincipal();
+        Object principal = Authentication();
 //
         if(principal instanceof  User){
             User user =(User) principal;
@@ -74,33 +80,43 @@ public class AnimalBoardCommentController {
     return ResponseEntity.badRequest().build();
     }
 
-    // 댓글 수정
+    // 댓글 수정 - 권한필요
     @PutMapping("/animal-board/comment")
     public ResponseEntity<AnimalBoardComment> updateComment(@RequestBody AnimalBoardCommentDTO dto){
         log.info("dto : " + dto);
-        AnimalBoardComment updateComment = AnimalBoardComment.builder()
-                .animalCommentCode(dto.getAnimalCommentCode())
-                .animalParentCode(dto.getAnimalParentCode())
-                .animalCommentContent(dto.getAnimalCommentContent())
-                .animalCommentDate(dto.getAnimalCommentDate())
-                .animalBoard(AnimalBoard.builder()
-                        .animalBoardCode(dto.getAnimalBoardCode())
-                        .build())
-                .user((User.builder()
-                        .userId(dto.getUser().getUserId())
-                        .userNickname(dto.getUser().getUserNickname())
-                        .build()))
-                .build();
-        animalBoardCommentService.writeComment(updateComment);
-        return ResponseEntity.ok().build();
+        Object principal = Authentication();
+        if(principal instanceof  User) {
+            User user = (User) principal;
+            AnimalBoardComment updateComment = AnimalBoardComment.builder()
+                    .animalCommentCode(dto.getAnimalCommentCode())
+                    .animalParentCode(dto.getAnimalParentCode())
+                    .animalCommentContent(dto.getAnimalCommentContent())
+                    .animalCommentDate(dto.getAnimalCommentDate())
+                    .animalBoard(AnimalBoard.builder()
+                            .animalBoardCode(dto.getAnimalBoardCode())
+                            .build())
+                    .user((User.builder()
+                            .userId(dto.getUser().getUserId())
+                            .userNickname(dto.getUser().getUserNickname())
+                            .build()))
+                    .build();
+            animalBoardCommentService.writeComment(updateComment);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
-    // 댓글삭제
+    // 댓글삭제 - 권한필요
     @DeleteMapping("/animal-board/comment/{animalCommentCode}")
     public ResponseEntity<?> deleteComment (@PathVariable(name = "animalCommentCode") int commentCode){
-        animalBoardCommentService.deleteComment(commentCode);
-        return ResponseEntity.ok().build();
+        Object principal = Authentication();
+        if(principal instanceof  User) {
+
+            animalBoardCommentService.deleteComment(commentCode);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
-    // 댓글 불러오기
+    // 댓글 불러오기 -권한 미필요
     @GetMapping("/public/animal-board/{animalBoardCode}/comment")
     public ResponseEntity<List<AnimalBoardCommentDTO>> getAnimalBoardComments(@PathVariable(name = "animalBoardCode") int boardCode){
         List<AnimalBoardComment> topList = animalBoardCommentService.topLevelComments(boardCode);
@@ -139,4 +155,11 @@ public class AnimalBoardCommentController {
         log.info("comments : " + comments);
         return ResponseEntity.ok(comments);
     }
+//    // 하위 댓글만 불러오기
+//    @GetMapping("/public/animal-board/{animalBoardCode}/comment")
+//    public ResponseEntity<List<AnimalBoardCommentDTO>> getBottomLevelComment(@PathVariable(name = "animalBoardCode") int boardCode){
+//        List<AnimalBoardComment> topList = animalBoardCommentService.topLevelComments(boardCode);
+//        List<AnimalBoardCommentDTO> comments = new ArrayList<>();
+//        return ResponseEntity.ok().build();
+//    }
 }
