@@ -37,31 +37,41 @@ public class AnimalBoardCommentController {
         log.info("dto : " + dto);
 
         // 시큐리티에 담은 로그인한 사용자 정보 가져오기
-//        SecurityContext securityContext = SecurityContextHolder.getContext();
-//        Authentication authentication = securityContext.getAuthentication();
-//        Object principal = authentication.getPrincipal();
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
 //
-//        if(principal instanceof  User){
-//            User user =(User) principal;
+        if(principal instanceof  User){
+            User user =(User) principal;
 //            log.info("user : " + user);
-            AnimalBoardComment comment = new AnimalBoardComment();
-            comment.setAnimalCommentContent(dto.getAnimalCommentContent());
-            comment.setAnimalCommentDate(nowDate);
-            comment.setAnimalParentCode(dto.getAnimalParentCode());
-            AnimalBoard board = new AnimalBoard();
-            board.setAnimalBoardCode(dto.getAnimalBoardCode()); // 어떤 글에 쓴 댓글
-            comment.setAnimalBoard(board);
+            AnimalBoardComment comment =AnimalBoardComment.builder()
+                    .animalCommentContent(dto.getAnimalCommentContent())
+                    .animalCommentDate(nowDate)
+                    .animalParentCode(dto.getAnimalParentCode())
+                    .animalBoard(AnimalBoard.builder()
+                            .animalBoardCode(dto.getAnimalBoardCode())
+                            .build())
+                    .user(User.builder()
+                            .userId(user.getUserId())
+                            .build())
+                    .build();
+//            comment.setAnimalCommentContent(dto.getAnimalCommentContent());
+//            comment.setAnimalCommentDate(nowDate);
+//            comment.setAnimalParentCode(dto.getAnimalParentCode());
+//            AnimalBoard board = new AnimalBoard();
+//            board.setAnimalBoardCode(dto.getAnimalBoardCode()); // 어떤 글에 쓴 댓글
+//            comment.setAnimalBoard(board);
+////            comment.setUser(user);
+//            User user = new User();
+//            user.setUserNickname(dto.getUser().getUserNickname());
+//            user.setUserId(dto.getUser().getUserId());
 //            comment.setUser(user);
-            User user = new User();
-            user.setUserNickname(dto.getUser().getUserNickname());
-            user.setUserId(dto.getUser().getUserId());
-            comment.setUser(user);
 
             AnimalBoardComment writtenComment = animalBoardCommentService.writeComment(comment);
 //            log.info("writtenComment : " + writtenComment);
             return ResponseEntity.ok().build(); // 댓글추가
-//        }
-//    return ResponseEntity.badRequest().build();
+        }
+    return ResponseEntity.badRequest().build();
     }
 
     // 댓글 수정
