@@ -1,9 +1,6 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.NeighborBoard.NeighborBoard;
-import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoard;
-import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoardBookmark;
-import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoardImage;
+import com.project.compagnoserver.domain.NeighborBoard.*;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardBookmarkDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardImageDAO;
@@ -38,4 +35,41 @@ public class NeighborBoardService {
     public List<NeighborBoard> neighborViewAll() {
         return neighborBoardDAO.findAll();
     }
+    public List<NeighborBoardImage> neighborViewAllImg(int code) {
+        return neighborBoardImageDAO.findByBoardCode(code);
+    }
+
+    // 상세 페이지
+    public NeighborBoard neighborView(int code) {
+        return neighborBoardDAO.findById(code).orElse(null);
+    }
+    public List<NeighborBoardImage> neighborViewImg(int code) {
+        return queryFactory.selectFrom(qNeighborBoardImage)
+                .where(qNeighborBoardImage.neighborBoard.neighborBoardCode.eq(code))
+                .fetch();
+    }
+
+
+    // 게시글 등록
+    public NeighborBoard neighborCreate(NeighborBoard neighborBoardVo) {
+        return neighborBoardDAO.save(neighborBoardVo);
+    }
+    public void neighborCreateImg(NeighborBoardImage neighborBoardImageVo) {
+        neighborBoardImageDAO.save(neighborBoardImageVo);
+    }
+
+
+    // 게시글 삭제
+    public void neighborDeleteImg(int code) {
+        if(neighborBoardImageDAO.existsById(code)) {
+            neighborBoardImageDAO.deleteById(code);
+        }
+    }
+    public void neighborDelete(int code) {
+        if(neighborBoardDAO.existsById(code)) {
+            neighborBoardDAO.deleteById(code);
+        }
+    }
+
+
 }

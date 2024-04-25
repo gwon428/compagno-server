@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -80,6 +81,17 @@ public class SitterBoardService {
                 .where(qSitterBoardImage.sitterBoard.sitterBoardCode.eq(code))
                 .execute();
     }
+
+
+    // 조회수
+    @Transactional
+    public void sitterViewCount(int code) {
+        queryFactory.update(qSitterBoard)
+                .set(qSitterBoard.sitterViewCount, qSitterBoard.sitterViewCount.add(1))
+                .where(qSitterBoard.sitterBoardCode.eq(code))
+                .execute();
+    }
+
 
 // ====================================== 댓글 ======================================
 

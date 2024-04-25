@@ -1,7 +1,9 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
+import com.project.compagnoserver.repo.RegisterPet.RegisterPetFaqDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -20,32 +22,31 @@ import java.util.*;
 @Slf4j
 public class XlsParsingService {
 
-    private String fileName = "동물등록 대행기관.xls";
+    private String instsFileName = "동물등록 대행기관.xls";
 
     @Autowired
-    private RegisterPetDAO dao;
+    private RegisterPetDAO registerPetDAO;
 
     public void saveToDb() {
 
         try {
-            List<Map<Object, Object>> excelData = readExcel(fileName);
-
-            for(Map<Object, Object> rowMap : excelData) {
+            // 대행기관 데이터
+            List<Map<Object, Object>> instsData = readExcel(instsFileName);
+            for(Map<Object, Object> rowMap : instsData) {
                 RegisterPet regiPet = new RegisterPet();
                 regiPet.setRegiInstName((String) rowMap.get("업체명"));
                 regiPet.setRegiInstOwner((String) rowMap.get("대표자명"));
                 regiPet.setRegiInstPhone((String) rowMap.get("전화번호"));
                 regiPet.setRegiInstAddr((String) rowMap.get("주소"));
 
-                log.info("RegisterPet : {}", regiPet);
-
                 // db 저장
-                dao.save(regiPet);
+                registerPetDAO.save(regiPet);
             }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public static List<Map<Object, Object>> readExcel(String fileName) throws IOException {

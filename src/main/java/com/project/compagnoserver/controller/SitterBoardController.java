@@ -4,6 +4,9 @@ import com.project.compagnoserver.domain.SitterBoard.*;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.SitterBoardService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -114,6 +115,27 @@ public class SitterBoardController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+
+    // 조회수
+    public void sitterViewCount(int code, HttpServletRequest req, HttpServletResponse res) {
+        Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
+
+        Cookie cookie = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("sitterBoardView"))
+                .findFirst()
+                .orElseGet(() -> {
+                    sitterBoardService.sitterViewCount(code);
+                    return new Cookie("sitterBoardView", "[" + code + "]");
+                });
+
+        if(!cookie.getValue().contains("[" + code + "]")) {
+            sitterBoardService.sitterViewCount(code);
+            cookie.setValue(cookie.getValue() + "[" + code + "]");
+        }
+        cookie.setPath("/");
+        cookie.setMaxAge(60*60*24);
+        res.addCookie(cookie);
+    }
 
     // 댓글 추가
     @PostMapping("/sitter/comment")

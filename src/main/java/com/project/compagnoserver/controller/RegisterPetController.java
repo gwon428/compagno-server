@@ -22,8 +22,8 @@ public class RegisterPetController {
     @Autowired
     private XlsParsingService xlsService;
 
-    // 등록 대행기관 데이터
-    @GetMapping("/upload")
+    // 등록 대행기관 데이터 파싱
+    @GetMapping("/instsUpload")
     public ResponseEntity saveToDb() {
         xlsService.saveToDb();
         return ResponseEntity.ok().build();
@@ -36,44 +36,49 @@ public class RegisterPetController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+    @GetMapping("/faqUpload")
+    public ResponseEntity saveToDbFaq() {
+        service.saveToDb();
+        return ResponseEntity.ok().build();
+    }
 
     // faq 등록
-    @PostMapping("/faq")
+    @PostMapping("/register-pet/faq")
     public ResponseEntity faqInsert(@RequestBody RegisterPetFaq faq) {
         service.faqInsert(faq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // faq 전체 보기
-    @GetMapping("/faq")
+    @GetMapping("/register-pet/faq")
     public ResponseEntity<List<RegisterPetFaq>> faqSelect() {
         List<RegisterPetFaq> list = service.faqSelect();
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     // faq 한 개 보기
-    @GetMapping("/faq/{faqCode}")
+    @GetMapping("/register-pet/faq/{faqCode}")
     public ResponseEntity<RegisterPetFaq> faqSelect(@PathVariable("faqCode") int faqCode) {
         RegisterPetFaq faq = service.faqSelect(faqCode);
         return ResponseEntity.status(HttpStatus.OK).body(faq);
     }
 
     // faq 수정
-    @PutMapping("/faq")
+    @PutMapping("/register-pet/faq")
     public ResponseEntity faqUpdate(@RequestBody RegisterPetFaq faq) {
         service.faqUpdate(faq);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // faq 삭제
-    @DeleteMapping("/faq/{faqCode}")
+    @DeleteMapping("/register-pet/faq/{faqCode}")
     public ResponseEntity faqDelete(@PathVariable("faqCode") int faqCode) {
         service.faqDelete(faqCode);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 //    // faq 공개글만 조회
-//    @GetMapping("/faq")
+//    @GetMapping("/register-pet/faq")
 //    public ResponseEntity<List<RegisterPetFaq>> getPublicFaq() {
 //        List<RegisterPetFaq> list = service.getPublicFaq();
 //        return ResponseEntity.status(HttpStatus.OK).body(list);
