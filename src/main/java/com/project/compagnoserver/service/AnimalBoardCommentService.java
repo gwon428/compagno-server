@@ -26,6 +26,19 @@ public class AnimalBoardCommentService {
         return animalBoardCommentDAO.save(vo);
     }
 
+    // 게시글 댓글 수정
+//    public AnimalBoardComment updateComment(AnimalBoardComment vo){
+//        if(animalBoardCommentDAO.existsById(vo.getAnimalCommentCode())){
+//            return animalBoardCommentDAO.save(vo);
+//        }
+//        return null;
+//
+//    }
+    // 게시글 댓글 삭제
+    public void deleteComment(int commentCode){
+        animalBoardCommentDAO.deleteById(commentCode);
+    }
+
     // 상위댓글 불러오기  boardCode=? parentCode =0
     public List<AnimalBoardComment> topLevelComments (int animalBoardCode){
         return jpaQueryFactory.selectFrom(qAnimalBoardComment)

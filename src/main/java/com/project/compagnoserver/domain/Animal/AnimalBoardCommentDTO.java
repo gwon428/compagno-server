@@ -18,6 +18,7 @@ import java.util.List;
 public class AnimalBoardCommentDTO {
 
     private int animalBoardCode; // 어떤 글에 댓글?
+    private AnimalBoard animalBoard;
     private int animalCommentCode;
     private String animalCommentContent;
     private Date animalCommentDate;
