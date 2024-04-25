@@ -30,9 +30,6 @@ public class AnimalBoardCommentController {
     @Autowired
     private AnimalBoardCommentService animalBoardCommentService;
 
-
-
-
     public  Object Authentication(){
         // 시큐리티에 담은 로그인한 사용자 정보 가져오기
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -46,7 +43,6 @@ public class AnimalBoardCommentController {
         log.info("dto : " + dto);
 
         Object principal = Authentication();
-//
         if(principal instanceof  User){
             User user =(User) principal;
 //            log.info("user : " + user);
@@ -54,6 +50,7 @@ public class AnimalBoardCommentController {
                     .animalCommentContent(dto.getAnimalCommentContent())
                     .animalCommentDate(nowDate)
                     .animalParentCode(dto.getAnimalParentCode())
+                    .animalCommentTag(dto.getAnimalCommentTag())
                     .animalBoard(AnimalBoard.builder()
                             .animalBoardCode(dto.getAnimalBoardCode())
                             .build())
@@ -92,6 +89,7 @@ public class AnimalBoardCommentController {
                     .animalParentCode(dto.getAnimalParentCode())
                     .animalCommentContent(dto.getAnimalCommentContent())
                     .animalCommentDate(dto.getAnimalCommentDate())
+                    .animalCommentTag(dto.getAnimalCommentTag())
                     .animalBoard(AnimalBoard.builder()
                             .animalBoardCode(dto.getAnimalBoardCode())
                             .build())
@@ -132,7 +130,9 @@ public class AnimalBoardCommentController {
                         .animalCommentContent(bottomReply.getAnimalCommentContent())
                         .animalCommentDate(bottomReply.getAnimalCommentDate())
                         .animalParentCode(bottomReply.getAnimalParentCode())
+                        .animalCommentTag(bottomReply.getAnimalCommentTag())
                         .user(UserDTO.builder()
+                                .userId(bottomReply.getUser().getUserId())
                                 .userNickname(bottomReply.getUser().getUserNickname())
                                 .userImg(bottomReply.getUser().getUserImg())
                                 .build())
@@ -145,6 +145,7 @@ public class AnimalBoardCommentController {
                     .animalCommentContent(topReply.getAnimalCommentContent())
                     .animalCommentDate(topReply.getAnimalCommentDate())
                     .user(UserDTO.builder()
+                            .userId(topReply.getUser().getUserId())
                             .userNickname(topReply.getUser().getUserNickname())
                             .userImg(topReply.getUser().getUserImg())
                             .build())

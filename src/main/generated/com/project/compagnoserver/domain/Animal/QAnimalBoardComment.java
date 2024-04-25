@@ -30,6 +30,8 @@ public class QAnimalBoardComment extends EntityPathBase<AnimalBoardComment> {
 
     public final DateTimePath<java.util.Date> animalCommentDate = createDateTime("animalCommentDate", java.util.Date.class);
 
+    public final StringPath animalCommentTag = createString("animalCommentTag");
+
     public final QAnimalBoardComment animalParent;
 
     public final NumberPath<Integer> animalParentCode = createNumber("animalParentCode", Integer.class);
