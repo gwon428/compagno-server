@@ -23,20 +23,21 @@ public class RegisterPetController {
     private XlsParsingService xlsService;
 
     // 등록 대행기관 데이터 파싱
-    @GetMapping("/instsUpload")
+    @GetMapping("public/instsUpload")
     public ResponseEntity saveToDb() {
         xlsService.saveToDb();
         return ResponseEntity.ok().build();
     }
 
     // 대행기관 전체보기
-    @GetMapping("/register-pet")
+    @GetMapping("public/register-pet")
     public ResponseEntity<List<RegisterPet>> instList() {
         List<RegisterPet> list = service.instList();
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
-    @GetMapping("/faqUpload")
+    // faq 파싱
+    @GetMapping("public/faqUpload")
     public ResponseEntity saveToDbFaq() {
         service.saveToDb();
         return ResponseEntity.ok().build();

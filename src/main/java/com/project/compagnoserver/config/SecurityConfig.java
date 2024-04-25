@@ -35,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/compagno/signUp").permitAll()
                         .requestMatchers("/compagno/signUp/**").permitAll()
                         .requestMatchers("/compagno/public/**").permitAll()
+                        .requestMatchers("/compagno/register-pet/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterAfter(jwtAuthenticationFilter, CorsFilter.class)
