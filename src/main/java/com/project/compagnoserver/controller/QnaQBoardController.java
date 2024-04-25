@@ -93,12 +93,14 @@ public class QnaQBoardController {
 
                         String fileName = file.getOriginalFilename();
                         String uuid = UUID.randomUUID().toString();
+//                        uploadPath = "http:////192.168.10.28:8081";
                         String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
 
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
                         img.setQnaQUrl(saveName.substring(27));
                         img.setQnaQCode(result.getQnaQCode());
+
                         service.createImg(img);
                         log.info("imageCREATED!!");
                     }
