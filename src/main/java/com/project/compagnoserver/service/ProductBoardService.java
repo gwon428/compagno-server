@@ -151,7 +151,7 @@ public class ProductBoardService {
     }
 
     // 검색, 전체보기
-    public Page<ProductBoard> searchProfuctBoard(ProductBoardSearchDTO dto, Pageable pageable) {
+    public Page<ProductBoard> searchProductBoard(ProductBoardSearchDTO dto, Pageable pageable) {
 
         String sort = dto.getSort();
 
@@ -207,10 +207,9 @@ public class ProductBoardService {
                 .fetch();
 
         // 게시판 수 카운트
-        Long count =queryFactory.select(qProductBoard.count())
-                .from(qProductBoard)
+        int count =queryFactory.selectFrom(qProductBoard)
                 .where(builder)
-                .fetchOne();
+                .fetch().size();
 
         // 페이징 처리
         return new PageImpl<>(list, pageable, count);

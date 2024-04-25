@@ -271,7 +271,7 @@ public class ProductBoardController {
         Pageable pageable = PageRequest.of(page - 1, 12);
         QProductBoard qProductBoard = QProductBoard.productBoard;
 
-        Page<ProductBoard> list = productBoard.searchProfuctBoard(dto, pageable);
+        Page<ProductBoard> list = productBoard.searchProductBoard(dto, pageable);
         return ResponseEntity.ok().body(list);
     }
     // 댓글 작성
