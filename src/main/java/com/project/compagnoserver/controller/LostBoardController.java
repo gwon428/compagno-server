@@ -52,28 +52,34 @@ public class LostBoardController {
     public ResponseEntity<LostBoard> create(LostBoardDTO dto) throws IOException {
 
         LostBoard lost = new LostBoard();
+//        lost.setLostBoardCode(dto.getLostBoardCode());
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
         lost.setUserNickname(dto.getUserNickname());
         lost.setUserPhone(dto.getUserPhone());
 //        lost.setLostTitle(dto.getLostTitle());
-        lost.setLostAnimalImage(dto.getLostAnimalImage());
+//        lost.setLostAnimalImage(dto.getLostAnimalImage());
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
         lost.setLostLocation(dto.getLostLocation());
+        lost.setLostLocationDetail(dto.getLostLocationDetail());
         lost.setLostAnimalKind(dto.getLostAnimalKind());
         lost.setLostAnimalColor(dto.getLostAnimalColor());
         lost.setLostAnimalGender(dto.getLostAnimalGender());
         lost.setLostAnimalAge(dto.getLostAnimalAge());
         lost.setLostAnimalFeature(dto.getLostAnimalFeature());
         lost.setLostAnimalRFID(dto.getLostAnimalRFID());
+        lost.setLostRegiDate(dto.getLostRegiDate());
 
         LostBoard result = service.create(lost);
+        log.info("dto : " + dto);
+        log.info("getImagessss : " + dto.getImages());
         if(dto.getImages()!=null){
             log.info("getImages : " + dto.getImages());
+
             for(MultipartFile file : dto.getImages()){
                 if(!file.getOriginalFilename().equals("")){
-                    log.info("originName: " + file.getOriginalFilename());
+                    //log.info("originName: " + file.getOriginalFilename());
                     LostBoardImage images = new LostBoardImage();
 
                     String fileName = file.getOriginalFilename();
@@ -82,8 +88,14 @@ public class LostBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
+                    if(result.getLostAnimalImage() == null){
+                        result.setLostAnimalImage(saveName);
+                        log.info("result.대표사진 : ");
+                    }
+                    
                     images.setLostImage(saveName);
                     images.setLostBoardCode(result);
+                    
                     service.createImages(images);
                 }
             }
@@ -94,7 +106,8 @@ public class LostBoardController {
     }
     // 보기------------------------------------------------------------------------------
     // 전체 보기 -------------------
-    @GetMapping("/lostBoard")
+    @GetMapping("/public/lostBoard")
+
     public ResponseEntity<List<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page){
         Sort sort = Sort.by("lostBoardCode").descending();
         Pageable pageable = PageRequest.of(page-1, 12, sort);
@@ -104,7 +117,7 @@ public class LostBoardController {
 
 
     // 하나 보기 --------------------
-    @GetMapping("/lostBoard/{lostBoardCode}")
+    @GetMapping("/public/lostBoard/{lostBoardCode}")
     public ResponseEntity<LostBoard> view(@PathVariable(name="lostBoardCode")int lostBoardCode){
         LostBoard lost = service.view(lostBoardCode);
         return ResponseEntity.status(HttpStatus.OK).body(lost);
@@ -114,7 +127,7 @@ public class LostBoardController {
     // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
     // 정렬 보기 -----------------------
     // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
-    @GetMapping("/lostBoard/search")
+    @GetMapping("/public/lostBoard/search")
     public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
                                                         @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
                                                         @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
@@ -200,7 +213,7 @@ public class LostBoardController {
 
         LostBoard prev = service.view(dto.getLostBoardCode());
         LostBoard lost = service.view(dto.getLostBoardCode());
-//        LostBoard lost = new LostBoard();
+
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
         lost.setUserNickname(dto.getUserNickname());
@@ -210,16 +223,13 @@ public class LostBoardController {
         lost.setLostAnimalName(dto.getLostAnimalName());
         lost.setLostDate(dto.getLostDate());
         lost.setLostLocation(dto.getLostLocation());
+        lost.setLostLocationDetail(dto.getLostLocationDetail());
         lost.setLostAnimalKind(dto.getLostAnimalKind());
         lost.setLostAnimalColor(dto.getLostAnimalColor());
         lost.setLostAnimalGender(dto.getLostAnimalGender());
         lost.setLostAnimalAge(dto.getLostAnimalAge());
         lost.setLostAnimalFeature(dto.getLostAnimalFeature());
         lost.setLostAnimalRFID(dto.getLostAnimalRFID());
-
-//        LostBoard prev = service.view(dto.getLostBoardCode());
-        //LostBoard result = service.create(lost);
-
 
 
         LostBoard result = service.update(lost);
@@ -355,8 +365,6 @@ public class LostBoardController {
         LostBoardComment vo = comment.viewComment(dto.getLostCommentCode());
         log.info("vo : " + vo.getCommentContent());
         vo.setCommentContent(dto.getCommentContent());
-//        LostBoardComment vo = new LostBoardComment();
-//        vo.setCommentContent(dto.getCommentContent());
         LostBoardComment result = comment.update(vo);
         return (result != null) ?
                 ResponseEntity.status(HttpStatus.ACCEPTED).body(result)

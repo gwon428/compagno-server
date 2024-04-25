@@ -40,8 +40,9 @@ public class LostBoard {
 //    @Column(name="lost_title")
 //    private String lostTitle;
 
+
     @Column(name="lost_regi_date")
-    private Timestamp lostRegiDate;
+    private Date lostRegiDate;
 
     @Column(name="lost_view_count")
     private int lostViewCount;
@@ -59,6 +60,9 @@ public class LostBoard {
     @Column(name="lost_location")
     private String lostLocation;
 
+    @Column(name="lost_location_detail")
+    private String lostLocationDetail;
+
     @Column(name="lost_animal_kind")
     private String lostAnimalKind;
 
@@ -75,7 +79,7 @@ public class LostBoard {
     private String lostAnimalFeature;
 
     @Column(name="lost_animal_RFID")
-    private int lostAnimalRFID;
+    private String lostAnimalRFID;
 
     @OneToMany(mappedBy = "lostBoardCode")
     private List<LostBoardImage> images;

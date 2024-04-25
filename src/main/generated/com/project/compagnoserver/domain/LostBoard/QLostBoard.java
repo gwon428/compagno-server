@@ -36,7 +36,7 @@ public class QLostBoard extends EntityPathBase<LostBoard> {
 
     public final StringPath lostAnimalName = createString("lostAnimalName");
 
-    public final NumberPath<Integer> lostAnimalRFID = createNumber("lostAnimalRFID", Integer.class);
+    public final StringPath lostAnimalRFID = createString("lostAnimalRFID");
 
     public final NumberPath<Integer> lostBoardCode = createNumber("lostBoardCode", Integer.class);
 
@@ -44,7 +44,9 @@ public class QLostBoard extends EntityPathBase<LostBoard> {
 
     public final StringPath lostLocation = createString("lostLocation");
 
-    public final DateTimePath<java.sql.Timestamp> lostRegiDate = createDateTime("lostRegiDate", java.sql.Timestamp.class);
+    public final StringPath lostLocationDetail = createString("lostLocationDetail");
+
+    public final DateTimePath<java.util.Date> lostRegiDate = createDateTime("lostRegiDate", java.util.Date.class);
 
     public final NumberPath<Integer> lostViewCount = createNumber("lostViewCount", Integer.class);
 
