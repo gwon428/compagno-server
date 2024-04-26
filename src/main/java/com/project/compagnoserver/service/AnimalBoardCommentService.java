@@ -4,6 +4,7 @@ import com.project.compagnoserver.domain.Animal.AnimalBoardComment;
 import com.project.compagnoserver.domain.Animal.AnimalBoardCommentDTO;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardComment;
 import com.project.compagnoserver.repo.Animal.AnimalBoardCommentDAO;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,14 @@ public class AnimalBoardCommentService {
 //    }
     // 게시글 댓글 삭제
     public void deleteComment(int commentCode){
+        // parentCode가 존재하는 자식댓글의 경우 개별적인 삭제가 가능
+        animalBoardCommentDAO.deleteById(commentCode); // 그냥 개별적으로 지울때.
+    }
+    public void deleteParentChildren(int commentCode){ // 부모의 commentCode
+        // parentCode가 0 인 부모댓글의 경우, 자식댓글도 함께 삭제를 해 줘야 함.
+        //자식 먼저 삭제
+        animalBoardCommentDAO.deleteChildrenComment(commentCode);
+        // 그후 부모 삭제
         animalBoardCommentDAO.deleteById(commentCode);
     }
 

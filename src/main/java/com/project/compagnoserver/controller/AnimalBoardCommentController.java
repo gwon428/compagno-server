@@ -6,6 +6,7 @@ import com.project.compagnoserver.domain.Animal.AnimalBoardCommentDTO;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.AnimalBoardCommentService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -104,12 +105,18 @@ public class AnimalBoardCommentController {
         return ResponseEntity.badRequest().build();
     }
     // 댓글삭제 - 권한필요
-    @DeleteMapping("/animal-board/comment/{animalCommentCode}")
-    public ResponseEntity<?> deleteComment (@PathVariable(name = "animalCommentCode") int commentCode){
+    @Transactional
+    @PostMapping("/animal-board/deleteComment")
+    public ResponseEntity<?> deleteComment (@RequestBody AnimalBoardCommentDTO commentCodes){
+        log.info("부모자식 : " + commentCodes);
         Object principal = Authentication();
         if(principal instanceof  User) {
+            if(commentCodes.getAnimalParentCode()!=0){ // 부모코드가 0이 아니면, 즉 자식댓글일때
+                animalBoardCommentService.deleteComment(commentCodes.getAnimalCommentCode());
+            } else{ // 부모 코드가 0일때 - 즉 부모 댓글일때, 부모의 코드는 자식의 parentcode
+                animalBoardCommentService.deleteParentChildren(commentCodes.getAnimalCommentCode());
+            }
 
-            animalBoardCommentService.deleteComment(commentCode);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();

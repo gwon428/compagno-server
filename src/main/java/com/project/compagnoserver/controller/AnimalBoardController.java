@@ -48,19 +48,20 @@ public class AnimalBoardController {
     Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
 
 
-
-
-
+    public  Object Authentication(){
+        // 시큐리티에 담은 로그인한 사용자 정보 가져오기
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        return authentication.getPrincipal();
+    }
 
 
     // 자유게시판 글쓰기
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> write(@RequestBody AnimalBoardDTO dto) throws IOException {
         log.info("dto : " + dto);
-        // 시큐리티에 담은 로그인한 사용자 정보 가져오기
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        Authentication authentication = securityContext.getAuthentication();
-        Object principal = authentication.getPrincipal();
+
+        Object principal = Authentication();
         if(principal instanceof User) {
             User user = (User) principal;
             // 글작성
@@ -128,8 +129,10 @@ public class AnimalBoardController {
                 .animalBoardView(getBoard.getAnimalBoardView())
                 .animalMainImage(getBoard.getAnimalMainImage())
                 .user(UserDTO.builder()
+                        .userId(getBoard.getUser().getUserId())
                         .userNickname(getBoard.getUser().getUserNickname())
                         .userImg(getBoard.getUser().getUserImg())
+                        .userRole(getBoard.getUser().getUserRole())
                         .build())
                 .animalCategory(getBoard.getAnimalCategory())
                 .build();
