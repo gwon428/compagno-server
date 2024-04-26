@@ -49,26 +49,30 @@ public class QnaQBoardController {
         return authentication.getPrincipal();
     }
     // 질문 등록
-    @PostMapping("/public/question")
+    @PostMapping("/question")
     public ResponseEntity<QnaQBoardDTO> create(QnaQBoardDTO dto) throws IOException {
 
+        log.info("dto : " + dto);
         Object principal = authentication();
 
-//        QnaQBoard vo = new QnaQBoard();
+        QnaQBoard vo = new QnaQBoard();
 
-//        if(principal instanceof User){
-//
-//            User user = (User) principal;
+        log.info("principal" + principal);
+        if(principal instanceof User) {
 
-//            vo.setUserId(user.getUserId());
-//            vo.setUserNickname(user.getUserNickname());
+            log.info("유저 있엉");
 
-//            vo.setQnaQCode(dto.getQnaQCode());
-//            vo.setQnaQTitle(dto.getQnaQTitle());
-//            vo.setQnaQContent(dto.getQnaQContent());
+            User user = (User) principal;
+
+            vo.setUserId(user.getUserId());
+            vo.setUserNickname(user.getUserNickname());
+
+            vo.setQnaQCode(dto.getQnaQCode());
+            vo.setQnaQTitle(dto.getQnaQTitle());
+            vo.setQnaQContent(dto.getQnaQContent());
 
             // 비밀글의 경우
-            if(dto.getSecret() == null || dto.getSecret().equals("")){
+            if (dto.getSecret() == null || dto.getSecret().equals("")) {
                 log.info("dto : " + dto);
                 dto.setSecret("");
 //                log.info("secret : " + dto.getSecret());
@@ -78,17 +82,17 @@ public class QnaQBoardController {
             }
 
             QnaQBoard result = service.create(QnaQBoard.builder()
-                            .qnaQContent(dto.getQnaQContent())
-                            .qnaQTitle(dto.getQnaQTitle())
-                            .userNickname(dto.getUserNickname())
-                            .userId(dto.getUserId())
-                            .secret(dto.getSecret())
+                    .qnaQContent(dto.getQnaQContent())
+                    .qnaQTitle(dto.getQnaQTitle())
+                    .userNickname(dto.getUserNickname())
+                    .userId(dto.getUserId())
+                    .secret(dto.getSecret())
                     .build());
 
-            if(dto.getFiles()!= null) {
+            if (dto.getFiles() != null) {
                 log.info("files 있음");
                 for (MultipartFile file : dto.getFiles()) {
-                    if(file.getOriginalFilename() != "") {
+                    if (file.getOriginalFilename() != "") {
                         QnaQBoardImage img = new QnaQBoardImage();
 
                         String fileName = file.getOriginalFilename();
@@ -99,18 +103,16 @@ public class QnaQBoardController {
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
                         img.setQnaQUrl(saveName.substring(27));
-                        img.setQnaQCode(result.getQnaQCode());
+                        img.setQnaQCode(dto.getQnaQCode());
 
                         service.createImg(img);
                         log.info("imageCREATED!!");
                     }
                 }
             }
-
-
-            return result != null ? ResponseEntity.status(HttpStatus.CREATED).build() :
-                    ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
+        }
+        log.info("heyyyyyyyy");
+            return null;
     }
 
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
