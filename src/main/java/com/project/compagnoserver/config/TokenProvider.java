@@ -31,6 +31,7 @@ public class TokenProvider {
                         "userPhone", user.getUserPhone(),
                         "userEmail", user.getUserEmail(),
                         "userStatus",user.getUserStatus()
+
                 ))
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS))) // 로그인 토큰 유지기간 1일
