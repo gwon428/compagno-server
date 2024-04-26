@@ -53,19 +53,18 @@ public class QnaQBoardController {
     public ResponseEntity<QnaQBoardDTO> create(QnaQBoardDTO dto) throws IOException {
 
         log.info("dto : " + dto);
-        Object principal = authentication();
+//        Object principal = authentication();
 
         QnaQBoard vo = new QnaQBoard();
 
-        log.info("principal" + principal);
-        if(principal instanceof User) {
+//        if(principal instanceof User) {
 
             log.info("유저 있엉");
 
-            User user = (User) principal;
+//            User user = (User) principal;
 
-            vo.setUserId(user.getUserId());
-            vo.setUserNickname(user.getUserNickname());
+            vo.setUserId(dto.getUserId());
+            vo.setUserNickname(dto.getUserNickname());
 
             vo.setQnaQCode(dto.getQnaQCode());
             vo.setQnaQTitle(dto.getQnaQTitle());
@@ -110,9 +109,9 @@ public class QnaQBoardController {
                     }
                 }
             }
-        }
+//        }
         log.info("heyyyyyyyy");
-            return null;
+            return result != null ? ResponseEntity.ok().body(dto) : ResponseEntity.badRequest().build();
     }
 
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
