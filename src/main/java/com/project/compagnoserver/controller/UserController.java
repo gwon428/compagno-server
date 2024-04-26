@@ -127,11 +127,21 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
    }
 
+
     @Transactional
-    @PutMapping("/mypage/myinfo/{userId}/quit")
-    public ResponseEntity quitUser(@PathVariable("userId") String id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
+    @PutMapping("/api/mypage/myinfo/quit")
+    public ResponseEntity quitUser(@RequestBody User vo) {
+
+            // result가 1 이면 회원탈퇴 성공, 0 이면 회원탈퇴 조건 미충족으로 실패
+           int result =  userService.deleteUser(vo.getUserId(), vo.getUserPwd(), passwordEncoder);
+           if(result == 1) {
+
+               return ResponseEntity.ok().build();
+           }
+           return ResponseEntity.badRequest().build();
+
+
+
    }
 
 }
