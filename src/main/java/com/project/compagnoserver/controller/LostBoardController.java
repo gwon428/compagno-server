@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.query.JpaParameters;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,14 +109,20 @@ public class LostBoardController {
     // 보기------------------------------------------------------------------------------
     // 전체 보기 -------------------
     @GetMapping("/public/lostBoard")
-
     public ResponseEntity<List<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page){
         Sort sort = Sort.by("lostBoardCode").descending();
         Pageable pageable = PageRequest.of(page-1, 12, sort);
         Page<LostBoard> list = service.viewAll(pageable);
+        // 기존에는 List<LostBoard>  // body(list.getContent)였음
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }
 
+    // paging 처리 안된 전체 보기
+    @GetMapping("/public/lostBoard/paging")
+    public ResponseEntity<List<LostBoard>> viewPaging(){
+        List<LostBoard> list = service.viewPaging();
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
 
     // 하나 보기 --------------------
     @GetMapping("/public/lostBoard/{lostBoardCode}")
@@ -281,6 +288,8 @@ public class LostBoardController {
 
         LostBoard lost = service.view(lostBoardCode);
         if(lost!=null){
+
+            service.imageDelete(lostBoardCode);
             service.delete(lostBoardCode);
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }

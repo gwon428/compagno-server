@@ -30,6 +30,9 @@ public class LostBoardService {
     public Page<LostBoard> viewAll(Pageable pageable) {return boardDAO.findAll(pageable);}
 
 
+    // 페이징 처리 안된 전체보기
+    public List<LostBoard> viewPaging(){return boardDAO.findAll();}
+
     // 하나 보기 ----------------------------
     public LostBoard view(int lostBoardCode) {return boardDAO.findById(lostBoardCode).orElse(null);}
 
