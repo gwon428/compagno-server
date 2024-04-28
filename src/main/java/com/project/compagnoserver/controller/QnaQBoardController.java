@@ -59,14 +59,11 @@ public class QnaQBoardController {
 
 //        if(principal instanceof User) {
 
-            log.info("유저 있엉");
-
 //            User user = (User) principal;
 
             vo.setUserId(dto.getUserId());
             vo.setUserNickname(dto.getUserNickname());
 
-            vo.setQnaQCode(dto.getQnaQCode());
             vo.setQnaQTitle(dto.getQnaQTitle());
             vo.setQnaQContent(dto.getQnaQContent());
 
@@ -74,8 +71,6 @@ public class QnaQBoardController {
             if (dto.getSecret() == null || dto.getSecret().equals("")) {
                 log.info("dto : " + dto);
                 dto.setSecret("");
-//                log.info("secret : " + dto.getSecret());
-//                log.info("vosecret : " + vo.getSecret());
             } else {
                 dto.setSecret(dto.getSecret());
             }
@@ -83,10 +78,12 @@ public class QnaQBoardController {
             QnaQBoard result = service.create(QnaQBoard.builder()
                     .qnaQContent(dto.getQnaQContent())
                     .qnaQTitle(dto.getQnaQTitle())
+                    .qnaQCode(dto.getQnaQCode())
                     .userNickname(dto.getUserNickname())
                     .userId(dto.getUserId())
                     .secret(dto.getSecret())
                     .build());
+            log.info("result : " + result);
 
             if (dto.getFiles() != null) {
                 log.info("files 있음");
@@ -102,7 +99,7 @@ public class QnaQBoardController {
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
                         img.setQnaQUrl(saveName.substring(27));
-                        img.setQnaQCode(dto.getQnaQCode());
+                        img.setQnaQCode(result.getQnaQCode());
 
                         service.createImg(img);
                         log.info("imageCREATED!!");
@@ -111,7 +108,7 @@ public class QnaQBoardController {
             }
 //        }
         log.info("heyyyyyyyy");
-            return result != null ? ResponseEntity.ok().body(dto) : ResponseEntity.badRequest().build();
+            return ResponseEntity.ok().build();
     }
 
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
@@ -193,6 +190,7 @@ public class QnaQBoardController {
                 List<String> imagesList = dto.getImages()
                         .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
                 log.info("imagesList : " + imagesList);
+
 
 
                 List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
