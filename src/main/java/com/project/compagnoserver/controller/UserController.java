@@ -139,9 +139,6 @@ public class UserController {
                return ResponseEntity.ok().build();
            }
            return ResponseEntity.badRequest().build();
-
-
-
    }
 
 }
