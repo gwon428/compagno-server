@@ -219,27 +219,39 @@ public class QnaABoardController {
     // 답변 삭제
     @DeleteMapping("/answer/{code}")
     public ResponseEntity<QnaABoard> delete(@PathVariable(name="code") int code){
-        QnaABoard prev = service.view(code);
+        List<QnaABoardImage> list = service.viewImg(code);
 
-        Object principal = authentication();
+        if(list != null){
+            for(QnaABoardImage item : list){
+                File file = new File(item.getQnaAUrl());
+                file.delete();
 
-        QnaABoard vo = new QnaABoard();
-
-        if(principal instanceof User) {
-            User user = (User) principal;
-
-            if (user.getUserRole().equals("ROLE_ADMIN") && prev.getUserId().equals(user.getUserId())) {
-
-                if (prev.getFiles() != null) {
-                    QnaABoard target = service.delete(code);
-
-                    QnaQBoard update = questionService.view(target.getQnaQCode());
-                    update.setQnaQStatus("N");
-                    questionService.update(update);
-                }
+                service.deleteImg(item.getQnaAImgCode());
             }
         }
-        return (prev != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(prev) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        QnaABoard target = service.delete(code);
+
+        QnaQBoard update = questionService.view(target.getQnaQCode());
+        update.setQnaQStatus("N");
+        questionService.update(update);
+
+
+//        Object principal = authentication();
+
+//        QnaABoard vo = new QnaABoard();
+
+//        if(principal instanceof User) {
+//
+//                if (prev.getFiles() != null) {
+//                    QnaABoard target = service.delete(code);
+//
+//                    QnaQBoard update = questionService.view(target.getQnaQCode());
+//                    update.setQnaQStatus("N");
+//                    questionService.update(update);
+//                }
+//        }
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

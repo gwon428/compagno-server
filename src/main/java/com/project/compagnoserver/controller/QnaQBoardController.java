@@ -254,7 +254,7 @@ public class QnaQBoardController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/public/question/{code}")
+    @DeleteMapping("/question/{code}")
     public ResponseEntity<QnaQBoardDTO> delete(@PathVariable(name="code") int code){
         List<QnaQBoardImage> list = service.viewImg(code);
 
