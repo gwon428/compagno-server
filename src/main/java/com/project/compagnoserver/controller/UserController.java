@@ -15,6 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -141,6 +144,32 @@ public class UserController {
            return ResponseEntity.badRequest().build();
    }
 
+   // 프로필사진 변경
+   @Transactional
+    @PutMapping("/api/mypage/myinfo/updatePhoto")
+    public ResponseEntity changePhoto(UserDTO dto) throws IOException {
 
+
+        if(!dto.getFile().isEmpty()) {
+            String fileName = dto.getFile().getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+
+            //
+
+            String saveName = "user" + File.separator + uuid + "_" + fileName;
+
+            String saveNameWithPath = uploadPath + File.separator + "user" + File.separator + uuid + "_" + fileName;
+
+            Path savePath = Paths.get(saveNameWithPath);
+            dto.getFile().transferTo(savePath);
+
+            userService.changeProfilePhoto(saveName, dto.getUserId());
+        } else if(dto.getFile().isEmpty()) {
+            String ifPhotoEmpty = "user" + File.separator + "defaultImage.png";
+            userService.changeProfilePhoto(ifPhotoEmpty, dto.getUserId());
+        }
+        return ResponseEntity.ok().build();
+
+    }
 
 }

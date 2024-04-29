@@ -64,6 +64,11 @@ public class UserService {
         return 0;
     }
 
+    // 프로필사진 변경
+    public void changeProfilePhoto(String photo, String id) {
+        userDao.changeProfilePhoto(photo, id);
+
+    }
 
 
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -28,5 +29,7 @@ public class UserDTO {
     private String userEmail;
 
     private String userStatus;
+
+    private MultipartFile file;
 
 }
