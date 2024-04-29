@@ -24,6 +24,7 @@ public class OneDayClassService {
         return dao.findAll();
     }
 
+
     // 클래스 코드로 1명 찾기
     public ClassBoard view(int odcCode){
     return dao.findById(odcCode).orElse(null);
@@ -41,6 +42,5 @@ public class OneDayClassService {
         if (dao.existsById(odcCode)){
             dao.deleteById(odcCode);
         };
-
     }
 }
