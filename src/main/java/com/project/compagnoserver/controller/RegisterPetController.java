@@ -1,5 +1,7 @@
 package com.project.compagnoserver.controller;
 
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
+import com.project.compagnoserver.domain.Parsing.LocationParsingDTO;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
 import com.project.compagnoserver.service.RegisterPetService;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -89,4 +92,53 @@ public class RegisterPetController {
 //        List<RegisterPetFaq> list = service.getPublicFaq();
 //        return ResponseEntity.status(HttpStatus.OK).body(list);
 //    }
+
+
+    // ====================================== Location ======================================
+
+//    // 전체 시도/시군구 조회
+//    @GetMapping("public/location")
+//    public ResponseEntity<List<LocationParsingDTO>> viewAllLocation() {
+//        List<LocationParsing> provinceList = sitterBoardService.getProvinces();
+//        List<LocationParsingDTO> response = new ArrayList<>();
+//
+//        for(LocationParsing province : provinceList) {
+//            List<LocationParsing> districtList = sitterBoardService.getDistricts(province.getLocationCode());
+//
+//            LocationParsingDTO dto = LocationParsingDTO.builder()
+//                    .locationCode(province.getLocationCode())
+//                    .locationName(province.getLocationName())
+//                    .districts(districtList)
+//                    .build();
+//            response.add(dto);
+//        }
+//
+//        return ResponseEntity.ok(response);
+//    }
+
+
+
+// ====================================== Location ======================================
+
+    // 시도 조회
+    @GetMapping("public/location/province")
+    public ResponseEntity<List<LocationParsing>> viewProvince() {
+        return ResponseEntity.ok(service.getProvinces());
+    }
+
+    // 시도 선택에 따른 시군구 조회
+    @GetMapping("public/location/district/{code}")
+    public ResponseEntity<List<LocationParsingDTO>> viewDistrict(@PathVariable(name="code") int code) {
+        List<LocationParsing> districts = service.getDistricts(code);
+        List<LocationParsingDTO> districtsDTO = new ArrayList<>();
+
+        for(LocationParsing district : districts) {
+            LocationParsingDTO dto = LocationParsingDTO.builder()
+                    .locationCode(district.getLocationCode())
+                    .locationName(district.getLocationName())
+                    .build();
+            districtsDTO.add(dto);
+        }
+        return ResponseEntity.ok(districtsDTO);
+    }
 }

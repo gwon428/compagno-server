@@ -3,6 +3,7 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.NeighborBoard.*;
 import com.project.compagnoserver.domain.Parsing.LocationParsing;
+import com.project.compagnoserver.domain.Parsing.LocationParsingDTO;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.NeighborBoardService;
@@ -262,6 +263,31 @@ public class NeighborBoardController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         return authentication != null ? authentication.getPrincipal() : null;
+    }
+
+
+    // ====================================== Location ======================================
+
+    // 시도 조회
+    @GetMapping("public/location/province")
+    public ResponseEntity<List<LocationParsing>> viewProvince() {
+        return ResponseEntity.ok(neighborBoardService.getProvinces());
+    }
+
+    // 시도 선택에 따른 시군구 조회
+    @GetMapping("public/location/district/{code}")
+    public ResponseEntity<List<LocationParsingDTO>> viewDistrict(@PathVariable(name="code") int code) {
+        List<LocationParsing> districts = neighborBoardService.getDistricts(code);
+        List<LocationParsingDTO> districtsDTO = new ArrayList<>();
+
+        for(LocationParsing district : districts) {
+            LocationParsingDTO dto = LocationParsingDTO.builder()
+                    .locationCode(district.getLocationCode())
+                    .locationName(district.getLocationName())
+                    .build();
+            districtsDTO.add(dto);
+        }
+        return ResponseEntity.ok(districtsDTO);
     }
 
 }

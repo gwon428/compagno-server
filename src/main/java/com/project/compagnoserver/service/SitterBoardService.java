@@ -128,12 +128,8 @@ public class SitterBoardService {
     // 댓글 수정
     public void sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
         if(sitterCommentDAO.existsById(sitterBoardComment.getSitterCommentCode())) {
-//            log.info("댓글 수정!!");
-//            log.info("code : " + sitterBoardComment.getSitterCommentCode());
             sitterCommentDAO.save(sitterBoardComment);
         } else {
-//            log.info("메롱");
-//            log.info("code : " + sitterBoardComment.getSitterCommentCode());
         }
     }
 

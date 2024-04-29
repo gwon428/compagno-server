@@ -1,11 +1,14 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.NeighborBoard.*;
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
+import com.project.compagnoserver.domain.Parsing.QLocationParsing;
 import com.project.compagnoserver.domain.SitterBoard.SitterBoardComment;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardBookmarkDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardCommentDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardDAO;
 import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardImageDAO;
+import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,10 @@ public class NeighborBoardService {
     @Autowired
     private NeighborBoardCommentDAO neighborBoardCommentDAO;
     private final QNeighborBoardComment qNeighborBoardComment = QNeighborBoardComment.neighborBoardComment;
+
+    @Autowired
+    private LocationParsingDAO locationParsingDAO;
+    private final QLocationParsing qLocationParsing = QLocationParsing.locationParsing;
 
 
     // 전체 보기
@@ -162,6 +169,22 @@ public class NeighborBoardService {
                 .fetch();
     }
 
+
+    // ====================================== Location ======================================
+
+    // 시도 조회
+    public List<LocationParsing> getProvinces() {
+        return queryFactory.selectFrom(qLocationParsing)
+                .where(qLocationParsing.locationParentCode.eq(0))
+                .fetch();
+    }
+
+    // 시도별 시군구 조회
+    public List<LocationParsing> getDistricts(int code) {
+        return queryFactory.selectFrom(qLocationParsing)
+                .where(qLocationParsing.locationParentCode.eq(code))
+                .fetch();
+    }
 
 
 

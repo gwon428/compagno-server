@@ -1,9 +1,13 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
+import com.project.compagnoserver.domain.Parsing.QLocationParsing;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
+import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetFaqDAO;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,10 +30,18 @@ import java.util.Map;
 public class RegisterPetService {
 
     @Autowired
+    private JPAQueryFactory queryFactory;
+
+    @Autowired
     private RegisterPetDAO dao;
 
     @Autowired
     private RegisterPetFaqDAO faqDao;
+
+    @Autowired
+    private LocationParsingDAO locationParsingDAO;
+    private final QLocationParsing qLocationParsing = QLocationParsing.locationParsing;
+
 
     // 대행기관 전체 보기
     public Page<RegisterPet> instList(Pageable pageable) {
@@ -70,9 +82,6 @@ public class RegisterPetService {
 //    public List<RegisterPetFaq> getPublicFaq() {
 //        return faqDao.findByregiFaqStatus("Y");
 //    }
-
-
-
 
 
 
@@ -144,5 +153,20 @@ private String faqFileName = "동물등록 FAQ.xls";
 
 
 
+// ====================================== Location ======================================
+
+    // 시도 조회
+    public List<LocationParsing> getProvinces() {
+        return queryFactory.selectFrom(qLocationParsing)
+                .where(qLocationParsing.locationParentCode.eq(0))
+                .fetch();
+    }
+
+    // 시도별 시군구 조회
+    public List<LocationParsing> getDistricts(int code) {
+        return queryFactory.selectFrom(qLocationParsing)
+                .where(qLocationParsing.locationParentCode.eq(code))
+                .fetch();
+    }
 
 }

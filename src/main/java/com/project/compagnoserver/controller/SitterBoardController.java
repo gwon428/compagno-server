@@ -58,13 +58,24 @@ public class SitterBoardController {
 
     // 전체 보기
     @GetMapping("public/sitter")
-    public ResponseEntity<Page<SitterBoard>> sitterViewAll(@RequestParam(name = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<SitterBoard>> sitterViewAll(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                           @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
         // 파라미터 값 정렬 받아서 그에 따라 조건문 걸고!
         Sort sort = null;
-        if() {
-            sort = Sort.by("sitterBoardCode").descending();
-        } else if() {
-
+        switch (sortBy) {
+            case 1: // 최신순
+                sort = Sort.by("sitterRegiDate").descending();
+                break;
+            case 2: // 조회순
+                sort = Sort.by("sitterViewCount").descending();
+                break;
+            case 3: // 북마크순
+                sort = Sort.by("sitterTitle").ascending();
+                break;
+            default:
+                // 기본 정렬 설정: 최신순
+                sort = Sort.by("sitterRegiDate").descending();
+                break;
         }
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
