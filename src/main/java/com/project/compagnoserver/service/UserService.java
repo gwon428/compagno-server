@@ -47,7 +47,7 @@ public class UserService {
         return checkNickResult;
     }
 
-    // 비밀번호 변경
+    // 개인정보 변경
   public void updateUser(User user) {
         userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
   }
@@ -64,16 +64,6 @@ public class UserService {
         return 0;
     }
 
-    // 기존 비멀번호 확인
-    public int checkPassword(String id, String password, PasswordEncoder encoder) {
-        User user = userDao.findById(id).orElse(null);
-        if(user!= null && encoder.matches(password, user.getPassword())) {
-            userDao.deleteUserInfo(id);
-            // 1 리턴하면 회원탈퇴 성공
-            return 1;
-        }
-        // 0 리턴하면 회원정보 틀려서 탈퇴 실패
-        return 0;
-    }
+
 
 }

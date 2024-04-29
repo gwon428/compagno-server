@@ -94,7 +94,7 @@ public class UserController {
     }
 
     // 마이페이지 내 정보 가져오기
-    @GetMapping("/myinfo/{id}")
+    @GetMapping("/api/mypage/myinfo/{id}")
     public ResponseEntity myPageInfo(@PathVariable("id") String id) {
         return ResponseEntity.ok(userService.myPageInfo(id));
     }
@@ -111,9 +111,9 @@ public class UserController {
         return ResponseEntity.ok(userService.checkUserNick(nickname));
     }
 
-    // 이메일 변경
+    // 개인정보 변경
     @Transactional
-    @PutMapping("/mypage/myinfo")
+    @PutMapping("/api/mypage/myinfo/update")
     public ResponseEntity updateUser(@RequestBody User vo) {
         User user = User.builder()
                 .userEmail(vo.getUserEmail())
@@ -127,7 +127,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
    }
 
-
+    // 회원 탈퇴
     @Transactional
     @PutMapping("/api/mypage/myinfo/quit")
     public ResponseEntity quitUser(@RequestBody User vo) {
@@ -140,5 +140,7 @@ public class UserController {
            }
            return ResponseEntity.badRequest().build();
    }
+
+
 
 }
