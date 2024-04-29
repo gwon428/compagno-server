@@ -15,9 +15,12 @@ public class SitterBoardDTO {
 
     private int sitterBoardCode;
 
-    private String sitterCategory;
+    private int sitterCategoryCode;
+    private SitterCategory sitterCategory;
 
-    private String sitterLocation;
+    private int animalCategoryCode;
+
+    private int locationCode;
 
     private String sitterTitle;
 
@@ -28,5 +31,6 @@ public class SitterBoardDTO {
     private Date sitterRegiDate;
 
     private List<MultipartFile> files;
+    private List<String> images;
 
 }

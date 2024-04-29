@@ -2,6 +2,7 @@ package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.NeighborBoard.*;
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.NeighborBoardService;
@@ -34,9 +35,6 @@ public class NeighborBoardController {
     @Autowired
     private NeighborBoardService neighborBoardService;
 
-//    @Autowired
-//    private NeighborBoardCommentService
-
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
@@ -64,10 +62,11 @@ public class NeighborBoardController {
         NeighborBoard neighbor = NeighborBoard.builder()
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(neighborBoardDTO.getAnimalCategoryCode()).build())
-                .neighborLocation((neighborBoardDTO.getNeighborLocation()))
+                .locationCode(LocationParsing.builder()
+                        .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-                .userId(userInfo())
+                .user(userInfo())
                 .build();
         NeighborBoard result = neighborBoardService.neighborCreate(neighbor);
 
@@ -139,10 +138,11 @@ public class NeighborBoardController {
                 .neighborBoardCode(neighborBoardDTO.getNeighborBoardCode())
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(neighborBoardDTO.getAnimalCategoryCode()).build())
-                .neighborLocation((neighborBoardDTO.getNeighborLocation()))
+                .locationCode(LocationParsing.builder()
+                        .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-                .userId(userInfo())
+                .user(userInfo())
                 .build();
         neighborBoardService.neighborCreate(neighbor);
 

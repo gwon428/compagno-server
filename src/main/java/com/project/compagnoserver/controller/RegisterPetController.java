@@ -5,6 +5,9 @@ import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
 import com.project.compagnoserver.service.RegisterPetService;
 import com.project.compagnoserver.service.XlsParsingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +34,11 @@ public class RegisterPetController {
 
     // 대행기관 전체보기
     @GetMapping("public/register-pet")
-    public ResponseEntity<List<RegisterPet>> instList() {
-        List<RegisterPet> list = service.instList();
-        return ResponseEntity.status(HttpStatus.OK).body(list);
+    public ResponseEntity<List<RegisterPet>> instList(@RequestParam(name = "page", defaultValue = "1") int page) {
+        Pageable pageable = PageRequest.of(page-1, 10);
+
+        Page<RegisterPet> list = service.instList(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }
 
     // faq 파싱

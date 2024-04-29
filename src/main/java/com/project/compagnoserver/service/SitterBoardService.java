@@ -1,12 +1,18 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
+import com.project.compagnoserver.domain.Parsing.QLocationParsing;
 import com.project.compagnoserver.domain.SitterBoard.*;
+import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardImageDAO;
+import com.project.compagnoserver.repo.SitterBoard.SitterCategoryDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterCommentDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +29,9 @@ public class SitterBoardService {
     private final QSitterBoard qSitterBoard = QSitterBoard.sitterBoard;
 
     @Autowired
+    private SitterCategoryDAO sitterCategoryDAO;
+
+    @Autowired
     private SitterBoardImageDAO sitterBoardImageDAO;
     private final QSitterBoardImage qSitterBoardImage = QSitterBoardImage.sitterBoardImage;
 
@@ -30,11 +39,22 @@ public class SitterBoardService {
     private SitterCommentDAO sitterCommentDAO;
     private final QSitterBoardComment qSitterBoardComment = QSitterBoardComment.sitterBoardComment;
 
+    @Autowired
+    private LocationParsingDAO locationParsingDAO;
+    private final QLocationParsing qLocationParsing = QLocationParsing.locationParsing;
+
+
+    // 카테고리 전체보기
+    public List<SitterCategory> sitterCategoryView() {
+        return sitterCategoryDAO.findAll();
+    }
+
 
     // 전체 보기
-    public List<SitterBoard> sitterViewAll() {
-        return sitterBoardDAO.findAll();
+    public Page<SitterBoard> sitterViewAll(Pageable pageable) {
+        return sitterBoardDAO.findAll(pageable);
     }
+    public List<SitterBoardImage> sitterViewAllImg(int code) {return sitterBoardImageDAO.findByBoardCode(code);}
 
 
     // 상세 보기
@@ -144,5 +164,19 @@ public class SitterBoardService {
     }
 
 
+// ====================================== Location ======================================
 
+    // 시도 조회
+    public List<LocationParsing> getProvinces() {
+        return queryFactory.selectFrom(qLocationParsing)
+                .where(qLocationParsing.locationParentCode.eq(0))
+                .fetch();
+    }
+
+    // 시도별 시군구 조회
+    public List<LocationParsing> getDistricts(int code) {
+        return queryFactory.selectFrom(qLocationParsing)
+                .where(qLocationParsing.locationParentCode.eq(code))
+                .fetch();
+    }
 }

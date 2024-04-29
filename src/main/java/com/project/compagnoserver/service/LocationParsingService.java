@@ -1,17 +1,15 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
-import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
+import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
-import com.project.compagnoserver.repo.RegisterPet.RegisterPetFaqDAO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -23,71 +21,32 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class RegisterPetService {
+public class LocationParsingService {
+
+    private String fileName = "location.xls";
 
     @Autowired
-    private RegisterPetDAO dao;
-
-    @Autowired
-    private RegisterPetFaqDAO faqDao;
-
-    // 대행기관 전체 보기
-    public Page<RegisterPet> instList(Pageable pageable) {
-        return dao.findAll(pageable);
-    }
-
-
-    // faq 등록
-    public void faqInsert(RegisterPetFaq faq) {
-        faqDao.save(faq);
-    }
-
-    // faq 전체 보기
-    public List<RegisterPetFaq> faqSelect() {
-        return faqDao.findAll();
-    }
-
-    // faq 한 개 보기
-    public RegisterPetFaq faqSelect(int faqCode) {
-        return faqDao.findById(faqCode).orElse(null);
-    }
-
-    // faq 수정
-    public void faqUpdate(RegisterPetFaq faq) {
-        if(faqDao.existsById(faq.getRegiFaqCode())) {
-            faqDao.save(faq);
-        }
-    }
-
-    // faq 삭제
-    public void faqDelete(int faqCode) {
-        if(faqDao.existsById(faqCode)) {
-            faqDao.deleteById(faqCode);
-        }
-    }
-
-//    // faq 공개글만 조회
-//    public List<RegisterPetFaq> getPublicFaq() {
-//        return faqDao.findByregiFaqStatus("Y");
-//    }
-
-
-
-
-
-
-//    ========================================= FAQ xls 파싱 =========================================
-private String faqFileName = "동물등록 FAQ.xls";
+    private LocationParsingDAO locationParsingDAO;
 
     public void saveToDb() {
+
         try {
-            List<Map<Object, Object>> faqData = readExcel(faqFileName);
-            for(Map<Object, Object> rowMap : faqData) {
-                RegisterPetFaq regiPetFaq = new RegisterPetFaq();
-                regiPetFaq.setRegiFaqQuestion((String) rowMap.get("질문"));
-                regiPetFaq.setRegiFaqAnswer((String) rowMap.get("답변"));
-                faqDao.save(regiPetFaq); // db 저장
+            List<Map<Object, Object>> locationData = readExcel(fileName);
+            for(Map<Object, Object> rowMap : locationData) {
+                LocationParsing location = new LocationParsing();
+                location.setLocationName((String) rowMap.get("주소명"));
+                String parentCodeString = (String) rowMap.get("부모코드");
+                if (!parentCodeString.isEmpty()) {
+                    location.setLocationParentCode(Integer.parseInt(parentCodeString));
+                } else {
+                    // 부모코드가 비어 있거나 null인 경우에 대한 처리
+                    location.setLocationParentCode(00); // 또는 다른 적절한 값을 설정할 수 있습니다.
+                }
+
+                // db 저장
+                locationParsingDAO.save(location);
             }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -118,7 +77,7 @@ private String faqFileName = "동물등록 FAQ.xls";
     public static Map<Object, Object> getCell(Row row, int cells) {
         Map<Object, Object> map = new HashMap<>();
 
-        String[] columns = {"질문", "답변"};
+        String[] columns = {"주소명", "부모코드"};
         for(int i=0; i<cells; i++) {
             if(i>= columns.length) {
                 break;
@@ -141,8 +100,5 @@ private String faqFileName = "동물등록 FAQ.xls";
 
         return map;
     }
-
-
-
 
 }
