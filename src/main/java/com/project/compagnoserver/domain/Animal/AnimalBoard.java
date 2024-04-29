@@ -52,6 +52,9 @@ public class AnimalBoard {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user; // 유저테이블과 연결
+
+    @Column(name = "animal_board_favorite_count")
+    private int animalBoardFavoriteCount;
     /*
     // 메모 : mappedBy = "animal_board"
     *Collection 'com.project.compagnoserver.domain.Animal.AnimalBoard.images' is

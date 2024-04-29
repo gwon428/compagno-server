@@ -27,5 +27,7 @@ public class AnimalBoardDTO {
     private int animalCategoryCode; // 게시글 작성시 코드 받아오기
     private AnimalCategory animalCategory; // 게시글 볼때(detail/edit) 정보 보내기
 
+    private int animalBoardFavoriteCount;
+
     // 자유게시판 글쓰기 DTO
 }

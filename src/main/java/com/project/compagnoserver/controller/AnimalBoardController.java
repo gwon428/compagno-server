@@ -6,6 +6,7 @@ import com.project.compagnoserver.domain.Animal.AnimalBoard;
 import com.project.compagnoserver.domain.Animal.AnimalBoardDTO;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
+import com.project.compagnoserver.service.AnimalBoardFavoriteService;
 import com.project.compagnoserver.service.AnimalBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class AnimalBoardController {
 
     @Autowired
     private AnimalBoardService animalBoardService;
+
+    @Autowired
+    private AnimalBoardFavoriteService favoriteService;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
@@ -128,6 +132,7 @@ public class AnimalBoardController {
                 .animalBoardContent(getBoard.getAnimalBoardContent())
                 .animalBoardView(getBoard.getAnimalBoardView())
                 .animalMainImage(getBoard.getAnimalMainImage())
+                .animalBoardFavoriteCount(getBoard.getAnimalBoardFavoriteCount())
                 .user(UserDTO.builder()
                         .userId(getBoard.getUser().getUserId())
                         .userNickname(getBoard.getUser().getUserNickname())
@@ -198,4 +203,46 @@ public class AnimalBoardController {
 //        animalBoardService.boardView(boardCode);
 //        return ResponseEntity.ok().build();
 //    }
+
+    // 좋아요 여부 확인 정보 가져오기
+    @PostMapping("/public/animal-board/checkFavorite")
+    public ResponseEntity<Boolean> checkFavorite(@RequestBody AnimalBoardFavoriteDTO dto){
+//            log.info("user왔나 : " + dto.getUserId());
+//            log.info("여기까지 왔나? : " + dto.getAnimalBoardCode());
+        Boolean b = favoriteService.checkFavorite(dto.getAnimalBoardCode(), dto.getUserId());
+
+            return ResponseEntity.ok(b);
+    }
+    // 좋아요 추가
+    @PostMapping("/animal-board/addFavorite")
+    public ResponseEntity<AnimalBoardFavorite> favoriteBoard(@RequestBody AnimalBoardFavoriteDTO dto){
+        // 필요값 : userId, animalBoardCode
+        AnimalBoardFavorite favoriteBoard = AnimalBoardFavorite.builder()
+                .animalBoard(AnimalBoard.builder()
+                        .animalBoardCode(dto.getAnimalBoardCode())
+                        .build())
+                .user(User.builder()
+                        .userId(dto.getUserId())
+                        .build())
+                .animalFavoriteDate(nowDate)
+                .build();
+        favoriteService.favoriteBoard(favoriteBoard);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // 좋아요 삭제
+    @PostMapping("/animal-board/delFavorite")
+    public ResponseEntity<?> deleteFavorite(@RequestBody AnimalBoardFavoriteDTO dto){
+        favoriteService.deleteFavorite(dto);
+        return ResponseEntity.ok().build();
+    }
+
+    // 글마다 좋아요 수 조회
+    @PutMapping("/public/animal-board/countFavorite")
+    public ResponseEntity<?> favCount(@RequestBody AnimalBoardFavoriteDTO dto){
+        log.info("좋아요 dto : " + dto);
+        favoriteService.favCount(dto);
+        return ResponseEntity.ok().build();
+    }
 }
