@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 public class AnimalBoardDTO {
 
-//    private List<MultipartFile> files;
+    private MultipartFile file;
     private UserDTO user; // 유저정보
     private String animalMainImage;
     private String animalBoardTitle;
@@ -27,7 +27,7 @@ public class AnimalBoardDTO {
     private int animalCategoryCode; // 게시글 작성시 코드 받아오기
     private AnimalCategory animalCategory; // 게시글 볼때(detail/edit) 정보 보내기
 
-    private int animalBoardFavoriteCount;
+    private int animalBoardFavoriteCount; //게시글 좋아요 수
 
     // 자유게시판 글쓰기 DTO
 }
