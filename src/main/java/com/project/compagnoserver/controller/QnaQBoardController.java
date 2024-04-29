@@ -180,7 +180,7 @@ public class QnaQBoardController {
     }
 
     // 질문 수정
-    @PutMapping("/public/question")
+    @PutMapping("/question")
     public ResponseEntity update(QnaQBoardDTO dto) throws IOException {
 
             log.info("dto 제목 : " + dto.getQnaQTitle());
