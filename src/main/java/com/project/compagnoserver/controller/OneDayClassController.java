@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/*")
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class OneDayClassController {
 
     @Autowired
@@ -60,7 +61,10 @@ public class OneDayClassController {
     @DeleteMapping("/ClassBoard/{odcCode}")
     public ResponseEntity delete(@PathVariable("odcCode") int odcCode){
         service.delete(odcCode);
+
+
         return ResponseEntity.status(HttpStatus.OK).build();
+
     }
 
 
