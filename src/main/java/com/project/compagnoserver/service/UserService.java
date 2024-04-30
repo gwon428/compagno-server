@@ -47,11 +47,6 @@ public class UserService {
         return checkNickResult;
     }
 
-    // 개인정보 변경
-  public void updateUser(User user) {
-        userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
-  }
-
   // 회원 탈퇴
     public int deleteUser(String id, String password, PasswordEncoder encoder) {
       User user = userDao.findById(id).orElse(null);
@@ -64,11 +59,21 @@ public class UserService {
         return 0;
     }
 
+    // 프사제외 개인정보 변경
+    public void updateUser(User user) {
+        userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
+    }
+
     // 프로필사진 변경
     public void changeProfilePhoto(String photo, String id) {
         userDao.changeProfilePhoto(photo, id);
-
     }
+
+    // 개인정보 + 프로필 변경
+    public void changeProfile(User user) {
+        userDao.changeProfile(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserImg(), user.getUserId());
+    }
+
 
 
 }

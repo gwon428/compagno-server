@@ -19,6 +19,7 @@ public class UserDTO {
 
     private String userId;
     private String userPersonName;
+    private String userPwd;
 
     // LostBoardComment에 필요
     private String userNickname;
