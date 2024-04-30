@@ -13,6 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,8 +46,27 @@ public class NeighborBoardController {
 
     // 전체 보기
     @GetMapping("public/neighbor")
-    public ResponseEntity<List<NeighborBoard>> neighborViewAll() {
-        List<NeighborBoard> list = neighborBoardService.neighborViewAll();
+    public ResponseEntity<Page<NeighborBoard>> neighborViewAll(@RequestParam(name = "page", defaultValue = "1") int page,
+                                                               @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
+        Sort sort = null;
+        switch (sortBy) {
+            case 1: // 최신순
+                sort = Sort.by("neighborBoardRegiDate").descending();
+                break;
+            case 2: // 조회순
+                sort = Sort.by("neighborBoardViewCount").descending();
+                break;
+            case 3: // 제목순
+                sort = Sort.by("neighborBoardTitle").ascending();
+                break;
+            default:
+                // 기본 정렬 설정: 최신순
+                sort = Sort.by("neighborBoardRegiDate").descending();
+                break;
+        }
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Page<NeighborBoard> list = neighborBoardService.neighborViewAll(pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
@@ -269,19 +292,19 @@ public class NeighborBoardController {
     // ====================================== Location ======================================
 
     // 시도 조회
-    @GetMapping("public/location/province")
-    public ResponseEntity<List<LocationParsing>> viewProvince() {
-        return ResponseEntity.ok(neighborBoardService.getProvinces());
+    @GetMapping("public/neighbor/province")
+    public ResponseEntity<List<NeighborBoardLocation>> neighborViewProvince() {
+        return ResponseEntity.ok(neighborBoardService.neighborGetProvinces());
     }
 
     // 시도 선택에 따른 시군구 조회
-    @GetMapping("public/location/district/{code}")
-    public ResponseEntity<List<LocationParsingDTO>> viewDistrict(@PathVariable(name="code") int code) {
-        List<LocationParsing> districts = neighborBoardService.getDistricts(code);
-        List<LocationParsingDTO> districtsDTO = new ArrayList<>();
+    @GetMapping("public/neighbor/district/{code}")
+    public ResponseEntity<List<NeighborBoardLocationDTO>> neighborViewDistrict(@PathVariable(name="code") int code) {
+        List<NeighborBoardLocation> districts = neighborBoardService.neighborGetDistricts(code);
+        List<NeighborBoardLocationDTO> districtsDTO = new ArrayList<>();
 
-        for(LocationParsing district : districts) {
-            LocationParsingDTO dto = LocationParsingDTO.builder()
+        for(NeighborBoardLocation district : districts) {
+            NeighborBoardLocationDTO dto = NeighborBoardLocationDTO.builder()
                     .locationCode(district.getLocationCode())
                     .locationName(district.getLocationName())
                     .build();

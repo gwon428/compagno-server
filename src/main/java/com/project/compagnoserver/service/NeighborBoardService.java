@@ -1,17 +1,12 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.NeighborBoard.*;
-import com.project.compagnoserver.domain.Parsing.LocationParsing;
-import com.project.compagnoserver.domain.Parsing.QLocationParsing;
-import com.project.compagnoserver.domain.SitterBoard.SitterBoardComment;
-import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardBookmarkDAO;
-import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardCommentDAO;
-import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardDAO;
-import com.project.compagnoserver.repo.NeighborBoard.NeighborBoardImageDAO;
-import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
+import com.project.compagnoserver.repo.NeighborBoard.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,13 +36,13 @@ public class NeighborBoardService {
     private final QNeighborBoardComment qNeighborBoardComment = QNeighborBoardComment.neighborBoardComment;
 
     @Autowired
-    private LocationParsingDAO locationParsingDAO;
-    private final QLocationParsing qLocationParsing = QLocationParsing.locationParsing;
+    private NeighborBoardLocationDAO neighborBoardLocationDAO;
+    private final QNeighborBoardLocation qNeighborBoardLocation = QNeighborBoardLocation.neighborBoardLocation;
 
 
     // 전체 보기
-    public List<NeighborBoard> neighborViewAll() {
-        return neighborBoardDAO.findAll();
+    public Page<NeighborBoard> neighborViewAll(Pageable pageable) {
+        return neighborBoardDAO.findAll(pageable);
     }
     public List<NeighborBoardImage> neighborViewAllImg(int code) {
         return neighborBoardImageDAO.findByBoardCode(code);
@@ -173,20 +168,17 @@ public class NeighborBoardService {
     // ====================================== Location ======================================
 
     // 시도 조회
-    public List<LocationParsing> getProvinces() {
-        return queryFactory.selectFrom(qLocationParsing)
-                .where(qLocationParsing.locationParentCode.eq(0))
+    public List<NeighborBoardLocation> neighborGetProvinces() {
+        return queryFactory.selectFrom(qNeighborBoardLocation)
+                .where(qNeighborBoardLocation.locationParentCode.eq(0))
                 .fetch();
     }
 
     // 시도별 시군구 조회
-    public List<LocationParsing> getDistricts(int code) {
-        return queryFactory.selectFrom(qLocationParsing)
-                .where(qLocationParsing.locationParentCode.eq(code))
+    public List<NeighborBoardLocation> neighborGetDistricts(int code) {
+        return queryFactory.selectFrom(qNeighborBoardLocation)
+                .where(qNeighborBoardLocation.locationParentCode.eq(code))
                 .fetch();
     }
-
-
-
 
 }
