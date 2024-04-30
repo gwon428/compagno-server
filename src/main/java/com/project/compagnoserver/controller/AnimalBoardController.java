@@ -165,11 +165,17 @@ public class AnimalBoardController {
 
         return list!=null ? ResponseEntity.ok(list) : ResponseEntity.badRequest().build();
     }
-
+    // 자유게시판 - 글 한개보기 = 조회수
+    @GetMapping("public/animal-board/{animalBoardCode}/viewCount")
+    public ResponseEntity<Integer> viewCount(@PathVariable(name = "animalBoardCode") int animalBoardCode){
+        log.info("조회수 : " + animalBoardCode);
+        animalBoardService.boardView(animalBoardCode);
+        return ResponseEntity.ok().build();
+    }
     // 자유게시판 - 글 한개보기 = 게시판 상세보기
     @GetMapping("public/animal-board/{animalBoardCode}")
     public ResponseEntity<AnimalBoardDTO> viewDetail(@PathVariable(name = "animalBoardCode")int animalBoardCode){
-        animalBoardService.boardView(animalBoardCode);
+
         AnimalBoard getBoard = animalBoardService.viewDetail(animalBoardCode);
         AnimalBoardDTO getBoardDTO = AnimalBoardDTO.builder()
                 .animalBoardDate(getBoard.getAnimalBoardDate())
