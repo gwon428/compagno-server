@@ -50,10 +50,10 @@ public class ProductBoardController {
 
     // 게시물 등록
     @PostMapping("/productBoard")
-    public ResponseEntity<ProductBoard> create(ProductBoardDTO dto) throws IOException {
+    public ResponseEntity<ProductBoard> create(@RequestBody ProductBoardDTO dto) throws IOException {
         String saveName = null;
         // 메인 이미지 업로드
-        if(!dto.getProductMainFile().isEmpty()) {
+        if(dto.getProductMainFile() != null && !dto.getProductMainFile().isEmpty()) {
             String fileName = dto.getProductMainFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
             saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
@@ -77,18 +77,20 @@ public class ProductBoardController {
         ProductBoard result = productBoard.createBoard(vo);
 
         // 이미지 업로드
-        for (MultipartFile file : dto.getFiles()) {
-            String fileName = file.getOriginalFilename();
-            if(!fileName.isEmpty()) {
-                ProductBoardImage imgVo = new ProductBoardImage();
-                String uuid = UUID.randomUUID().toString();
-                saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
-                Path savePath = Paths.get(saveName);
-                file.transferTo(savePath);
+        if (dto.getFiles() != null) {
+            for (MultipartFile file : dto.getFiles()) {
+                String fileName = file.getOriginalFilename();
+                if (!fileName.isEmpty()) {
+                    ProductBoardImage imgVo = new ProductBoardImage();
+                    String uuid = UUID.randomUUID().toString();
+                    saveName = uploadPath + File.separator + "productBoard" + File.separator + uuid + "_" + fileName;
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
 
-                imgVo.setProductBoard(result);
-                imgVo.setProductImage(saveName);
-                productBoard.createImage(imgVo);
+                    imgVo.setProductBoard(result);
+                    imgVo.setProductImage(saveName);
+                    productBoard.createImage(imgVo);
+                }
             }
         }
 
@@ -283,15 +285,37 @@ public class ProductBoardController {
     }
     // 댓글 작성
     @PostMapping("/productBoard/comment")
-    public ResponseEntity<ProductBoardComment> createComment(@RequestBody ProductBoardComment vo) {
+    public ResponseEntity<ProductBoardComment> createComment(@RequestBody ProductBoardCommentDTO dto) {
+        ProductBoardComment vo = ProductBoardComment.builder()
+                .productBoard(ProductBoard.builder()
+                        .productBoardCode(dto.getProductBoardCode())
+                        .build())
+                .productCommentCode(dto.getProductCommentCode())
+                .productCommentContent(dto.getProductCommentContent())
+                .productParentCode(dto.getProductParentCode())
+                .user(User.builder()
+                        .userId(userInfo().getUserId())
+                        .build())
+                .build();
+
         vo.setUser(userInfo());
         return ResponseEntity.ok(comment.create(vo));
     }
 
     // 댓글 수정
     @PatchMapping("/productBoard/comment")
-    public ResponseEntity updateComment(@RequestBody ProductBoardComment vo) {
-        vo.setUser(userInfo());
+    public ResponseEntity updateComment(@RequestBody ProductBoardCommentDTO dto) {
+        ProductBoardComment vo = ProductBoardComment.builder()
+                .productBoard(ProductBoard.builder()
+                        .productBoardCode(dto.getProductBoardCode())
+                        .build())
+                .productCommentCode(dto.getProductCommentCode())
+                .productCommentContent(dto.getProductCommentContent())
+                .productParentCode(dto.getProductParentCode())
+                .user(User.builder()
+                        .userId(userInfo().getUserId())
+                        .build())
+                .build();
         comment.update(vo);
         return ResponseEntity.ok().build();
     }
@@ -319,7 +343,8 @@ public class ProductBoardController {
                         .productCommentCode(comment.getProductCommentCode())
                         .productCommentContent(comment.getProductCommentContent())
                         .productCommentRegiDate(comment.getProductCommentRegiDate())
-                        .user(userInfo())
+                        .productCommentDelete(comment.getProductCommentDelete())
+                        .user(comment.getUser())
                         .build();
                 replies.add(dto);
             }
@@ -328,8 +353,9 @@ public class ProductBoardController {
                     .productCommentCode(item.getProductCommentCode())
                     .productCommentContent(item.getProductCommentContent())
                     .productCommentRegiDate(item.getProductCommentRegiDate())
+                    .productCommentDelete(item.getProductCommentDelete())
                     .replies(replies)
-                    .user(userInfo())
+                    .user(item.getUser())
                     .build();
             response.add(dto);
         }
