@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @RestController
-@RequestMapping("/content")
+@RequestMapping("/compagno/public/content")
 @RequiredArgsConstructor
 @Slf4j
 public class ParsingController {

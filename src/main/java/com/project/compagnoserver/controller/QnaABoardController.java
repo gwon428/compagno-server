@@ -95,6 +95,7 @@ public class QnaABoardController {
             QnaQBoard update = questionService.view(dto.getQnaQCode());
             update.setQnaACode(result);
             update.setQnaQStatus("Y");
+            log.info("상태 업데이트했어요");
 
             questionService.update(update);
 

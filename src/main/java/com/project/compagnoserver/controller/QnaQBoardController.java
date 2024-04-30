@@ -113,30 +113,25 @@ public class QnaQBoardController {
 
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
     @GetMapping("/public/question")
-    public ResponseEntity<List<QnaQBoard>> viewList(){
-        return ResponseEntity.ok().body(service.viewList());
-    }
-
-    /*
-    public ResponseEntity<List<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
+    public ResponseEntity<Page<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
         Sort sort = Sort.by("QnaQCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
-
+        BooleanExpression expression;
         if(!StringUtils.isEmpty(title)){
-            BooleanExpression expression = qQnaQBoard.qnaQTitle.contains(title);
+            expression = qQnaQBoard.qnaQTitle.contains(title);
             builder.and(expression);
-        } else if (!StringUtils.isEmpty(content)){
-            BooleanExpression expression = qQnaQBoard.qnaQContent.contains(content);
+        }
+        if (!StringUtils.isEmpty(content)) {
+            expression = qQnaQBoard.qnaQContent.contains(content);
             builder.and(expression);
         }
 
         Page<QnaQBoard> list = service.viewAll(builder, pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
-    */
 
     @GetMapping("/question/manage")
     public ResponseEntity<List<QnaQBoard>> viewManage(@RequestParam (name="page", defaultValue = "1") int page){
@@ -193,9 +188,9 @@ public class QnaQBoardController {
             log.info("dto 내용 : " + dto.getQnaQContent());
             log.info("dto images : " + dto.getImages());
             if (dto.getImages() != null) {
-//                List<String> imagesList = dto.getImages()
-//                        .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
-//                log.info("imagesList : " + imagesList);
+                List<String> imagesList = dto.getImages()
+                        .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
+                log.info("imagesList : " + imagesList);
 
                 List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
                 log.info("list :  " + list);
@@ -207,8 +202,8 @@ public class QnaQBoardController {
                     log.info("getImages() : " + dto.getImages());
 //                log.info("compare  " + image.compareTo())
 
-//                    if ((dto.getImages() != null && !imagesList.contains(image.getQnaQUrl())) || (dto.getImages() == null)) {
-                    if((dto.getImages() != null && !list.contains(image.getQnaQUrl())) || dto.getImages() == null){
+                    if ((dto.getImages() != null && !imagesList.contains(image.getQnaQUrl())) || (dto.getImages() == null)) {
+//                    if((dto.getImages() != null && !list.contains(image.getQnaQUrl())) || dto.getImages() == null){
                     File file = new File(image.getQnaQUrl());
                     file.delete();
 
@@ -220,6 +215,7 @@ public class QnaQBoardController {
 
             if (dto.getFiles() != null) {
                 for (MultipartFile file : dto.getFiles()) {
+                    log.info("이나ㅓ리ㅏ넝리ㅏ넝");
                     QnaQBoardImage img = new QnaQBoardImage();
 
                     String fileName = file.getOriginalFilename();
