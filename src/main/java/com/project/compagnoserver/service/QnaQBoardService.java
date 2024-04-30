@@ -38,6 +38,10 @@ public class QnaQBoardService {
         return dao.findAll(builder, pageable);
     }
 
+    public List<QnaQBoard> viewList(){
+        return dao.findAll();
+    }
+
     public List<QnaQBoardImage> viewImg(int code){
         return image.findByqnaQCode(code);
     }
