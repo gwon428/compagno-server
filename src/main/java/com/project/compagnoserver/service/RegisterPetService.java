@@ -1,12 +1,12 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.Parsing.LocationParsing;
-import com.project.compagnoserver.domain.Parsing.QLocationParsing;
+import com.project.compagnoserver.domain.RegisterPet.QRegisterPetLocation;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
-import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocation;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetFaqDAO;
+import com.project.compagnoserver.repo.RegisterPet.RegisterPetLocationDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -39,8 +39,8 @@ public class RegisterPetService {
     private RegisterPetFaqDAO faqDao;
 
     @Autowired
-    private LocationParsingDAO locationParsingDAO;
-    private final QLocationParsing qLocationParsing = QLocationParsing.locationParsing;
+    private RegisterPetLocationDAO registerPetLocationDAO;
+    private final QRegisterPetLocation qRegisterPetLocation = QRegisterPetLocation.registerPetLocation;
 
 
     // 대행기관 전체 보기
@@ -156,17 +156,18 @@ private String faqFileName = "동물등록 FAQ.xls";
 // ====================================== Location ======================================
 
     // 시도 조회
-    public List<LocationParsing> getProvinces() {
-        return queryFactory.selectFrom(qLocationParsing)
-                .where(qLocationParsing.locationParentCode.eq(0))
-                .fetch();
+    public List<RegisterPetLocation> registerGetProvinces() {
+    return queryFactory.selectFrom(qRegisterPetLocation)
+            .where(qRegisterPetLocation.locationParentCode.eq(0))
+            .fetch();
     }
 
     // 시도별 시군구 조회
-    public List<LocationParsing> getDistricts(int code) {
-        return queryFactory.selectFrom(qLocationParsing)
-                .where(qLocationParsing.locationParentCode.eq(code))
+    public List<RegisterPetLocation> registerGetDistricts(int code) {
+        return queryFactory.selectFrom(qRegisterPetLocation)
+                .where(qRegisterPetLocation.locationParentCode.eq(code))
                 .fetch();
     }
+
 
 }

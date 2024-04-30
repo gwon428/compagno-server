@@ -1,9 +1,9 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.Parsing.LocationParsing;
-import com.project.compagnoserver.domain.Parsing.LocationParsingDTO;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocation;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocationDTO;
 import com.project.compagnoserver.service.RegisterPetService;
 import com.project.compagnoserver.service.XlsParsingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +37,11 @@ public class RegisterPetController {
 
     // 대행기관 전체보기
     @GetMapping("public/register-pet")
-    public ResponseEntity<List<RegisterPet>> instList(@RequestParam(name = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<RegisterPet>> instList(@RequestParam(name = "page", defaultValue = "1") int page) {
         Pageable pageable = PageRequest.of(page-1, 10);
 
         Page<RegisterPet> list = service.instList(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     // faq 파싱
@@ -94,46 +94,24 @@ public class RegisterPetController {
 //    }
 
 
-    // ====================================== Location ======================================
-
-//    // 전체 시도/시군구 조회
-//    @GetMapping("public/location")
-//    public ResponseEntity<List<LocationParsingDTO>> viewAllLocation() {
-//        List<LocationParsing> provinceList = sitterBoardService.getProvinces();
-//        List<LocationParsingDTO> response = new ArrayList<>();
-//
-//        for(LocationParsing province : provinceList) {
-//            List<LocationParsing> districtList = sitterBoardService.getDistricts(province.getLocationCode());
-//
-//            LocationParsingDTO dto = LocationParsingDTO.builder()
-//                    .locationCode(province.getLocationCode())
-//                    .locationName(province.getLocationName())
-//                    .districts(districtList)
-//                    .build();
-//            response.add(dto);
-//        }
-//
-//        return ResponseEntity.ok(response);
-//    }
-
 
 
 // ====================================== Location ======================================
 
     // 시도 조회
-    @GetMapping("public/location/province")
-    public ResponseEntity<List<LocationParsing>> viewProvince() {
-        return ResponseEntity.ok(service.getProvinces());
+    @GetMapping("public/register-pet/province")
+    public ResponseEntity<List<RegisterPetLocation>> registerViewProvinces() {
+        return ResponseEntity.ok(service.registerGetProvinces());
     }
 
     // 시도 선택에 따른 시군구 조회
-    @GetMapping("public/location/district/{code}")
-    public ResponseEntity<List<LocationParsingDTO>> viewDistrict(@PathVariable(name="code") int code) {
-        List<LocationParsing> districts = service.getDistricts(code);
-        List<LocationParsingDTO> districtsDTO = new ArrayList<>();
+    @GetMapping("public/register-pet/district/{code}")
+    public ResponseEntity<List<RegisterPetLocationDTO>> viewDistrict(@PathVariable(name="code") int code) {
+        List<RegisterPetLocation> districts = service.registerGetDistricts(code);
+        List<RegisterPetLocationDTO> districtsDTO = new ArrayList<>();
 
-        for(LocationParsing district : districts) {
-            LocationParsingDTO dto = LocationParsingDTO.builder()
+        for(RegisterPetLocation district : districts) {
+            RegisterPetLocationDTO dto = RegisterPetLocationDTO.builder()
                     .locationCode(district.getLocationCode())
                     .locationName(district.getLocationName())
                     .build();
@@ -141,4 +119,6 @@ public class RegisterPetController {
         }
         return ResponseEntity.ok(districtsDTO);
     }
+
+
 }
