@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
@@ -49,18 +50,17 @@ public class QnaABoardController {
 
     @GetMapping("/public/question/{code}/answer")
     public ResponseEntity<QnaABoardDTO> select(@PathVariable(name="code") int code){
-        log.info("code : " + code);
         QnaABoard vo = service.view(code);
 
         if(vo != null){
-            log.info("vo : " + vo);
-
-            QnaABoardDTO dto = new QnaABoardDTO();
-            dto.setQnaACode(vo.getQnaACode());
-            dto.setQnaATitle(vo.getQnaATitle());
-            dto.setQnaQCode(vo.getQnaQCode());
-            dto.setQnaAContent(vo.getQnaAContent());
-            log.info("dto : " + dto);
+            QnaABoardDTO dto = QnaABoardDTO.builder()
+                    .qnaQCode(vo.getQnaQCode())
+                    .qnaACode(vo.getQnaACode())
+                    .qnaATitle(vo.getQnaATitle())
+                    .qnaAContent(vo.getQnaAContent())
+                    .userId(vo.getUserId())
+                    .images(service.viewImg(code))
+                    .build();
             return ResponseEntity.status(HttpStatus.OK).body(dto);
         } else {
             log.info("답변이 없엉ㅇ");
@@ -72,21 +72,21 @@ public class QnaABoardController {
     // 답변 등록
     @PostMapping("/answer")
     public ResponseEntity<QnaABoard> create (QnaABoardDTO dto) throws IOException {
-        Object principal = authentication();
+//        Object principal = authentication();
 
         QnaABoard vo = new QnaABoard();
         log.info("등록?");
 
-        if(principal instanceof User) {
-            User user = (User) principal;
-            String status = questionService.view(dto.getQnaQCode()).getQnaQStatus();
-            log.info("status : " + status);
-            log.info("equals : " + status.equals("N"));
-            if(user.getUserRole().equals("ROLE_ADMIN") && status.equals("N")){
+//        if(principal instanceof User) {
+//            User user = (User) principal;
+//            String status = questionService.view(dto.getQnaQCode()).getQnaQStatus();
+//            log.info("status : " + status);
+//            log.info("equals : " + status.equals("N"));
+//            if(user.getUserRole().equals("ROLE_ADMIN") && status.equals("N")){
 
+            vo.setUserId(dto.getUserId());
             vo.setQnaACode(dto.getQnaACode());
             vo.setQnaQCode(dto.getQnaQCode());
-            vo.setUserId(user.getUserId());
             vo.setQnaATitle(dto.getQnaATitle());
             vo.setQnaAContent(dto.getQnaAContent());
 
@@ -106,115 +106,77 @@ public class QnaABoardController {
 
                         String fileName = file.getOriginalFilename();
                         String uuid = UUID.randomUUID().toString();
+//                        uploadPath = "http:////192.168.10.28:8081";
                         String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
 
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
-                        img.setQnaAUrl(saveName);
-                        img.setQnaACode(result);
+                        img.setQnaAUrl(saveName.substring(27));
+                        img.setQnaACode(result.getQnaACode());
                         service.createImg(img);
                     }
                 }
             }
 //            return ResponseEntity.status(HttpStatus.CREATED).body(result);
-            }
-            log.info("야!");
-        }
-        
+
         log.info("유저에걸려잇서?");
-        return vo!=null ?
-                ResponseEntity.status(HttpStatus.CREATED).body(vo) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.ok().build();
 //        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PutMapping("/answer")
     public ResponseEntity<QnaABoard> update(QnaABoardDTO dto) throws IOException {
-        // 수정 전
-        QnaABoard prev = service.view(dto.getQnaACode());
+        if(dto.getImages() != null){
+            List<String> imagesList = dto.getImages()
+                    .stream().map(image -> image.getQnaAUrl()).collect(Collectors.toList());
+            log.info("imagesList : " + imagesList);
 
-        Object principal = authentication();
+            List<QnaABoardImage> list = service.viewImg(dto.getQnaACode());
+            log.info("list :  " + list);
 
-        QnaABoard vo = new QnaABoard();
+            for (QnaABoardImage image : list){
+                if((dto.getImages() != null && !imagesList.contains(image.getQnaAUrl())) || (dto.getImages() == null)){
+                    File file = new File(image.getQnaAUrl());
+                    file.delete();
 
-        if(principal instanceof User) {
-            User user = (User) principal;
-
-            if(user.getUserRole().equals("ROLE_ADMIN") && prev.getUserId().equals(user.getUserId())){
-
-            vo.setQnaACode(dto.getQnaACode());
-            vo.setQnaQCode(dto.getQnaQCode());
-            vo.setUserId(user.getUserId());
-            vo.setQnaATitle(dto.getQnaATitle());
-            vo.setQnaAContent(dto.getQnaAContent());
-
-        log.info("파일 확인 " + dto.getFiles().getFirst().getOriginalFilename());
-
-        if(dto.getFiles().getFirst().getOriginalFilename() != ""){
-            if(prev.getFiles() != null){
-                log.info("기존 사진 o, 추가 사진 o");
-                List<QnaABoardImage> list = prev.getFiles();
-
-                // 기존 사진 삭제
-                for(QnaABoardImage img : list){
-                   service.deleteImg(img.getQnaAImgCode());
-                }
-
-                // 후, 추가되는 사진 다시 리스트로 만들어서 저장
-                for(MultipartFile file : dto.getFiles()){
-                    QnaABoardImage image = new QnaABoardImage();
-
-                    String fileName = file.getOriginalFilename();
-                    String uuid = UUID.randomUUID().toString();
-                    String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
-
-                    Path savePath = Paths.get(saveName);
-                    file.transferTo(savePath);
-
-                    image.setQnaAUrl(saveName);
-                    image.setQnaACode(prev);
-                    service.createImg(image);
-                }
-            } else {
-                log.info("기존 사진 x, 추가 사진 o");
-                // 추가되는 사진 리스트로 받아서 저장
-                for(MultipartFile file : dto.getFiles()){
-                    if(file.getOriginalFilename() != ""){
-                        QnaABoardImage image = new QnaABoardImage();
-
-                        String fileName = file.getOriginalFilename();
-                        String uuid = UUID.randomUUID().toString();
-                        String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
-
-                        Path savePath = Paths.get(saveName);
-                        file.transferTo(savePath);
-
-                        image.setQnaAUrl(saveName);
-                        image.setQnaACode(prev);
-                        service.createImg(image);
-                    }
+                    service.deleteImg(image.getQnaAImgCode());
                 }
             }
+
+        }
+
+        if(dto.getFiles() != null){
+            for(MultipartFile file : dto.getFiles()) {
+                QnaABoardImage img = new QnaABoardImage();
+
+                String fileName = file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString();
+                String saveName = uploadPath + File.separator + "QnaA" + File.separator + uuid + "_" + fileName;
+
+                Path savePath = Paths.get(saveName);
+                file.transferTo(savePath);
+
+                img.setQnaAUrl(saveName.substring(27));
+                img.setQnaACode(dto.getQnaACode());
+
+                service.createImg(img);
+            }
+
         } else {
-            // 추가되는 사진이 없을 때
-            if(prev.getFiles() == null){
-                log.info("기존 사진 x, 추가 사진 x");
-            } else {
-                log.info("기존 사진 o, 추가 사진 x");
-                // 추가 사진은 없지만 삭제를 원하지 않을 때
-
-
-                // 추가 사진 없이 삭제만 원할 때
-//                List<QnaABoardImage> list = prev.getFiles();
-//                for(QnaABoardImage img : list){
-//                    service.deleteImg(img.getQnaABoardImgCode());
-//                }
-            }
+            log.info("추가하는 이미지 없음");
         }
-            }
-        }
-        QnaABoard target = service.update(vo);
-        return (target != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(target) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        QnaABoard vo = QnaABoard.builder()
+                .userId(dto.getUserId())
+                .qnaQCode(dto.getQnaQCode())
+                .qnaACode(dto.getQnaACode())
+                .qnaATitle(dto.getQnaATitle())
+                .qnaAContent(dto.getQnaAContent())
+                .build();
+
+        service.update(vo);
+
+        return ResponseEntity.ok().build();
     }
 
     // 답변 삭제

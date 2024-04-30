@@ -38,7 +38,7 @@ public class QnaABoard {
     @Column(name="qna_a_date")
     private Timestamp qnaADate;
 
-    @OneToMany(mappedBy = "qnaACode")
-    @JsonIgnore
-    private List<QnaABoardImage> files;
+//    @OneToMany(mappedBy = "qnaACode")
+//    @JsonIgnore
+//    private List<QnaABoardImage> files;
 }
