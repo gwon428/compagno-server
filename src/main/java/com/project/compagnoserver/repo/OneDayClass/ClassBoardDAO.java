@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 public interface ClassBoardDAO extends JpaRepository<ClassBoard, Integer> {
 
     // 특정카테고리별 전체 조회
-    @Query(value="SELECT * FROM ClassBoard WHERE =:code", nativeQuery = true)
-    Page<Product> findByCateCode(@Param("code") Integer code, Pageable pageable);
+//    @Query(value="SELECT * FROM ClassBoard WHERE =:code", nativeQuery = true)
+//    Page<Product> findByCateCode(@Param("code") Integer code, Pageable pageable);
 
 }

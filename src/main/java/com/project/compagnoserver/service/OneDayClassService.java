@@ -14,8 +14,8 @@ public class OneDayClassService {
     private ClassBoardDAO dao;
 
     // 클래스 등록
-    public void insert(ClassBoard vo){
-        dao.save(vo);
+    public ClassBoard insert(ClassBoard vo){
+        return dao.save(vo);
     }
     //                                  객체에다가 저장
     
