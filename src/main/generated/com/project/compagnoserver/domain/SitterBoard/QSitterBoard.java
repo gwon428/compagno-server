@@ -63,7 +63,7 @@ public class QSitterBoard extends EntityPathBase<SitterBoard> {
     public QSitterBoard(Class<? extends SitterBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.animalCategoryCode = inits.isInitialized("animalCategoryCode") ? new com.project.compagnoserver.domain.Animal.QAnimalCategory(forProperty("animalCategoryCode")) : null;
-        this.location = inits.isInitialized("location") ? new com.project.compagnoserver.domain.Parsing.QLocationParsing(forProperty("location")) : null;
+        this.location = inits.isInitialized("location") ? new com.project.compagnoserver.domain.Parsing.QLocationParsing(forProperty("location"), inits.get("location")) : null;
         this.sitterCategory = inits.isInitialized("sitterCategory") ? new QSitterCategory(forProperty("sitterCategory")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }

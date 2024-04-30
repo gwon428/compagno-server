@@ -8,6 +8,7 @@ import com.project.compagnoserver.repo.SitterBoard.SitterBoardDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardImageDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterCategoryDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterCommentDAO;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,8 @@ public class SitterBoardService {
 
 
     // 전체 보기
-    public Page<SitterBoard> sitterViewAll(Pageable pageable) {
-        return sitterBoardDAO.findAll(pageable);
+    public Page<SitterBoard> sitterViewAll(Pageable pageable, BooleanBuilder builder) {
+        return sitterBoardDAO.findAll(builder, pageable);
     }
     public List<SitterBoardImage> sitterViewAllImg(int code) {return sitterBoardImageDAO.findByBoardCode(code);}
 
@@ -163,14 +164,14 @@ public class SitterBoardService {
 // ====================================== Location ======================================
 
     // 시도 조회
-    public List<LocationParsing> getProvinces() {
+    public List<LocationParsing> sitterGetProvinces() {
         return queryFactory.selectFrom(qLocationParsing)
                 .where(qLocationParsing.locationParentCode.eq(0))
                 .fetch();
     }
 
     // 시도별 시군구 조회
-    public List<LocationParsing> getDistricts(int code) {
+    public List<LocationParsing> sitterGetDistricts(int code) {
         return queryFactory.selectFrom(qLocationParsing)
                 .where(qLocationParsing.locationParentCode.eq(code))
                 .fetch();

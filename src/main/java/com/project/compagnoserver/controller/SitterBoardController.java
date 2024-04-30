@@ -7,6 +7,8 @@ import com.project.compagnoserver.domain.SitterBoard.*;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.SitterBoardService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,9 +60,33 @@ public class SitterBoardController {
 
     // 전체 보기
     @GetMapping("public/sitter")
-    public ResponseEntity<Page<SitterBoard>> sitterViewAll(@RequestParam(name = "page", defaultValue = "1") int page,
+    public ResponseEntity<Page<SitterBoard>> sitterViewAll(@RequestParam(name="sitterCategory", required = false) Integer sitterCateCode,
+                                                           @RequestParam(name="animalCategory", required = false) Integer animalCateCode,
+                                                           @RequestParam(name = "location", required = false) String locationName,
+                                                           @RequestParam(name = "page", defaultValue = "1") int page,
                                                            @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
-        // 파라미터 값 정렬 받아서 그에 따라 조건문 걸고!
+
+        // ================================ 검색 ================================
+        QSitterBoard qSitterBoard = QSitterBoard.sitterBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression;
+
+        if(sitterCateCode!=null) {
+            expression = qSitterBoard.sitterCategory.sitterCategoryCode.eq(sitterCateCode);
+            builder.and(expression);
+        }
+        if(animalCateCode!=null) {
+             expression = qSitterBoard.animalCategoryCode.animalCategoryCode.eq(animalCateCode);
+             builder.and(expression);
+        }
+        if(locationName!=null){
+            expression = qSitterBoard.location.locationName.like("'%" + locationName + "%'");
+            builder.and(expression);
+        }
+
+
+
+        // ================================ 정렬 ================================
         Sort sort = null;
         switch (sortBy) {
             case 1: // 최신순
@@ -69,8 +95,8 @@ public class SitterBoardController {
             case 2: // 조회순
                 sort = Sort.by("sitterViewCount").descending();
                 break;
-            case 3: // 북마크순
-                sort = Sort.by("sitterTitle").ascending();
+            case 3: //
+                sort = Sort.by("sitterTitle").descending();
                 break;
             default:
                 // 기본 정렬 설정: 최신순
@@ -79,7 +105,7 @@ public class SitterBoardController {
         }
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
-        Page<SitterBoard> sitterList = sitterBoardService.sitterViewAll(pageable);
+        Page<SitterBoard> sitterList = sitterBoardService.sitterViewAll(pageable, builder);
         return ResponseEntity.status(HttpStatus.OK).body(sitterList);
     }
 
@@ -341,13 +367,13 @@ public class SitterBoardController {
     // 시도 조회
     @GetMapping("public/location/province")
     public ResponseEntity<List<LocationParsing>> viewProvince() {
-        return ResponseEntity.ok(sitterBoardService.getProvinces());
+        return ResponseEntity.ok(sitterBoardService.sitterGetProvinces());
     }
 
     // 시도 선택에 따른 시군구 조회
     @GetMapping("public/location/district/{code}")
     public ResponseEntity<List<LocationParsingDTO>> viewDistrict(@PathVariable(name="code") int code) {
-        List<LocationParsing> districts = sitterBoardService.getDistricts(code);
+        List<LocationParsing> districts = sitterBoardService.sitterGetDistricts(code);
         List<LocationParsingDTO> districtsDTO = new ArrayList<>();
 
         for(LocationParsing district : districts) {
