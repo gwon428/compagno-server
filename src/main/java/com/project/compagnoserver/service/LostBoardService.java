@@ -27,11 +27,8 @@ public class LostBoardService {
 
     // 보기 -----------------------------------------------------------
     // 전체 보기 ----------------------------
-    public Page<LostBoard> viewAll(Pageable pageable) {return boardDAO.findAll(pageable);}
+    public Page<LostBoard> viewAll(Pageable pageable, BooleanBuilder builder) {return boardDAO.findAll(builder, pageable);}
 
-
-    // 페이징 처리 안된 전체보기
-    public List<LostBoard> viewPaging(){return boardDAO.findAll();}
 
     // 하나 보기 ----------------------------
     public LostBoard view(int lostBoardCode) {return boardDAO.findById(lostBoardCode).orElse(null);}

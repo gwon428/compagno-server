@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.query.JpaParameters;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,43 +107,22 @@ public class LostBoardController {
     }
     // 보기------------------------------------------------------------------------------
     // 전체 보기 -------------------
-    @GetMapping("/public/lostBoard")
-    public ResponseEntity<List<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page){
-        Sort sort = Sort.by("lostBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 12, sort);
-        Page<LostBoard> list = service.viewAll(pageable);
-        // 기존에는 List<LostBoard>  // body(list.getContent)였음
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
-    }
-
-    // paging 처리 안된 전체 보기
-    @GetMapping("/public/lostBoard/paging")
-    public ResponseEntity<List<LostBoard>> viewPaging(){
-        List<LostBoard> list = service.viewPaging();
-        return ResponseEntity.status(HttpStatus.OK).body(list);
-    }
-
-    // 하나 보기 --------------------
-    @GetMapping("/public/lostBoard/{lostBoardCode}")
-    public ResponseEntity<LostBoard> view(@PathVariable(name="lostBoardCode")int lostBoardCode){
-        LostBoard lost = service.view(lostBoardCode);
-        return ResponseEntity.status(HttpStatus.OK).body(lost);
-    }
-
     // 검색 보기 -----------------------
     // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
     // 정렬 보기 -----------------------
     // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
-    @GetMapping("/public/lostBoard/search")
-    public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
-                                                        @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
-                                                        @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
-                                                        @RequestParam(name="userNickname", required = false) String userNickname,
-                                                        @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
-                                                        @RequestParam(name="lostLocation", required = false)String lostLocation,
-                                                        @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
-                                                        @RequestParam(name="sort", defaultValue = "0")int sortNum){
-
+    @GetMapping("/public/lostBoard")
+    public ResponseEntity<Page<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page,
+                                                   @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
+                                                   @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
+                                                   @RequestParam(name="userNickname", required = false) String userNickname,
+                                                   @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
+                                                   @RequestParam(name="lostLocation", required = false)String lostLocation,
+                                                   @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
+                                                   @RequestParam(name="sort", defaultValue = "0")int sortNum){
+//        Sort sort = Sort.by("lostBoardCode").descending();
+//        Pageable pageable = PageRequest.of(page-1, 12, sort);
+        // 기존에는 List<LostBoard>  // body(list.getContent)였음
         QLostBoard qLostBoard = QLostBoard.lostBoard;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression = null;
@@ -174,7 +152,7 @@ public class LostBoardController {
         }
 
 
-        Pageable pageable = PageRequest.of(page-1, 9);
+        Pageable pageable = PageRequest.of(page-1, 12);
 
         // 작성일 순(선입, 후입)
         Sort lRegiDate = Sort.by("lostRegiDate");
@@ -199,19 +177,107 @@ public class LostBoardController {
         }
 
         // 조회수순(낮은 순, 높은 순)
-        Sort lViewCount = Sort.by("lostViewCount");
-        Sort lViewCountD = Sort.by("lostViewCount").descending();
+//        Sort lViewCount = Sort.by("lostViewCount");
+//        Sort lViewCountD = Sort.by("lostViewCount").descending();
+//
+//        if(sortNum==4){
+//            pageable = PageRequest.of(page-1, 9, lViewCount);
+//        }
+//        if(sortNum==5){
+//            pageable = PageRequest.of(page-1, 9, lViewCountD);
+//        }
 
-        if(sortNum==4){
-            pageable = PageRequest.of(page-1, 9, lViewCount);
-        }
-        if(sortNum==5){
-            pageable = PageRequest.of(page-1, 9, lViewCountD);
-        }
-
-        Page<LostBoard> list = service.viewBySearch(pageable, builder);
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        return ResponseEntity.ok(service.viewAll(pageable, builder));
     }
+
+    // 하나 보기 --------------------
+    @GetMapping("/public/lostBoard/{lostBoardCode}")
+    public ResponseEntity<LostBoard> view(@PathVariable(name="lostBoardCode")int lostBoardCode){
+        LostBoard lost = service.view(lostBoardCode);
+        return ResponseEntity.status(HttpStatus.OK).body(lost);
+    }
+
+    // 검색 보기 -----------------------
+    // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
+    // 정렬 보기 -----------------------
+    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
+//    @GetMapping("/public/lostBoard/search")
+//    public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
+//                                                        @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
+//                                                        @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
+//                                                        @RequestParam(name="userNickname", required = false) String userNickname,
+//                                                        @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
+//                                                        @RequestParam(name="lostLocation", required = false)String lostLocation,
+//                                                        @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
+//                                                        @RequestParam(name="sort", defaultValue = "0")int sortNum){
+//
+//        QLostBoard qLostBoard = QLostBoard.lostBoard;
+//        BooleanBuilder builder = new BooleanBuilder();
+//        BooleanExpression expression = null;
+//        if(lostAnimalKind != null){
+//            expression = qLostBoard.lostAnimalKind.contains(lostAnimalKind);
+//            builder.and(expression);
+//        }
+//        if(lostAnimalGender != null){
+//            expression = qLostBoard.lostAnimalGender.contains(lostAnimalGender);
+//            builder.and(expression);
+//        }
+//        if(userNickname != null){
+//            expression = qLostBoard.userNickname.contains(userNickname);
+//            builder.and(expression);
+//        }
+//        if(lostDate != null){
+//            expression = qLostBoard.lostDate.eq(lostDate);
+//            builder.and(expression);
+//        }
+//        if(lostLocation != null){
+//            expression = qLostBoard.lostLocation.contains(lostLocation);
+//            builder.and(expression);
+//        }
+//        if(lostAnimalName != null){
+//            expression = qLostBoard.lostAnimalName.contains(lostAnimalName);
+//            builder.and(expression);
+//        }
+//
+//
+//        Pageable pageable = PageRequest.of(page-1, 9);
+//
+//        // 작성일 순(선입, 후입)
+//        Sort lRegiDate = Sort.by("lostRegiDate");
+//        Sort lRegiDateD = Sort.by("lostRegiDate").descending();
+//
+//        if(sortNum==0){
+//            pageable = PageRequest.of(page-1, 9, lRegiDateD);
+//        }
+//        if(sortNum==1){
+//            pageable = PageRequest.of(page-1, 9, lRegiDate);
+//        }
+//
+//
+//        // 분실 날짜 순(선입, 후입)
+//        if(sortNum==2){
+//            Sort lDate = Sort.by("lostDate");
+//            pageable = PageRequest.of(page-1, 9, lDate);
+//        }
+//        if(sortNum==3){
+//            Sort lDateD = Sort.by("lostDate").descending();
+//            pageable = PageRequest.of(page-1, 9, lDateD);
+//        }
+//
+//        // 조회수순(낮은 순, 높은 순)
+//        Sort lViewCount = Sort.by("lostViewCount");
+//        Sort lViewCountD = Sort.by("lostViewCount").descending();
+//
+//        if(sortNum==4){
+//            pageable = PageRequest.of(page-1, 9, lViewCount);
+//        }
+//        if(sortNum==5){
+//            pageable = PageRequest.of(page-1, 9, lViewCountD);
+//        }
+//
+//        Page<LostBoard> list = service.viewBySearch(pageable, builder);
+//        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+//    }
 
     // 사진 수정(프론트에 맞춰 변경) 
     // 수정 ---------------------------------------------------------------------------------------
@@ -220,7 +286,7 @@ public class LostBoardController {
         log.info("dto : " + dto);
 
         LostBoard prev = service.view(dto.getLostBoardCode());
-        LostBoard lost = service.view(dto.getLostBoardCode());
+        LostBoard lost = service.view(dto.getLostBoardCode());;
 
         lost.setUserId(dto.getUserId());
         lost.setUserImg(dto.getUserImg());
