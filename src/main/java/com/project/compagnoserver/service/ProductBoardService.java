@@ -135,7 +135,6 @@ public class ProductBoardService {
 
     // 게시판 추천
     public void boardRecommend(ProductBoardRecommend vo) {
-        log.info("check : " + checkRecommend(vo));
         if(checkRecommend(vo)==null) {
             recommend.save(vo);
         } else {
@@ -160,7 +159,7 @@ public class ProductBoardService {
         // 검색 필터
         BooleanBuilder builder = new BooleanBuilder();
         // 동물 카테고리
-        if (dto.getAnimal() != null) {
+        if (dto.getAnimal() != null && dto.getAnimal() != 0) {
             builder.and(qProductBoard.animalCategory.animalCategoryCode.eq(dto.getAnimal()));
         }
         // 평점
@@ -176,12 +175,16 @@ public class ProductBoardService {
             builder.and(qProductBoard.productPrice.goe(dto.getMinPrice()));
         }
         // 최대 가격
-        if (dto.getMaxPrice() != null) {
+        if (dto.getMaxPrice() != null && dto.getMaxPrice() != 0) {
             builder.and(qProductBoard.productPrice.loe(dto.getMaxPrice()));
+        }
+        // 제품명
+        if (dto.getProductCate() != null && !dto.getProductCate().isEmpty()) {
+            builder.and(qProductBoard.productName.eq(dto.getProductName()));
         }
 
         // 키워드 검색
-        if (dto.getKeyword() != null && !dto.getKeyword().isEmpty()) {
+        if (dto.getSelect() != null && dto.getKeyword() != null && !dto.getKeyword().isEmpty()) {
             switch (dto.getSelect()) {
                 case "title": // 제목 검색
                     builder.and(qProductBoard.productBoardTitle.contains(dto.getKeyword()));
@@ -224,7 +227,9 @@ public class ProductBoardService {
         if(sort!= null && sort.equals("view")) { // 조회수 순 DESC
             orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardViewCount));
         }
-
+        if(sort!= null && sort.equals("recommend")) {
+            orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.recommend.size()));
+        }
         orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardRegiDate)); // 날짜 순 DESC
 
         return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
