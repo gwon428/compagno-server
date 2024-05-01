@@ -54,12 +54,12 @@ public class QnaABoardController {
 
         if(vo != null){
             QnaABoardDTO dto = QnaABoardDTO.builder()
-                    .qnaQCode(vo.getQnaQCode())
+                    .qnaQCode(vo.getQnaQCode().getQnaQCode())
                     .qnaACode(vo.getQnaACode())
                     .qnaATitle(vo.getQnaATitle())
                     .qnaAContent(vo.getQnaAContent())
                     .userId(vo.getUserId())
-                    .images(service.viewImg(code))
+                    .images(service.viewImg(vo.getQnaACode()))
                     .build();
             return ResponseEntity.status(HttpStatus.OK).body(dto);
         } else {
@@ -86,7 +86,7 @@ public class QnaABoardController {
 
             vo.setUserId(dto.getUserId());
             vo.setQnaACode(dto.getQnaACode());
-            vo.setQnaQCode(dto.getQnaQCode());
+            vo.setQnaQCode(QnaQBoard.builder().qnaQCode(dto.getQnaQCode()).build());
             vo.setQnaATitle(dto.getQnaATitle());
             vo.setQnaAContent(dto.getQnaAContent());
 
@@ -126,6 +126,7 @@ public class QnaABoardController {
 
     @PutMapping("/answer")
     public ResponseEntity<QnaABoard> update(QnaABoardDTO dto) throws IOException {
+       log.info("dto : " + dto);
         if(dto.getImages() != null){
             List<String> imagesList = dto.getImages()
                     .stream().map(image -> image.getQnaAUrl()).collect(Collectors.toList());
@@ -168,7 +169,7 @@ public class QnaABoardController {
 
         QnaABoard vo = QnaABoard.builder()
                 .userId(dto.getUserId())
-                .qnaQCode(dto.getQnaQCode())
+                .qnaQCode(QnaQBoard.builder().qnaQCode(dto.getQnaQCode()).build())
                 .qnaACode(dto.getQnaACode())
                 .qnaATitle(dto.getQnaATitle())
                 .qnaAContent(dto.getQnaAContent())
@@ -195,7 +196,7 @@ public class QnaABoardController {
 
         QnaABoard target = service.delete(code);
 
-        QnaQBoard update = questionService.view(target.getQnaQCode());
+        QnaQBoard update = questionService.view(target.getQnaQCode().getQnaQCode());
         update.setQnaQStatus("N");
         questionService.update(update);
 
