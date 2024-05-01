@@ -110,7 +110,7 @@ public class LostBoardController {
     // 검색 보기 -----------------------
     // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
     // 정렬 보기 -----------------------
-    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
+    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순)
     @GetMapping("/public/lostBoard")
     public ResponseEntity<Page<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page,
                                                    @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
@@ -159,22 +159,23 @@ public class LostBoardController {
         Sort lRegiDateD = Sort.by("lostRegiDate").descending();
 
         if(sortNum==0){
-            pageable = PageRequest.of(page-1, 9, lRegiDateD);
+            pageable = PageRequest.of(page-1, 12, lRegiDateD);
         }
         if(sortNum==1){
-            pageable = PageRequest.of(page-1, 9, lRegiDate);
+            pageable = PageRequest.of(page-1, 12, lRegiDate);
         }
 
 
         // 분실 날짜 순(선입, 후입)
         if(sortNum==2){
-            Sort lDate = Sort.by("lostDate");
-            pageable = PageRequest.of(page-1, 9, lDate);
+            Sort lDateD = Sort.by("lostDate").descending();
+            pageable = PageRequest.of(page-1, 12, lDateD);
         }
         if(sortNum==3){
-            Sort lDateD = Sort.by("lostDate").descending();
-            pageable = PageRequest.of(page-1, 9, lDateD);
+            Sort lDate = Sort.by("lostDate");
+            pageable = PageRequest.of(page-1, 12, lDate);
         }
+
 
         // 조회수순(낮은 순, 높은 순)
 //        Sort lViewCount = Sort.by("lostViewCount");
