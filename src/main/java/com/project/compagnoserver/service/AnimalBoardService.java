@@ -4,11 +4,15 @@ import com.project.compagnoserver.domain.Animal.*;
 import com.project.compagnoserver.domain.user.QUser;
 import com.project.compagnoserver.repo.Animal.AnimalBoardDAO;
 import com.project.compagnoserver.repo.Animal.AnimalBoardImageDAO;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 
@@ -78,9 +82,21 @@ public class AnimalBoardService {
                     .where(qAnimalBoardImage.animalBoard.animalBoardCode.isNull())
                     .execute();
         }
-        // 자유게시판 전체보기
-        public List<AnimalBoard> viewAll(){
-            return animalBoardDAO.findAll();
+
+         // 자유게시판 전체보기
+         public Page<AnimalBoard> viewAll(Pageable pageable, BooleanBuilder builder){
+            return animalBoardDAO.findAll(builder, pageable);
+    }
+
+
+    // 자유게시판 - 카테고리별 전체보기
+        public List<AnimalBoard> viewCategory(int categoryCode, Pageable pageable){
+            return queryFactory.selectFrom(qAnimalBoard)
+                    .where(qAnimalCategory.animalCategoryCode.eq(categoryCode))
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .fetch();
+
         }
 
         // 자유게시판 - 글 한개보기 = 상세페이지

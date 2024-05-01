@@ -8,9 +8,15 @@ import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.AnimalBoardFavoriteService;
 import com.project.compagnoserver.service.AnimalBoardService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -160,10 +166,23 @@ public class AnimalBoardController {
 
     // 무한페이징 처리가 필요
     @GetMapping("public/animal-board")
-    public ResponseEntity<List<AnimalBoard>> viewAll(){
-        List<AnimalBoard> list = animalBoardService.viewAll();
+    public ResponseEntity<List<AnimalBoard>> viewAll(@RequestParam(name = "category", required = false)Integer animalCategoryCode, @RequestParam(name = "page", defaultValue = "1")int page){
+       log.info("page :" + page);
+        Sort sort = Sort.by("animalBoardCode");
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
-        return list!=null ? ResponseEntity.ok(list) : ResponseEntity.badRequest().build();
+        QAnimalBoard qAnimalBoard = QAnimalBoard.animalBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if(animalCategoryCode !=null){
+            BooleanExpression expression = qAnimalBoard.animalCategory.animalCategoryCode.eq(animalCategoryCode);
+
+            builder.and(expression);
+        }
+
+        Page<AnimalBoard> list = animalBoardService.viewAll(pageable, builder);
+
+        return list!=null ? ResponseEntity.ok(list.getContent()) : ResponseEntity.badRequest().build();
     }
     // 자유게시판 - 글 한개보기 = 조회수
     @GetMapping("public/animal-board/{animalBoardCode}/viewCount")
