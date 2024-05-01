@@ -334,7 +334,9 @@ public class LostBoardController {
         } else {// 2) 추가 사진 X
             // -> 기존 사진 O : 기존 사진 남기기 (사진 처리X)
             // -> 기존 사진 x : 사진 처리X
-            if(prev.getImages()!=null){} else {}
+            if(prev.getImages()!=null){
+                log.info(prev.getImages().toString());
+            } else {}
 
             // 기존 사진 있을 경우 글만 변경 원하고 추가 사진 없으며 기존 사진 삭제 원할 때
             //if(!file.getOriginalFilename().equals("")) 해당 조건 사용하기!
