@@ -64,11 +64,6 @@ public class UserService {
         userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
     }
 
-    // 프로필사진 변경
-    public void changeProfilePhoto(String photo, String id) {
-        userDao.changeProfilePhoto(photo, id);
-    }
-
     // 개인정보 + 프로필 변경
     public void changeProfile(User user) {
         userDao.changeProfile(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserImg(), user.getUserId());

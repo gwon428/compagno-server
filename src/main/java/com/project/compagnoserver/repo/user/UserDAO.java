@@ -27,10 +27,6 @@ public interface UserDAO extends JpaRepository<User, String> {
     @Query(value = "UPDATE user SET user_email = :email, user_phone = :phone, user_pwd = :password WHERE user_id = :id", nativeQuery = true)
     void updateUserInfo(@Param("email") String email, @Param("phone") String phone, @Param("password") String password , @Param("id") String id);
 
-    // 프로필사진 변경
-    @Modifying(clearAutomatically = true)
-    @Query(value = "UPDATE user SET user_img = :photo WHERE user_id = :id", nativeQuery = true)
-    void changeProfilePhoto(@Param("photo") String photo, @Param("id") String id);
 
     // 개인정보 + 프로필사진 변경
     @Modifying(clearAutomatically = true)

@@ -128,91 +128,48 @@ public class UserController {
            return ResponseEntity.badRequest().build();
    }
 
-    // 개인정보 변경
-    @Transactional
-    @PutMapping("/api/mypage/myinfo/update")
-    public ResponseEntity updateUser(@RequestBody User vo) {
-        User user = User.builder()
-                .userEmail(vo.getUserEmail())
-                .userPhone(vo.getUserPhone())
-                .userPwd(passwordEncoder.encode(vo.getUserPwd()))
-                .userId(vo.getUserId())
-                .build();
-
-        log.info("컨트롤러에서 입력값 : " + user);
-        userService.updateUser(user);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-   // 프로필사진 변경
-   @Transactional
-    @PutMapping("/api/mypage/myinfo/updatePhoto")
-    public ResponseEntity changePhoto(UserDTO dto) throws IOException {
-
-        if(!dto.getFile().isEmpty()) {
-            String fileName = dto.getFile().getOriginalFilename();
-            String uuid = UUID.randomUUID().toString();
-
-            String saveName = "user" + File.separator + uuid + "_" + fileName;
-
-            String saveNameWithPath = uploadPath + File.separator + "user" + File.separator + uuid + "_" + fileName;
-
-            Path savePath = Paths.get(saveNameWithPath);
-            dto.getFile().transferTo(savePath);
-
-            userService.changeProfilePhoto(saveName, dto.getUserId());
-        } else if(dto.getFile().isEmpty()) {
-            String ifPhotoEmpty = "user" + File.separator + "defaultImage.png";
-            userService.changeProfilePhoto(ifPhotoEmpty, dto.getUserId());
-        }
-        return ResponseEntity.ok().build();
-    }
-
-    // 개인정보 변경
+    // 개인정보 + 프사 변경
     @Transactional
     @PutMapping("/api/mypage/myinfo/updateProfile")
     public ResponseEntity changeProfile(UserDTO dto) throws IOException {
 
-        String saveName = "";
+        User user = User.builder()
+                .userEmail(dto.getUserEmail())
+                .userPhone(dto.getUserPhone())
+                .userPwd(passwordEncoder.encode(dto.getUserPwd()))
+                .userId(dto.getUserId())
+                .build();
+        log.info("defaultImg : " + dto.getDefaultImg());
 
-        // 프로필사진 변경 안하고 개인정보만 변경
-        if(dto.getFile() == null) {
-            User user = User.builder()
-                    .userEmail(dto.getUserEmail())
-                    .userPhone(dto.getUserPhone())
-                    .userPwd(passwordEncoder.encode(dto.getUserPwd()))
-                    .userId(dto.getUserId())
-                    .build();
-            userService.updateUser(user);
-        }
 
         // 프로필사진도 변경할때
-       else if(!dto.getFile().isEmpty()) {
+       if(dto.getFile()!=null ) {
             String fileName = dto.getFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
 
-            saveName = "user" + File.separator + uuid + "_" + fileName;
+           String saveName = "user" + File.separator + uuid + "_" + fileName;
 
             String saveNameWithPath = uploadPath + File.separator + "user" + File.separator + uuid + "_" + fileName;
 
             Path savePath = Paths.get(saveNameWithPath);
             dto.getFile().transferTo(savePath);
 
-            User user = User.builder()
-                    .userEmail(dto.getUserEmail())
-                    .userPhone(dto.getUserPhone())
-                    .userPwd(passwordEncoder.encode(dto.getUserPwd()))
-                    .userImg(saveName)
-                    .userId(dto.getUserId())
-                    .build();
+            user.setUserImg(saveName);
 
             userService.changeProfile(user);
         }
 
-//       else if(dto.getFile().isEmpty()) {
-//            saveName = "user" + File.separator + "defaultImage.png";
-//        }
+       // 기본 프로필사진으로 변경할때
+        else if(dto.getDefaultImg().equals("true")) {
+            String saveName2 = "user" + File.separator + "defaultImage.png";
+           user.setUserImg(saveName2);
 
+           userService.changeProfile(user);
+       }
+
+       else {
+           userService.updateUser(user);
+       }
 
         return ResponseEntity.ok().build();
     }
