@@ -164,21 +164,18 @@ public class AnimalBoardController {
     }
 
 
-    // 무한페이징 처리가 필요
+    // 무한페이징 처리가 필요 + 조회
     @GetMapping("public/animal-board")
-    public ResponseEntity<List<AnimalBoard>> viewAll(@RequestParam(name = "category", required = false)Integer animalCategoryCode, @RequestParam(name = "page", defaultValue = "1")int page){
-       log.info("page :" + page);
+    public ResponseEntity<List<AnimalBoard>> viewAll(AnimalBoardViewDTO dto, @RequestParam(name = "page", defaultValue = "1")int page){
+//       log.info("page :" + page);
+        // 조회수, 좋아요, 전체
         Sort sort = Sort.by("animalBoardCode");
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QAnimalBoard qAnimalBoard = QAnimalBoard.animalBoard;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if(animalCategoryCode !=null){
-            BooleanExpression expression = qAnimalBoard.animalCategory.animalCategoryCode.eq(animalCategoryCode);
 
-            builder.and(expression);
-        }
 
         Page<AnimalBoard> list = animalBoardService.viewAll(pageable, builder);
 
