@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,26 +18,38 @@ public class QClassBoardMainImage extends EntityPathBase<ClassBoardMainImage> {
 
     private static final long serialVersionUID = -1529797391L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QClassBoardMainImage classBoardMainImage = new QClassBoardMainImage("classBoardMainImage");
 
-    public final NumberPath<Integer> odcCode = createNumber("odcCode", Integer.class);
+    public final QClassBoard classBoard;
 
     public final NumberPath<Integer> odcImageCode = createNumber("odcImageCode", Integer.class);
 
     public final StringPath odcMainImage = createString("odcMainImage");
 
-    public final NumberPath<Integer> userId = createNumber("userId", Integer.class);
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QClassBoardMainImage(String variable) {
-        super(ClassBoardMainImage.class, forVariable(variable));
+        this(ClassBoardMainImage.class, forVariable(variable), INITS);
     }
 
     public QClassBoardMainImage(Path<? extends ClassBoardMainImage> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QClassBoardMainImage(PathMetadata metadata) {
-        super(ClassBoardMainImage.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QClassBoardMainImage(PathMetadata metadata, PathInits inits) {
+        this(ClassBoardMainImage.class, metadata, inits);
+    }
+
+    public QClassBoardMainImage(Class<? extends ClassBoardMainImage> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.classBoard = inits.isInitialized("classBoard") ? new QClassBoard(forProperty("classBoard"), inits.get("classBoard")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

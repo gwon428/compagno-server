@@ -1,9 +1,8 @@
 package com.project.compagnoserver.domain.OneDayClass;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.user.User;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,22 +13,27 @@ import org.hibernate.annotations.DynamicInsert;
 @AllArgsConstructor
 @Entity
 @DynamicInsert
+@Table(name = "oneday_class_board_main_image")
 public class ClassBoardMainImage {
 
     @Id
     @Column(name = "odc_image_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int odcImageCode;
     // 원데이 클래스 메인 이미지 코드
-
-    @Column(name = "odc_code")
-    private int odcCode;
-    // 원데이클래스 등록 후 코드
 
     @Column(name = "odc_main_image")
     private String odcMainImage;
     // 원데이클래스 메인이미지
 
-    @JoinColumn
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "odc_code")
+    @JsonIgnore
+    private ClassBoard classBoard;
+    // ClassBoard랑 조인 !!
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     // 유저 아이디
 }

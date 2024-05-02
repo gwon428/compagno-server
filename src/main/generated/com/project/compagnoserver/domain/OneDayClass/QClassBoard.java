@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QClassBoard extends EntityPathBase<ClassBoard> {
 
     private static final long serialVersionUID = -675995343L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QClassBoard classBoard = new QClassBoard("classBoard");
 
@@ -33,16 +36,27 @@ public class QClassBoard extends EntityPathBase<ClassBoard> {
 
     public final StringPath odcTitle = createString("odcTitle");
 
+    public final com.project.compagnoserver.domain.user.QUser user;
+
     public QClassBoard(String variable) {
-        super(ClassBoard.class, forVariable(variable));
+        this(ClassBoard.class, forVariable(variable), INITS);
     }
 
     public QClassBoard(Path<? extends ClassBoard> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QClassBoard(PathMetadata metadata) {
-        super(ClassBoard.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QClassBoard(PathMetadata metadata, PathInits inits) {
+        this(ClassBoard.class, metadata, inits);
+    }
+
+    public QClassBoard(Class<? extends ClassBoard> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }
