@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -86,7 +87,7 @@ public class NeighborBoardController {
         NeighborBoard neighbor = NeighborBoard.builder()
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(neighborBoardDTO.getAnimalCategoryCode()).build())
-                .locationCode(LocationParsing.builder()
+                .location(LocationParsing.builder()
                         .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
@@ -162,7 +163,7 @@ public class NeighborBoardController {
                 .neighborBoardCode(neighborBoardDTO.getNeighborBoardCode())
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(neighborBoardDTO.getAnimalCategoryCode()).build())
-                .locationCode(LocationParsing.builder()
+                .location(LocationParsing.builder()
                         .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())

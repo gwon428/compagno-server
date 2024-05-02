@@ -33,7 +33,7 @@ public class NeighborBoard {
 
     @ManyToOne
     @JoinColumn(name = "location_code")
-    private LocationParsing locationCode;
+    private LocationParsing location;
 
     @Column(name = "neighbor_title")
     private String neighborBoardTitle;

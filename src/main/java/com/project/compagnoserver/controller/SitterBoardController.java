@@ -80,7 +80,7 @@ public class SitterBoardController {
              builder.and(expression);
         }
         if(locationName!=null){
-            expression = qSitterBoard.location.locationName.like("'%" + locationName + "%'");
+            expression = qSitterBoard.location.locationName.like(locationName);
             builder.and(expression);
         }
 
@@ -113,6 +113,7 @@ public class SitterBoardController {
     @GetMapping("public/sitter/{code}")
     public ResponseEntity<SitterBoard> sitterView(@PathVariable("code") int code) {
         SitterBoard sitterBoard = sitterBoardService.sitterView(code);
+        log.info("sitterBoardUseId : " + sitterBoard.getUser().getUserId());
         return ResponseEntity.status(HttpStatus.OK).body(sitterBoard);
     }
 
@@ -238,11 +239,11 @@ public class SitterBoardController {
         Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
 
         Cookie cookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals("sitterBoardView"))
+                .filter(c -> c.getName().equals("sitterBoardViewCount"))
                 .findFirst()
                 .orElseGet(() -> {
                     sitterBoardService.sitterViewCount(code);
-                    return new Cookie("sitterBoardView", "[" + code + "]");
+                    return new Cookie("sitterBoardViewCount", "[" + code + "]");
                 });
 
         if(!cookie.getValue().contains("[" + code + "]")) {
@@ -250,7 +251,7 @@ public class SitterBoardController {
             cookie.setValue(cookie.getValue() + "[" + code + "]");
         }
         cookie.setPath("/");
-        cookie.setMaxAge(60*60*24);
+        cookie.setMaxAge(60 * 60 * 24);
         res.addCookie(cookie);
     }
 

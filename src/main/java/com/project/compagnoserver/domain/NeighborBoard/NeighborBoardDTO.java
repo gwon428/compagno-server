@@ -25,6 +25,8 @@ public class NeighborBoardDTO {
 
     private String userId;
 
+    private int neighborBoardViewCount;
+
     private Date neighborBoardRegiDate;
 
     private List<MultipartFile> files;

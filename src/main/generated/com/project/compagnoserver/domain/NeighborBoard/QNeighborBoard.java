@@ -26,7 +26,7 @@ public class QNeighborBoard extends EntityPathBase<NeighborBoard> {
 
     public final ListPath<NeighborBoardImage, QNeighborBoardImage> images = this.<NeighborBoardImage, QNeighborBoardImage>createList("images", NeighborBoardImage.class, QNeighborBoardImage.class, PathInits.DIRECT2);
 
-    public final com.project.compagnoserver.domain.Parsing.QLocationParsing locationCode;
+    public final com.project.compagnoserver.domain.Parsing.QLocationParsing location;
 
     public final NumberPath<Integer> neighborBoardCode = createNumber("neighborBoardCode", Integer.class);
 
@@ -63,7 +63,7 @@ public class QNeighborBoard extends EntityPathBase<NeighborBoard> {
     public QNeighborBoard(Class<? extends NeighborBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.animalCategoryCode = inits.isInitialized("animalCategoryCode") ? new com.project.compagnoserver.domain.Animal.QAnimalCategory(forProperty("animalCategoryCode")) : null;
-        this.locationCode = inits.isInitialized("locationCode") ? new com.project.compagnoserver.domain.Parsing.QLocationParsing(forProperty("locationCode"), inits.get("locationCode")) : null;
+        this.location = inits.isInitialized("location") ? new com.project.compagnoserver.domain.Parsing.QLocationParsing(forProperty("location"), inits.get("location")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
