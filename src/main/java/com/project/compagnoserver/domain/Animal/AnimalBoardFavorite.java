@@ -1,6 +1,6 @@
 package com.project.compagnoserver.domain.Animal;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,31 +8,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
-@Entity
+import java.util.Date;
+
 @Data
+@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@DynamicInsert
 @Builder
-@Table(name = "animal_board_image")
-public class AnimalBoardImage {
-
+@Table(name = "animal_board_favorite")
+@DynamicInsert
+public class AnimalBoardFavorite {
     @Id
-    @Column(name = "animal_image_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int animalImageCode;
+    @Column(name = "animal_favorite_code")
+    private  int animalFavoriteCode;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "animal_board_code")
-    @JsonIgnore
     private AnimalBoard animalBoard;
 
-    @Column(name = "animal_board_image")
-    private String animalBoardImage;
+    @Column(name = "animal_favorite_date")
+    private Date animalFavoriteDate;
 }
-
-/*
-* animal_image_code INT PRIMARY KEY AUTO_INCREMENT,
-    animal_board_code int,
-    animal_board_image varchar(300)
-* */

@@ -46,6 +46,9 @@ public class AnimalBoardComment {
     @ManyToOne
     @JoinColumn(name = "animal_parent_code" ,referencedColumnName = "animal_comment_code", insertable = false, updatable = false)
     private AnimalBoardComment animalParent;
+
+    @Column(name = "animal_comment_tag")
+    private String animalCommentTag;
 }
 /*
 
