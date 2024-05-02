@@ -107,11 +107,10 @@ public class ProductBoardService {
     
     // 게시판 북마크 확인
     public Integer checkBookmark (ProductBoardBookmark vo) {
-        return queryFactory.select(qProductBoardBookmark.productBookmarkCode)
-                .from(qProductBoardBookmark)
-                .where(qProductBoardBookmark.productBoardCode.eq(vo.getProductBoardCode()))
+        return queryFactory.selectFrom(qProductBoardBookmark)
+                .where(qProductBoardBookmark.productBoard.productBoardCode.eq(vo.getProductBoard().getProductBoardCode()))
                 .where(qProductBoardBookmark.user.userId.eq(vo.getUser().getUserId()))
-                .fetchOne();
+                .fetch().size();
 
     }
     // 게시판 북마크
@@ -125,11 +124,10 @@ public class ProductBoardService {
 
     // 게시판 추천 확인
     public Integer checkRecommend (ProductBoardRecommend vo) {
-        return queryFactory.select(qProductBoardRecommend.productRecommendCode)
-                .from(qProductBoardRecommend)
-                .where(qProductBoardRecommend.productBoardCode.eq(vo.getProductBoardCode()))
+        return queryFactory.selectFrom(qProductBoardRecommend)
+                .where(qProductBoardRecommend.productBoard.productBoardCode.eq(vo.getProductBoard().getProductBoardCode()))
                 .where(qProductBoardRecommend.user.userId.eq(vo.getUser().getUserId()))
-                .fetchOne();
+                .fetch().size();
     }
 
     // 게시판 추천
@@ -151,7 +149,7 @@ public class ProductBoardService {
     }
 
     // 검색, 전체보기
-    public Page<ProductBoard> searchProfuctBoard(ProductBoardSearchDTO dto, Pageable pageable) {
+    public Page<ProductBoard> searchProductBoard(ProductBoardSearchDTO dto, Pageable pageable) {
 
         String sort = dto.getSort();
 
@@ -207,10 +205,9 @@ public class ProductBoardService {
                 .fetch();
 
         // 게시판 수 카운트
-        Long count =queryFactory.select(qProductBoard.count())
-                .from(qProductBoard)
+        int count =queryFactory.selectFrom(qProductBoard)
                 .where(builder)
-                .fetchOne();
+                .fetch().size();
 
         // 페이징 처리
         return new PageImpl<>(list, pageable, count);
@@ -220,7 +217,7 @@ public class ProductBoardService {
     private OrderSpecifier<?>[] productBoardSort (String sort) {
 
         List<OrderSpecifier<?>> orderSpecifiers = new ArrayList<>();
-        if(sort.equals("view")) { // 조회수 순 DESC
+        if(sort!= null && sort.equals("view")) { // 조회수 순 DESC
             orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardViewCount));
         }
 

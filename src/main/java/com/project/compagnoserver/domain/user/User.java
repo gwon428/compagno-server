@@ -26,8 +26,6 @@ import java.util.Date;
 public class User implements UserDetails {
 
     @Id
-
-
     @Column(name = "user_id")
     private String userId;
 

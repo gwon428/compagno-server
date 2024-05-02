@@ -36,6 +36,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/compagno/*")
 @Slf4j
+@CrossOrigin (origins = {"http://localhost:3000"}, maxAge = 6000, allowCredentials = "true")
 public class ProductBoardController {
 
     @Autowired
@@ -124,7 +125,7 @@ public class ProductBoardController {
 
     // 게시판 조회
     @GetMapping("/productBoard/{code}")
-    public ResponseEntity<ProductBoard> view(@PathVariable(name="code") int code,
+    public ResponseEntity<?> view(@PathVariable(name="code") int code,
                                              HttpServletRequest req, HttpServletResponse res) {
         ProductBoard result = productBoard.viewBoard(code);
         viewCountUp(code, req, res);
@@ -267,12 +268,10 @@ public class ProductBoardController {
     // 게시판 검색, 조회
     @GetMapping("/productBoard/search")
     public ResponseEntity<Page<ProductBoard>> searchBoard(ProductBoardSearchDTO dto, @RequestParam(name = "page", defaultValue = "1") int page) {
-        Pageable pageable = PageRequest.of(page - 1, 5);
+        Pageable pageable = PageRequest.of(page - 1, 12);
         QProductBoard qProductBoard = QProductBoard.productBoard;
 
-        log.info("dto" + dto);
-
-        Page<ProductBoard> list = productBoard.searchProfuctBoard(dto, pageable);
+        Page<ProductBoard> list = productBoard.searchProductBoard(dto, pageable);
         return ResponseEntity.ok().body(list);
     }
     // 댓글 작성
@@ -310,7 +309,7 @@ public class ProductBoardController {
 
             for(ProductBoardComment comment : comments) {
                 ProductBoardCommentDTO dto = ProductBoardCommentDTO.builder()
-                        .productBoardCode(comment.getProductBoardCode())
+                        .productBoardCode(comment.getProductBoard().getProductBoardCode())
                         .productCommentCode(comment.getProductCommentCode())
                         .productCommentContent(comment.getProductCommentContent())
                         .productCommentRegiDate(comment.getProductCommentRegiDate())
@@ -319,7 +318,7 @@ public class ProductBoardController {
                 replies.add(dto);
             }
             ProductBoardCommentDTO dto = ProductBoardCommentDTO.builder()
-                    .productBoardCode(item.getProductBoardCode())
+                    .productBoardCode(item.getProductBoard().getProductBoardCode())
                     .productCommentCode(item.getProductCommentCode())
                     .productCommentContent(item.getProductCommentContent())
                     .productCommentRegiDate(item.getProductCommentRegiDate())

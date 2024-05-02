@@ -1,4 +1,4 @@
-package com.project.compagnoserver.domain.WalkiesBoard;
+package com.project.compagnoserver.domain.NeighborBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -10,20 +10,20 @@ import org.hibernate.annotations.DynamicInsert;
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
 @DynamicInsert
-@Table(name = "walkies_board_image")
-public class WalkiesBoardImage {
+@Table(name = "neighbor_board_image")
+public class NeighborBoardImage {
 
     @Id
-    @Column(name = "walkies_image_code")
+    @Column(name = "neighbor_image_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int walkiesImageCode;
+    private int neighborImageCode;
 
     @ManyToOne
-    @JoinColumn(name = "walkies_board_code")
+    @JoinColumn(name = "neighbor_board_code")
     @JsonIgnore
-    private WalkiesBoard walkiesBoard;
+    private NeighborBoard neighborBoard;
 
-    @Column(name = "walkies_bd_image")
-    private String walkiesBoardImage;
+    @Column(name = "neighbor_bd_image")
+    private String neighborImage;
 
 }

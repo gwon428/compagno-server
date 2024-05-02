@@ -1,5 +1,4 @@
-package com.project.compagnoserver.domain.WalkiesBoard;
-
+package com.project.compagnoserver.domain.NeighborBoard;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,21 +11,21 @@ import java.util.Date;
 @Entity
 @Data @NoArgsConstructor @AllArgsConstructor
 @DynamicInsert
-@Table(name = "walkies_board_bookmark")
-public class WalkiesBoardBookmark {
+@Table(name = "neighbor_board_bookmark")
+public class NeighborBoardBookmark {
 
     @Id
-    @Column(name = "walkies_bookmark_code")
-    private int walkiesBookmarkCode;
+    @Column(name = "neighbor_bookmark_code")
+    private int neighborBookmarkCode;
 
-    @Column(name = "walkies_board_code")
-    private int walkiesBoardCode;
+    @Column(name = "neighbor_board_code")
+    private int neighborBoardCode;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "walkies_bookmark_date")
-    private Date walkiesBookmarkDate;
+    @Column(name = "neighbor_bookmark_date")
+    private Date neighborBookmarkDate;
 
 }

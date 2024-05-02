@@ -37,35 +37,71 @@ public class AnimalBoardCommentController {
         log.info("dto : " + dto);
 
         // 시큐리티에 담은 로그인한 사용자 정보 가져오기
-//        SecurityContext securityContext = SecurityContextHolder.getContext();
-//        Authentication authentication = securityContext.getAuthentication();
-//        Object principal = authentication.getPrincipal();
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
 //
-//        if(principal instanceof  User){
-//            User user =(User) principal;
+        if(principal instanceof  User){
+            User user =(User) principal;
 //            log.info("user : " + user);
-            AnimalBoardComment comment = new AnimalBoardComment();
-            comment.setAnimalCommentContent(dto.getAnimalCommentContent());
-            comment.setAnimalCommentDate(nowDate);
-            comment.setAnimalParentCode(dto.getAnimalParentCode());
-            AnimalBoard board = new AnimalBoard();
-            board.setAnimalBoardCode(dto.getAnimalBoardCode()); // 어떤 글에 쓴 댓글
-            comment.setAnimalBoard(board);
+            AnimalBoardComment comment =AnimalBoardComment.builder()
+                    .animalCommentContent(dto.getAnimalCommentContent())
+                    .animalCommentDate(nowDate)
+                    .animalParentCode(dto.getAnimalParentCode())
+                    .animalBoard(AnimalBoard.builder()
+                            .animalBoardCode(dto.getAnimalBoardCode())
+                            .build())
+                    .user(User.builder()
+                            .userId(user.getUserId())
+                            .build())
+                    .build();
+//            comment.setAnimalCommentContent(dto.getAnimalCommentContent());
+//            comment.setAnimalCommentDate(nowDate);
+//            comment.setAnimalParentCode(dto.getAnimalParentCode());
+//            AnimalBoard board = new AnimalBoard();
+//            board.setAnimalBoardCode(dto.getAnimalBoardCode()); // 어떤 글에 쓴 댓글
+//            comment.setAnimalBoard(board);
+////            comment.setUser(user);
+//            User user = new User();
+//            user.setUserNickname(dto.getUser().getUserNickname());
+//            user.setUserId(dto.getUser().getUserId());
 //            comment.setUser(user);
-            User user = new User();
-            user.setUserNickname(dto.getUser().getUserNickname());
-            user.setUserId(dto.getUser().getUserId());
-            comment.setUser(user);
 
             AnimalBoardComment writtenComment = animalBoardCommentService.writeComment(comment);
 //            log.info("writtenComment : " + writtenComment);
             return ResponseEntity.ok().build(); // 댓글추가
-//        }
-//    return ResponseEntity.badRequest().build();
+        }
+    return ResponseEntity.badRequest().build();
     }
 
+    // 댓글 수정
+    @PutMapping("/animal-board/comment")
+    public ResponseEntity<AnimalBoardComment> updateComment(@RequestBody AnimalBoardCommentDTO dto){
+        log.info("dto : " + dto);
+        AnimalBoardComment updateComment = AnimalBoardComment.builder()
+                .animalCommentCode(dto.getAnimalCommentCode())
+                .animalParentCode(dto.getAnimalParentCode())
+                .animalCommentContent(dto.getAnimalCommentContent())
+                .animalCommentDate(dto.getAnimalCommentDate())
+                .animalBoard(AnimalBoard.builder()
+                        .animalBoardCode(dto.getAnimalBoardCode())
+                        .build())
+                .user((User.builder()
+                        .userId(dto.getUser().getUserId())
+                        .userNickname(dto.getUser().getUserNickname())
+                        .build()))
+                .build();
+        animalBoardCommentService.writeComment(updateComment);
+        return ResponseEntity.ok().build();
+    }
+    // 댓글삭제
+    @DeleteMapping("/animal-board/comment/{animalCommentCode}")
+    public ResponseEntity<?> deleteComment (@PathVariable(name = "animalCommentCode") int commentCode){
+        animalBoardCommentService.deleteComment(commentCode);
+        return ResponseEntity.ok().build();
+    }
     // 댓글 불러오기
-    @GetMapping("/animal-board/{animalBoardCode}/comment")
+    @GetMapping("/public/animal-board/{animalBoardCode}/comment")
     public ResponseEntity<List<AnimalBoardCommentDTO>> getAnimalBoardComments(@PathVariable(name = "animalBoardCode") int boardCode){
         List<AnimalBoardComment> topList = animalBoardCommentService.topLevelComments(boardCode);
         List<AnimalBoardCommentDTO> comments = new ArrayList<>();
@@ -79,6 +115,7 @@ public class AnimalBoardCommentController {
                         .animalCommentCode(bottomReply.getAnimalCommentCode())
                         .animalCommentContent(bottomReply.getAnimalCommentContent())
                         .animalCommentDate(bottomReply.getAnimalCommentDate())
+                        .animalParentCode(bottomReply.getAnimalParentCode())
                         .user(UserDTO.builder()
                                 .userNickname(bottomReply.getUser().getUserNickname())
                                 .userImg(bottomReply.getUser().getUserImg())
@@ -99,7 +136,7 @@ public class AnimalBoardCommentController {
                     .build();
             comments.add(dto); //상위댓글DTO
         }
-//        log.info("comments : " + comments);
+        log.info("comments : " + comments);
         return ResponseEntity.ok(comments);
     }
 }

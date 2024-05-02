@@ -4,6 +4,9 @@ import com.project.compagnoserver.domain.SitterBoard.*;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.SitterBoardService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -115,6 +116,27 @@ public class SitterBoardController {
     }
 
 
+    // 조회수
+    public void sitterViewCount(int code, HttpServletRequest req, HttpServletResponse res) {
+        Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
+
+        Cookie cookie = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("sitterBoardView"))
+                .findFirst()
+                .orElseGet(() -> {
+                    sitterBoardService.sitterViewCount(code);
+                    return new Cookie("sitterBoardView", "[" + code + "]");
+                });
+
+        if(!cookie.getValue().contains("[" + code + "]")) {
+            sitterBoardService.sitterViewCount(code);
+            cookie.setValue(cookie.getValue() + "[" + code + "]");
+        }
+        cookie.setPath("/");
+        cookie.setMaxAge(60*60*24);
+        res.addCookie(cookie);
+    }
+
     // 댓글 추가
     @PostMapping("/sitter/comment")
     public ResponseEntity sitterCommentCreate(@RequestBody SitterBoardComment sitterBoardComment) {
@@ -131,8 +153,16 @@ public class SitterBoardController {
 
     // 댓글 수정
     @PutMapping("/sitter/comment")
-    public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
-        sitterBoardService.sitterCommentUpdate(sitterBoardComment);
+    public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterCommentDTO sitterCommentDTO) {
+        log.info("dto : " + sitterCommentDTO);
+        SitterBoardComment comment = sitterBoardService.sitterCommentview(sitterCommentDTO.getSitterCommentCode());
+
+        log.info("comment : " + comment);
+
+        comment.setSitterCommentCode(sitterCommentDTO.getSitterCommentCode());
+        comment.setSitterCommentContent(sitterCommentDTO.getSitterCommentContent());
+
+        sitterBoardService.sitterCommentUpdate(comment);
         return ResponseEntity.ok().build();
     }
 
@@ -146,11 +176,13 @@ public class SitterBoardController {
     // 각 게시판에 대한 댓글 조회
     @GetMapping("/sitter/{code}/comment")
     public ResponseEntity<List<SitterCommentDTO>> sitterViewAllComment(@PathVariable(name = "code") int code) {
+        log.info("code : " + code);
         List<SitterBoardComment> topList = sitterBoardService.getTopComments(code);
         List<SitterCommentDTO> response = new ArrayList<>();
 
         for(SitterBoardComment top : topList) {
             List<SitterBoardComment> replies = sitterBoardService.getReplyComments(top.getSitterCommentCode(), code);
+
             List<SitterCommentDTO> repliesDTO = new ArrayList<>();
 
             for(SitterBoardComment reply : replies) {
@@ -168,7 +200,7 @@ public class SitterBoardController {
 
             SitterCommentDTO dto = SitterCommentDTO.builder()
                     .sitterBoardCode(top.getSitterBoardCode())
-                    .sitterBoardCode(top.getSitterCommentCode())
+                    .sitterCommentCode(top.getSitterCommentCode())
                     .sitterCommentContent(top.getSitterCommentContent())
                     .sitterCommentRegiDate(top.getSitterCommentRegiDate())
                     .user(UserDTO.builder()

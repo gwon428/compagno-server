@@ -22,7 +22,7 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public static final QProductBoardRecommend productBoardRecommend = new QProductBoardRecommend("productBoardRecommend");
 
-    public final NumberPath<Integer> productBoardCode = createNumber("productBoardCode", Integer.class);
+    public final QProductBoard productBoard;
 
     public final NumberPath<Integer> productRecommendCode = createNumber("productRecommendCode", Integer.class);
 
@@ -48,6 +48,7 @@ public class QProductBoardRecommend extends EntityPathBase<ProductBoardRecommend
 
     public QProductBoardRecommend(Class<? extends ProductBoardRecommend> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.productBoard = inits.isInitialized("productBoard") ? new QProductBoard(forProperty("productBoard"), inits.get("productBoard")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 

@@ -4,12 +4,16 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.Animal.*;
 import com.project.compagnoserver.domain.Animal.AnimalBoard;
 import com.project.compagnoserver.domain.Animal.AnimalBoardDTO;
+import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.AnimalBoardService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,25 +47,47 @@ public class AnimalBoardController {
     LocalDateTime localDateTime = LocalDateTime.now();
     Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
 
+
+
+
+
+
+
     // 자유게시판 글쓰기
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> write(@RequestBody AnimalBoardDTO dto) throws IOException {
         log.info("dto : " + dto);
+        // 시큐리티에 담은 로그인한 사용자 정보 가져오기
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal instanceof User) {
+            User user = (User) principal;
+            // 글작성
+            AnimalBoard board = AnimalBoard.builder()
+                    .animalBoardTitle(dto.getAnimalBoardTitle())
+                    .animalBoardContent(dto.getAnimalBoardContent())
+                    .animalBoardDate(nowDate)
+                    .animalCategory(AnimalCategory.builder()
+                            .animalCategoryCode(dto.getAnimalCategoryCode())
+                            .build())
+                    .user(User.builder()
+                            .userId(user.getUserId())
+                            .build())
+                    .build();
+            AnimalBoard writtenBoard = animalBoardService.write(board);
+//            AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/
+//            vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
+//            vo.setAnimalBoardContent(dto.getAnimalBoardContent());
+//            vo.setAnimalBoardDate(nowDate);
+////        vo.setAnimalBoardCode(dto.getAnimalCategoryCode());
+//            AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
+//            animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
+//            vo.setAnimalCategory(animalCategory);
 
+            //log.info("vo : " + writtenBoard);
 
-        // 글작성
-        AnimalBoard vo = new AnimalBoard(); // 추가로 필요한것 : userId/
-        vo.setAnimalBoardTitle(dto.getAnimalBoardTitle());
-        vo.setAnimalBoardContent(dto.getAnimalBoardContent());
-        vo.setAnimalBoardDate(nowDate);
-//        vo.setAnimalBoardCode(dto.getAnimalCategoryCode());
-        AnimalCategory animalCategory = new AnimalCategory(); // board -> category로 animalCategoryCode 가져오기
-        animalCategory.setAnimalCategoryCode(dto.getAnimalCategoryCode());
-        vo.setAnimalCategory(animalCategory);
-        AnimalBoard writtenBoard = animalBoardService.write(vo);
-        //log.info("vo : " + writtenBoard);
-
-        // 글에 필요한 사진 넣기- 어떤 글의 사진? => animal_board_code 필요
+            // 글에 필요한 사진 넣기- 어떤 글의 사진? => animal_board_code 필요
 //        for(MultipartFile file : dto.getFiles()){
 //            log.info("file :" + file.getOriginalFilename());
 //
@@ -77,10 +103,12 @@ public class AnimalBoardController {
 //            animalBoardService.writeImages(image);
 
 //        }
-        return writtenBoard !=null ? ResponseEntity.ok(writtenBoard) : ResponseEntity.badRequest().build();
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
     // 무한페이징 처리가 필요
-    @GetMapping("/animal-board")
+    @GetMapping("public/animal-board")
     public ResponseEntity<List<AnimalBoard>> viewAll(){
         List<AnimalBoard> list = animalBoardService.viewAll();
 
@@ -88,7 +116,7 @@ public class AnimalBoardController {
     }
 
     // 자유게시판 - 글 한개보기 = 게시판 상세보기
-    @GetMapping("/animal-board/{animalBoardCode}")
+    @GetMapping("/public/animal-board/{animalBoardCode}")
     public ResponseEntity<AnimalBoardDTO> viewDetail(@PathVariable(name = "animalBoardCode")int animalBoardCode){
         animalBoardService.boardView(animalBoardCode);
         AnimalBoard getBoard = animalBoardService.viewDetail(animalBoardCode);
@@ -99,10 +127,10 @@ public class AnimalBoardController {
                 .animalBoardContent(getBoard.getAnimalBoardContent())
                 .animalBoardView(getBoard.getAnimalBoardView())
                 .animalMainImage(getBoard.getAnimalMainImage())
-//                .user(UserDTO.builder()
-//                        .userNickname(getBoard.getUser().getUserNickname())
-//                        .userImg(getBoard.getUser().getUserImg())
-//                        .build())
+                .user(UserDTO.builder()
+                        .userNickname(getBoard.getUser().getUserNickname())
+                        .userImg(getBoard.getUser().getUserImg())
+                        .build())
                 .animalCategory(getBoard.getAnimalCategory())
                 .build();
 //    log.info("getdto : " + getBoardDTO);
