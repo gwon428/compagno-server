@@ -41,13 +41,13 @@ public class UserController {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    LocalDateTime localDateTime = LocalDateTime.now();
-    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
-
 
     // 회원가입
     @PostMapping("/signUp")
     public ResponseEntity create(@RequestBody User vo) {
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
         String uuid = UUID.randomUUID().toString();
 
         User user = User.builder()
