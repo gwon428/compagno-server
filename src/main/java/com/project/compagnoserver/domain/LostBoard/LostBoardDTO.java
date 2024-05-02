@@ -37,4 +37,5 @@ public class LostBoardDTO {
     private Date lostRegiDate;
 
     private List<MultipartFile> images;
+    private List<String> image;
 }

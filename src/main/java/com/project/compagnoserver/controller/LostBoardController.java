@@ -155,8 +155,9 @@ public class LostBoardController {
         Pageable pageable = PageRequest.of(page-1, 12);
 
         // 작성일 순(선입, 후입)
+        Sort lRegiDateD = Sort.by("lostBoardCode").descending();
         Sort lRegiDate = Sort.by("lostRegiDate");
-        Sort lRegiDateD = Sort.by("lostRegiDate").descending();
+
 
         if(sortNum==0){
             pageable = PageRequest.of(page-1, 12, lRegiDateD);
@@ -286,66 +287,82 @@ public class LostBoardController {
     public ResponseEntity<LostBoard> update(LostBoardDTO dto) throws IOException {
         log.info("dto : " + dto);
 
-        LostBoard prev = service.view(dto.getLostBoardCode());
-        LostBoard lost = service.view(dto.getLostBoardCode());;
+//        LostBoard prev = service.view(dto.getLostBoardCode());
+//        LostBoard lost = service.view(dto.getLostBoardCode());;
 
-        lost.setUserId(dto.getUserId());
-        lost.setUserImg(dto.getUserImg());
-        lost.setUserNickname(dto.getUserNickname());
-        lost.setUserPhone(dto.getUserPhone());
-//        lost.setLostTitle(dto.getLostTitle());
-        lost.setLostAnimalImage(dto.getLostAnimalImage());
-        lost.setLostAnimalName(dto.getLostAnimalName());
-        lost.setLostDate(dto.getLostDate());
-        lost.setLostLocation(dto.getLostLocation());
-        lost.setLostLocationDetail(dto.getLostLocationDetail());
-        lost.setLostAnimalKind(dto.getLostAnimalKind());
-        lost.setLostAnimalColor(dto.getLostAnimalColor());
-        lost.setLostAnimalGender(dto.getLostAnimalGender());
-        lost.setLostAnimalAge(dto.getLostAnimalAge());
-        lost.setLostAnimalFeature(dto.getLostAnimalFeature());
-        lost.setLostAnimalRFID(dto.getLostAnimalRFID());
+        List<LostBoardImage> list = service.findByCode(dto.getLostBoardCode());
+
+        List<String> mainImage = new ArrayList<>();
+
+        LostBoard lost = LostBoard.builder()
+                .lostBoardCode(dto.getLostBoardCode())
+                .userId(dto.getUserId())
+                .userImg(dto.getUserImg())
+                .userNickname(dto.getUserNickname())
+                .userPhone(dto.getUserPhone())
+                .lostAnimalName(dto.getLostAnimalName())
+                .lostDate(dto.getLostDate())
+                .lostLocation(dto.getLostLocation())
+                .lostLocationDetail(dto.getLostLocationDetail())
+                .lostAnimalKind(dto.getLostAnimalKind())
+                .lostAnimalColor(dto.getLostAnimalColor())
+                .lostAnimalGender(dto.getLostAnimalGender())
+                .lostAnimalAge(dto.getLostAnimalAge())
+                .lostAnimalFeature(dto.getLostAnimalFeature())
+                .lostAnimalRFID(dto.getLostAnimalRFID())
+                .lostRegiDate(dto.getLostRegiDate())
+                .build();
 
 
-        LostBoard result = service.update(lost);
+
+        for(LostBoardImage image : list){
+
+            if(dto.getImage()!=null&&!dto.getImage().contains(image.getLostImage()) || dto.getImage()==null) {
+                File file = new File(image.getLostImage());
+                file.delete();
+                service.deleteImage(image.getLostImageCode());
+            } else {
+                mainImage.add(image.getLostImage());
+            }
+        }
 
         if(dto.getImages()!=null){
-            // 1) 추가 사진 O
-            if(prev.getImages()!=null){
-                // -> 기존 사진 O : 기존 사진 삭제 + 추가 사진 넣기
-                service.imageDelete(dto.getLostBoardCode());
-            } else{// -> 기존 사진 X : 추가 사진 넣기
+
+            for(LostBoardImage image : list){
+                File file = new File(image.getLostImage());
+                file.delete();
+                service.deleteImage(image.getLostImageCode());
+                mainImage.remove(0);
             }
-                for(MultipartFile file : dto.getImages()){
-                    LostBoardImage images = new LostBoardImage();
+            for(MultipartFile file : dto.getImages()){
 
-                    String fileName = file.getOriginalFilename();
-                    String uuid = UUID.randomUUID().toString();
+                String fileName =  file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString();
 
-                    String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
+                String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    images.setLostImage(saveName);
-                    images.setLostBoardCode(result);
-                    service.update(images);
-                }
+                    service.createImages(LostBoardImage.builder()
+                            .lostImage(saveName)
+                            .lostBoardCode(LostBoard.builder().lostBoardCode(dto.getLostBoardCode()).build())
+                            .build());
 
-        } else {// 2) 추가 사진 X
-            // -> 기존 사진 O : 기존 사진 남기기 (사진 처리X)
-            // -> 기존 사진 x : 사진 처리X
-            if(prev.getImages()!=null){
-                log.info(prev.getImages().toString());
-            } else {}
+                mainImage.add(saveName);
 
-            // 기존 사진 있을 경우 글만 변경 원하고 추가 사진 없으며 기존 사진 삭제 원할 때
-            //if(!file.getOriginalFilename().equals("")) 해당 조건 사용하기!
+            }
 
+//            log.info(vo.getLostImage());
+            log.info(dto.getImages().toString());
         }
-       // log.info("result : " + result.getLostTitle());
-        return result!=null?
-                ResponseEntity.status(HttpStatus.CREATED).body(result):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        lost.setLostAnimalImage(mainImage.getFirst());
+
+        service.create(lost);
+
+    return ResponseEntity.ok().build();
+//        return result!=null?
+//                ResponseEntity.status(HttpStatus.CREATED).body(result):
+//                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
     }
 
