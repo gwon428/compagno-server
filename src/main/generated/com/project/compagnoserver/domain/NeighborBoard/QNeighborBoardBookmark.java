@@ -28,7 +28,7 @@ public class QNeighborBoardBookmark extends EntityPathBase<NeighborBoardBookmark
 
     public final DateTimePath<java.util.Date> neighborBookmarkDate = createDateTime("neighborBookmarkDate", java.util.Date.class);
 
-    public final com.project.compagnoserver.domain.user.QUser user;
+    public final com.project.compagnoserver.domain.user.QUser userId;
 
     public QNeighborBoardBookmark(String variable) {
         this(NeighborBoardBookmark.class, forVariable(variable), INITS);
@@ -48,7 +48,7 @@ public class QNeighborBoardBookmark extends EntityPathBase<NeighborBoardBookmark
 
     public QNeighborBoardBookmark(Class<? extends NeighborBoardBookmark> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
+        this.userId = inits.isInitialized("userId") ? new com.project.compagnoserver.domain.user.QUser(forProperty("userId")) : null;
     }
 
 }

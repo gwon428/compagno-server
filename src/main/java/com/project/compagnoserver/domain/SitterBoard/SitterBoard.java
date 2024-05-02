@@ -1,6 +1,8 @@
 package com.project.compagnoserver.domain.SitterBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,13 +26,17 @@ public class SitterBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int sitterBoardCode;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "sitter_category_code")
-    @JsonIgnore
     private SitterCategory sitterCategory;
 
-    @Column(name = "sitter_location")
-    private String sitterLocation;
+    @ManyToOne
+    @JoinColumn(name = "animal_category_code")
+    private AnimalCategory animalCategoryCode;
+
+    @ManyToOne
+    @JoinColumn(name = "location_code")
+    private LocationParsing location;
 
     @Column(name = "sitter_title")
     private String sitterTitle;
@@ -40,7 +46,7 @@ public class SitterBoard {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
     @Column(name = "sitter_view_count")
     private int sitterViewCount;
@@ -51,6 +57,6 @@ public class SitterBoard {
     @Column(name = "sitter_update_date")
     private Date sitterUpdateDate;
 
-    @OneToMany(mappedBy = "sitterBoard")
+    @OneToMany(mappedBy = "sitterBoard", orphanRemoval = true)
     private List<SitterBoardImage> images;
 }

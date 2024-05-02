@@ -23,7 +23,7 @@ public class NeighborBoardBookmark {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User userId;
 
     @Column(name = "neighbor_bookmark_date")
     private Date neighborBookmarkDate;
