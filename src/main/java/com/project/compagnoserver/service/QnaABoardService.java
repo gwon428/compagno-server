@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service @Slf4j
 public class QnaABoardService {
     @Autowired
@@ -30,8 +32,8 @@ public class QnaABoardService {
         return dao.findByqnaQCode(code);
     }
 
-    public QnaABoardImage viewImg(QnaQBoardImage vo){
-        return image.findById(vo.getQnaQImgCode()).orElse(null);
+    public List<QnaABoardImage> viewImg(int code){
+        return image.findByQnaACode(code);
     }
 
     public QnaABoard update(QnaABoard vo){

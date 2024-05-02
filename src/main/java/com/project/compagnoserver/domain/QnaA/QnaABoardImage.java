@@ -21,8 +21,11 @@ public class QnaABoardImage {
     @Column(name="qna_a_url")
     private String qnaAUrl;
 
-    @ManyToOne
-    @JoinColumn(name="qna_a_code")
-    @JsonIgnore
-    private QnaABoard qnaACode;
+    @Column(name="qna_a_code")
+    private int qnaACode;
+
+//    @ManyToOne
+//    @JoinColumn(name="qna_a_code")
+//    @JsonIgnore
+//    private QnaABoard qnaACode;
 }

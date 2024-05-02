@@ -58,7 +58,7 @@ public class QQnaQBoard extends EntityPathBase<QnaQBoard> {
 
     public QQnaQBoard(Class<? extends QnaQBoard> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.qnaACode = inits.isInitialized("qnaACode") ? new com.project.compagnoserver.domain.QnaA.QQnaABoard(forProperty("qnaACode")) : null;
+        this.qnaACode = inits.isInitialized("qnaACode") ? new com.project.compagnoserver.domain.QnaA.QQnaABoard(forProperty("qnaACode"), inits.get("qnaACode")) : null;
     }
 
 }

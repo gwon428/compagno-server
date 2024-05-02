@@ -18,9 +18,9 @@ public class QQnaABoard extends EntityPathBase<QnaABoard> {
 
     private static final long serialVersionUID = -966417873L;
 
-    public static final QQnaABoard qnaABoard = new QQnaABoard("qnaABoard");
+    private static final PathInits INITS = PathInits.DIRECT2;
 
-    public final ListPath<QnaABoardImage, QQnaABoardImage> files = this.<QnaABoardImage, QQnaABoardImage>createList("files", QnaABoardImage.class, QQnaABoardImage.class, PathInits.DIRECT2);
+    public static final QQnaABoard qnaABoard = new QQnaABoard("qnaABoard");
 
     public final NumberPath<Integer> qnaACode = createNumber("qnaACode", Integer.class);
 
@@ -30,20 +30,29 @@ public class QQnaABoard extends EntityPathBase<QnaABoard> {
 
     public final StringPath qnaATitle = createString("qnaATitle");
 
-    public final NumberPath<Integer> qnaQCode = createNumber("qnaQCode", Integer.class);
+    public final com.project.compagnoserver.domain.QnaQ.QQnaQBoard qnaQCode;
 
     public final StringPath userId = createString("userId");
 
     public QQnaABoard(String variable) {
-        super(QnaABoard.class, forVariable(variable));
+        this(QnaABoard.class, forVariable(variable), INITS);
     }
 
     public QQnaABoard(Path<? extends QnaABoard> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QQnaABoard(PathMetadata metadata) {
-        super(QnaABoard.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QQnaABoard(PathMetadata metadata, PathInits inits) {
+        this(QnaABoard.class, metadata, inits);
+    }
+
+    public QQnaABoard(Class<? extends QnaABoard> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.qnaQCode = inits.isInitialized("qnaQCode") ? new com.project.compagnoserver.domain.QnaQ.QQnaQBoard(forProperty("qnaQCode"), inits.get("qnaQCode")) : null;
     }
 
 }
