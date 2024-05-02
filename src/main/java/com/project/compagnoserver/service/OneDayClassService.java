@@ -1,7 +1,9 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.OneDayClass.ClassBoard;
+import com.project.compagnoserver.domain.OneDayClass.ClassBoardMainImage;
 import com.project.compagnoserver.repo.OneDayClass.ClassBoardDAO;
+import com.project.compagnoserver.repo.OneDayClass.ClassBoardMainImageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,27 @@ public class OneDayClassService {
     @Autowired
     private ClassBoardDAO dao;
 
+    @Autowired
+    private ClassBoardMainImageDAO img;
+
+    // 이미지 저장
+    public ClassBoardMainImage create(ClassBoardMainImage vo){
+        return img.save(vo);
+    }
+    // 이미지 조회
+    public List<ClassBoardMainImage> viewImages(int odcImageCode){
+        return img.findByCode(odcImageCode);
+    }
+
+    // 이미지 수정
+    public ClassBoardMainImage updateImages(ClassBoardMainImage vo){
+        return img.
+    }
+
+    // 이미지 삭제
+    public void deleImage(int )
+
+//    ============================================================================
     // 원데이 클래스 등록 insert
     public ClassBoard insert(ClassBoard vo){
         return dao.save(vo);
@@ -38,9 +61,10 @@ public class OneDayClassService {
     };
 
     // 등록된 원데이 클래스 삭제
-    public void delete(int odcCode){
+    public ClassBoard delete(int odcCode){
         if (dao.existsById(odcCode)){
             dao.deleteById(odcCode);
         };
+        return null;
     }
 }

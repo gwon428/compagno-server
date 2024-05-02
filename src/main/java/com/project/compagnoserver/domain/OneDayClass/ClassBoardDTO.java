@@ -15,9 +15,10 @@ import java.util.Date;
 public class ClassBoardDTO {
 
     private int odcCode;
-    private String odcTitile;
+    private String odcTitle;
     private String odcContent;
     private MultipartFile file;
-    private Date odcStartDate;
-//    private int cateCode;
+    private String odcStartDate;
+    private String odcLastDate;
+
 }
