@@ -6,6 +6,9 @@ import com.project.compagnoserver.domain.OneDayClass.ClassBoardMainImage;
 import com.project.compagnoserver.service.OneDayClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,14 +36,9 @@ public class OneDayClassController {
     @PostMapping("/ClassBoard")
     public ResponseEntity<ClassBoard> insert(ClassBoardDTO dto) throws IOException {
 
-        // 파일 업로드
-        String fileName = dto.getFile().getOriginalFilename();
-
-        // UUID
-        String uuid = UUID.randomUUID().toString();
-        //                업로드까지 ! +
+        String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+        String uuid = UUID.randomUUID().toString();  // UUID
         String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-        //                      vo => 보내고있다 !!
         Path savePath = Paths.get(saveName);
         dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
 
@@ -62,7 +60,9 @@ public class OneDayClassController {
 
     // 클래스 전체 보기
     @GetMapping("/ClassBoard")
-    public ResponseEntity <List<ClassBoard>> viewAll(){
+    public ResponseEntity <List<ClassBoard>> viewAll(@RequestParam(name = "page", defaultValue = "1") int page){
+        Sort sort = Sort.by("odcCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 10);
        List<ClassBoard> list = service.viewAll();
        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
@@ -77,21 +77,12 @@ public class OneDayClassController {
 
     // 등록된 클래스 수정
     @PutMapping("/ClassBoard")
-    public ResponseEntity update(ClassBoardDTO dto, ClassBoardMainImage img){
-
+    public ResponseEntity<ClassBoard> update(ClassBoardDTO dto){
         ClassBoardMainImage vo = new ClassBoardMainImage();
-//        vo.set(dto.getOdcTitile());
-//        vo.setOdcContent(dto.getOdcContent());
-
-        ClassBoard prev = service.view(dto.getOdcCode());
 
         if (dto.getFile().isEmpty()){
             // 새로운 사진이 없는 경우 -> 기존 경로로 vo에 담아낸다.
-//            vo.set
         }
-
-
-//        service.update(vo);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

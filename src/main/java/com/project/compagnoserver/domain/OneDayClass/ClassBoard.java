@@ -1,5 +1,6 @@
 package com.project.compagnoserver.domain.OneDayClass;
 
+import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,9 +48,9 @@ public class ClassBoard {
     @Column(name = "odc_last_date")
     private Date odcLastDate;
 
-//    // 사용자 ID
-//    @ManyToOne
-//    @JoinColumn
-//    private String userId;
+    // 사용자 ID
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
 
 }
