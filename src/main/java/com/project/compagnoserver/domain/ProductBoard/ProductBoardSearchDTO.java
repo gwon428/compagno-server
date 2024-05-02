@@ -10,13 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ProductBoardSearchDTO {
-    private String title;
     private String productName;
     private Integer minPrice;
     private Integer maxPrice;
     private String productCate;
     private Float grade;
-    private String nickname;
     private Integer animal;
     private String select;
     private String keyword;

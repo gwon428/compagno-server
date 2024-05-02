@@ -44,7 +44,7 @@ public class ProductBoardCommentService {
     public void delete(int code) {
         if(dao.existsById(code)) {
             queryFactory.update(qProductBoardComment)
-                    .set(qProductBoardComment.productCommentDelete, 'y')
+                    .set(qProductBoardComment.productCommentDelete, 'Y')
                     .where(qProductBoardComment.productCommentCode.eq(code))
                     .execute();
         }

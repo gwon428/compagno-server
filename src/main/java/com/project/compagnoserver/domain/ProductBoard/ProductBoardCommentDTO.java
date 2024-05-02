@@ -29,5 +29,9 @@ public class ProductBoardCommentDTO {
 
     private User user;
 
+    private int productParentCode;
+
+    private Character productCommentDelete;
+
     private List<ProductBoardCommentDTO> replies = new ArrayList<>();
 }
