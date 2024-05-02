@@ -99,6 +99,7 @@ public class QnaQBoardController {
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
                         img.setQnaQUrl(saveName.substring(27));
+//                        img.setQnaQUrl(saveName.subString(34));
                         img.setQnaQCode(result.getQnaQCode());
 
                         service.createImg(img);

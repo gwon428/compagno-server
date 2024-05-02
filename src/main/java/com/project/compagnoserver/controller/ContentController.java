@@ -32,14 +32,17 @@ public class ContentController {
 
 
     // 전체보기
-    @GetMapping("/content")
+    @GetMapping("/content/list")
     public ResponseEntity<Page<Parsing>> view(@RequestParam(name="mainCate", required = true) int mainCate,
                                               @RequestParam(name="subCate", required = true, defaultValue = "0") int subCate,
                                               @RequestParam(name="mainReg", required = true, defaultValue = "0") int mainReg,
+                                              @RequestParam(name="keyword", required = false) String keyword,
                                               @RequestParam(name="page", required = false, defaultValue = "1") int page){
 
+        log.info("출력!!!!!!!!!");
+
         Sort sort = Sort.by(Sort.Order.asc("latitude"), Sort.Order.asc(("longtitude")));
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Pageable pageable = PageRequest.of(page-1, 30, sort);
 
         QParsing qParsing = QParsing.parsing;
         BooleanBuilder builder = new BooleanBuilder();
@@ -56,7 +59,10 @@ public class ContentController {
             expression = qParsing.mainregCode.eq(mainReg);
             builder.and(expression);
         }
-
+        if(keyword != null){
+            expression = qParsing.name.like("%" + keyword.trim() + "%");
+            builder.and(expression);
+        }
 
         Page<Parsing> list = service.viewAll(builder, pageable);
 
