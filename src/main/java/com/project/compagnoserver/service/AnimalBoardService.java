@@ -45,7 +45,7 @@ public class AnimalBoardService {
     }
 
     // 자유게시판 글쓰기 - 2-2) 완성된 이미지 리스트 불러오기
-    public AnimalBoardImage getThumnailList(int boardCode){
+    public AnimalBoardImage getThumbnailList(int boardCode){
         log.info("받은 boardCode : " + boardCode);
         return queryFactory.selectFrom(qAnimalBoardImage)
                 .where(qAnimalBoardImage.animalBoard.animalBoardCode.eq(boardCode))
@@ -54,7 +54,8 @@ public class AnimalBoardService {
 
     // 자유게시판 글쓰기 - 2-3) 썸네일 저장
     @Transactional
-    public void saveThumnail(String image, AnimalBoard vo){
+    public void saveThumbnail(String image, AnimalBoard vo){
+        log.info("service thumbnail : " + image);
          queryFactory.update(qAnimalBoard)
                 .set(qAnimalBoard.animalMainImage, image)
                 .where(qAnimalBoard.animalBoardCode.eq(vo.getAnimalBoardCode()))
@@ -88,16 +89,19 @@ public class AnimalBoardService {
             return animalBoardDAO.findAll(builder, pageable);
     }
 
-
-    // 자유게시판 - 카테고리별 전체보기
-        public List<AnimalBoard> viewCategory(int categoryCode, Pageable pageable){
-            return queryFactory.selectFrom(qAnimalBoard)
-                    .where(qAnimalCategory.animalCategoryCode.eq(categoryCode))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
-                    .fetch();
-
+        // 자유게시판 카테고리 불러오기
+        public List<AnimalCategory> viewCategory(){
+            return queryFactory.selectFrom(qAnimalCategory).fetch();
         }
+//    // 자유게시판 - 카테고리별 전체보기
+//        public List<AnimalBoard> viewCategory(int categoryCode, Pageable pageable){
+//            return queryFactory.selectFrom(qAnimalBoard)
+//                    .where(qAnimalCategory.animalCategoryCode.eq(categoryCode))
+//                    .offset(pageable.getOffset())
+//                    .limit(pageable.getPageSize())
+//                    .fetch();
+//
+//        }
 
         // 자유게시판 - 글 한개보기 = 상세페이지
         public AnimalBoard viewDetail(int animalBoardCode){

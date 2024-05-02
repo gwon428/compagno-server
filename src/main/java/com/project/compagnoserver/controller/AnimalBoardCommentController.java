@@ -27,11 +27,13 @@ import java.util.List;
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class AnimalBoardCommentController {
 
-    LocalDateTime localDateTime = LocalDateTime.now();
-    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
     @Autowired
     private AnimalBoardCommentService animalBoardCommentService;
 
+    public Date currentDate (){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return  java.sql.Timestamp.valueOf(localDateTime);
+    }
     public  Object Authentication(){
         // 시큐리티에 담은 로그인한 사용자 정보 가져오기
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -43,7 +45,7 @@ public class AnimalBoardCommentController {
     public ResponseEntity<AnimalBoardComment> writeComment(@RequestBody AnimalBoardCommentDTO dto) {
 
         log.info("dto : " + dto);
-
+        Date nowDate = currentDate ();
         Object principal = Authentication();
         if(principal instanceof  User){
             User user =(User) principal;

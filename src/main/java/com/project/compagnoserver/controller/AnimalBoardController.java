@@ -58,9 +58,11 @@ public class AnimalBoardController {
 
 
     // 시간정보 넣기
-    LocalDateTime localDateTime = LocalDateTime.now();
-    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
 
+    public Date currentDate (){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return  java.sql.Timestamp.valueOf(localDateTime);
+    }
 
     public  Object Authentication(){
         // 시큐리티에 담은 로그인한 사용자 정보 가져오기
@@ -89,6 +91,7 @@ public class AnimalBoardController {
     // 자유 게시판 글쓰기
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> writeBoard(@RequestBody AnimalBoardDTO dto){
+        Date nowDate = currentDate();
         log.info("write dto : " + dto);
         Object principal = Authentication();
         if(principal instanceof  User) {
@@ -154,9 +157,14 @@ public class AnimalBoardController {
             animalBoardService.deleteAnimalNoImages();
 
             // 완성된 이미지 리스트 불러오기 - 추후에 리스트로 변경하여 사용자에게 선택권한을 줌
-            AnimalBoardImage thumnail = animalBoardService.getThumnailList(response.getAnimalBoardCode());
-            log.info("thumnail : " + thumnail);
-            animalBoardService.saveThumnail(thumnail.getAnimalBoardImage(), response);
+            AnimalBoardImage thumbnail = animalBoardService.getThumbnailList(response.getAnimalBoardCode());
+            log.info("thumbnail : " + thumbnail);
+            if(thumbnail!=null){
+                animalBoardService.saveThumbnail(thumbnail.getAnimalBoardImage(), response);
+            } else{
+                animalBoardService.saveThumbnail("animalDefault.jpg", response);
+            }
+
 
             return ResponseEntity.ok().build();
         }
@@ -166,21 +174,53 @@ public class AnimalBoardController {
 
     // 무한페이징 처리가 필요 + 조회
     @GetMapping("public/animal-board")
-    public ResponseEntity<List<AnimalBoard>> viewAll(AnimalBoardViewDTO dto, @RequestParam(name = "page", defaultValue = "1")int page){
-//       log.info("page :" + page);
-        // 조회수, 좋아요, 전체
-        Sort sort = Sort.by("animalBoardCode");
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
-
+    public ResponseEntity<Page<AnimalBoard>> viewAll(@RequestParam(name = "page", defaultValue = "1")int page,
+                                                     @RequestParam(name = "animalCategory", required = false)Integer animalCategory,
+                                                     @RequestParam(name = "sortBy" , defaultValue = "0")Integer sortBy){
+    log.info("page : " + page);
+        log.info("animalCategoryCode : " + animalCategory);
+        log.info("sortBy : " + sortBy);
+        // category 검색
         QAnimalBoard qAnimalBoard = QAnimalBoard.animalBoard;
         BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression;
 
+        if(animalCategory!=null){
+            expression = qAnimalBoard.animalCategory.animalCategoryCode.eq(animalCategory);
+            builder.and(expression);
+        }
 
+        // 정렬
+        Sort sort = null;
+        switch (sortBy){
+            case 1: // 조회수
+                sort = Sort.by("animalBoardView").descending();
+                break;
+            case 2: // 좋아요
+                sort = Sort.by("animalBoardFavoriteCount").descending();
+                break;
+            case 3: // 옛날순
+                sort = Sort.by("animalBoardCode").ascending();
+                break;
+            default: // 최신순
+                sort = Sort.by("animalBoardDate").descending();
+                break;
+        }
+        // 조회수, 좋아요, 전체
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<AnimalBoard> list = animalBoardService.viewAll(pageable, builder);
+        log.info("최종 list : " + list);
 
-        return list!=null ? ResponseEntity.ok(list.getContent()) : ResponseEntity.badRequest().build();
+        return list!=null ? ResponseEntity.ok(list) : ResponseEntity.badRequest().build();
     }
+    // 카테고리 불러오기
+    @GetMapping("public/animal-board/animalCategory")
+    public ResponseEntity<List<AnimalCategory>> viewCategory(){
+        List<AnimalCategory> categoryList = animalBoardService.viewCategory();
+        return ResponseEntity.ok(categoryList);
+    }
+
     // 자유게시판 - 글 한개보기 = 조회수
     @GetMapping("public/animal-board/{animalBoardCode}/viewCount")
     public ResponseEntity<Integer> viewCount(@PathVariable(name = "animalBoardCode") int animalBoardCode){
@@ -215,7 +255,7 @@ public class AnimalBoardController {
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
     public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardDTO dto) throws IOException {
-
+        Date nowDate = currentDate();
         Object principal = Authentication();
         if(principal instanceof  User) {
             User user = (User) principal;
@@ -308,6 +348,7 @@ public class AnimalBoardController {
     @PostMapping("/animal-board/addFavorite")
     public ResponseEntity<AnimalBoardFavorite> favoriteBoard(@RequestBody AnimalBoardFavoriteDTO dto){
         // 필요값 : userId, animalBoardCode
+        Date nowDate = currentDate();
         AnimalBoardFavorite favoriteBoard = AnimalBoardFavorite.builder()
                 .animalBoard(AnimalBoard.builder()
                         .animalBoardCode(dto.getAnimalBoardCode())
