@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -73,8 +75,10 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody User vo) {
+
         User user = userService.login(vo.getUserId(), vo.getPassword(), passwordEncoder);
         if(user!=null) {
+
             String token = tokenProvider.create(user);
 
             UserDTO responseDTO = UserDTO.builder()
@@ -131,7 +135,7 @@ public class UserController {
     // 개인정보 + 프사 변경
     @Transactional
     @PutMapping("/api/mypage/myinfo/updateProfile")
-    public ResponseEntity changeProfile(UserDTO dto) throws IOException {
+    public ResponseEntity changeProfile(UserDTO dto) throws IOException, ParseException {
 
         User user = User.builder()
                 .userEmail(dto.getUserEmail())
@@ -139,10 +143,8 @@ public class UserController {
                 .userPwd(passwordEncoder.encode(dto.getUserPwd()))
                 .userId(dto.getUserId())
                 .build();
-        log.info("defaultImg : " + dto.getDefaultImg());
 
-
-        // 프로필사진도 변경할때
+//        // 프로필사진도 변경할때
        if(dto.getFile()!=null ) {
             String fileName = dto.getFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
@@ -160,7 +162,7 @@ public class UserController {
         }
 
        // 기본 프로필사진으로 변경할때
-        else if(dto.getDefaultImg().equals("true")) {
+        else if(dto.getFile()==null && dto.getDefaultImg() == 1) {
             String saveName2 = "user" + File.separator + "defaultImage.png";
            user.setUserImg(saveName2);
 
