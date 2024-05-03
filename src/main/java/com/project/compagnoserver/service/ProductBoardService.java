@@ -179,8 +179,8 @@ public class ProductBoardService {
             builder.and(qProductBoard.productPrice.loe(dto.getMaxPrice()));
         }
         // 제품명
-        if (dto.getProductCate() != null && !dto.getProductCate().isEmpty()) {
-            builder.and(qProductBoard.productName.eq(dto.getProductName()));
+        if (dto.getProductName() != null && !dto.getProductName().isEmpty()) {
+            builder.and(qProductBoard.productName.contains(dto.getProductName()));
         }
 
         // 키워드 검색
@@ -200,6 +200,9 @@ public class ProductBoardService {
                     builder.or(qProductBoard.productBoardContent.contains(dto.getKeyword()));
                     break;
             }
+        }
+        if(dto.getSelect() == null && dto.getKeyword() != null && !dto.getKeyword().isEmpty()) {
+            builder.and(qProductBoard.productBoardTitle.contains(dto.getKeyword()));
         }
 
         // 게시판 리스트
