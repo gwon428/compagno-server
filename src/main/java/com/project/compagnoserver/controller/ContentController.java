@@ -5,6 +5,7 @@ import com.project.compagnoserver.domain.Parsing.QParsing;
 import com.project.compagnoserver.service.ContentService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class ContentController {
 
         log.info("출력!!!!!!!!!");
 
+        log.info("keyword : " + keyword);
+
         Sort sort = Sort.by(Sort.Order.asc("latitude"), Sort.Order.asc(("longtitude")));
         Pageable pageable = PageRequest.of(page-1, 30, sort);
 
@@ -59,12 +62,14 @@ public class ContentController {
             expression = qParsing.mainregCode.eq(mainReg);
             builder.and(expression);
         }
-        if(keyword != null){
+        if(!StringUtils.isEmpty(keyword)){
+            log.info("keyword!!!");
             expression = qParsing.name.like("%" + keyword.trim() + "%");
             builder.and(expression);
         }
 
         Page<Parsing> list = service.viewAll(builder, pageable);
+        log.info("list : " + list);
 
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
