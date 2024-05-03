@@ -58,8 +58,11 @@ public class AnimalBoardController {
 
 
     // 시간정보 넣기
-    LocalDateTime localDateTime = LocalDateTime.now();
-    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
+
+    public Date currentDate (){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return  java.sql.Timestamp.valueOf(localDateTime);
+    }
 
 
     public  Object Authentication(){
@@ -86,9 +89,9 @@ public class AnimalBoardController {
         log.info("controller response : " + response);
         return ResponseEntity.ok(response); // 제일 중요한거! 사진 미리보기등 특정 부분의 결과값 확인을 위해서
     }
-    // 자유 게시판 글쓰기
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> writeBoard(@RequestBody AnimalBoardDTO dto){
+        Date nowDate = currentDate();
         log.info("write dto : " + dto);
         Object principal = Authentication();
         if(principal instanceof  User) {
@@ -215,7 +218,7 @@ public class AnimalBoardController {
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
     public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardDTO dto) throws IOException {
-
+        Date nowDate = currentDate();
         Object principal = Authentication();
         if(principal instanceof  User) {
             User user = (User) principal;
@@ -308,6 +311,7 @@ public class AnimalBoardController {
     @PostMapping("/animal-board/addFavorite")
     public ResponseEntity<AnimalBoardFavorite> favoriteBoard(@RequestBody AnimalBoardFavoriteDTO dto){
         // 필요값 : userId, animalBoardCode
+        Date nowDate = currentDate();
         AnimalBoardFavorite favoriteBoard = AnimalBoardFavorite.builder()
                 .animalBoard(AnimalBoard.builder()
                         .animalBoardCode(dto.getAnimalBoardCode())
