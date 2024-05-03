@@ -62,4 +62,12 @@ public class AnimalBoardCommentService {
                 .where(qAnimalBoardComment.animalParentCode.eq(parentCode))
                 .fetch();
     }
+
+    //  특정글 댓글 갯수
+    public Integer countComment(int boardCode){
+        return Math.toIntExact(jpaQueryFactory.select(qAnimalBoardComment.count()).from(qAnimalBoardComment)
+                .where(qAnimalBoardComment.animalBoard.animalBoardCode.eq(boardCode))
+                .fetchFirst());
+
+    }
 }

@@ -6,6 +6,7 @@ import com.project.compagnoserver.domain.Animal.AnimalBoard;
 import com.project.compagnoserver.domain.Animal.AnimalBoardDTO;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
+import com.project.compagnoserver.service.AnimalBoardCommentService;
 import com.project.compagnoserver.service.AnimalBoardFavoriteService;
 import com.project.compagnoserver.service.AnimalBoardService;
 import com.querydsl.core.BooleanBuilder;
@@ -34,10 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +50,9 @@ public class AnimalBoardController {
 
     @Autowired
     private AnimalBoardFavoriteService favoriteService;
+
+    @Autowired
+    private AnimalBoardCommentService animalBoardCommentService;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
@@ -123,10 +124,22 @@ public class AnimalBoardController {
             // 매칭된 문자열 추출
             while(matcher.find()) {
                 if(matcher.group().startsWith("<img")) {
-                    String image = matcher.group().substring(35, matcher.group().length() - 2);
-                    images.add(image); // 매칭된 이미지들 images에 추가
-                    // matcher 가 정규표현식이 매칭되는 이미지태그의 이미지를 iamges 리스트에 담아줌
-                    // 얘가 DB에 저장되어야할 아이
+                    String image = matcher.group().substring(35, matcher.group().length() - 2); //image-resize에 안 들어간 경우
+                    if(image.contains("\"")){
+                        String[] finalizedArr = image.split("\"");
+                        String finalizedImage = finalizedArr[0];
+                        log.info("db에 저장될 이미지 : " + image);
+                        log.info("2차 처리 이미지 배열: " + finalizedArr[0]);
+                        log.info("2차 처리 이미지 최종본: " + finalizedImage);
+                        images.add(finalizedImage);
+                        // image-resize가 적용될 경우 split을 통해서 이미지 문자열만 2차 재추출 해야함.
+                    }else{
+                        images.add(image); // 매칭된 이미지들 images에 추가
+                        // matcher 가 정규표현식이 매칭되는 이미지태그의 이미지를 iamges 리스트에 담아줌
+                        // 얘가 DB에 저장되어야할 아이
+                    }
+
+
                 }
             }
             /* =================================================================================== */
@@ -190,6 +203,7 @@ public class AnimalBoardController {
             builder.and(expression);
         }
 
+
         // 정렬
         Sort sort = null;
         switch (sortBy){
@@ -213,6 +227,28 @@ public class AnimalBoardController {
         log.info("최종 list : " + list);
 
         return list!=null ? ResponseEntity.ok(list) : ResponseEntity.badRequest().build();
+    }
+    //랭킹 - 좋아요 상위권 불러오기
+    @GetMapping("public/animal-board/weeklyRank")
+    public ResponseEntity<List<AnimalBoardDTO>> viewRankers (){
+        List<AnimalBoard> list = animalBoardService.viewRankers();
+        List<AnimalBoardDTO> listDTO = new ArrayList<>();
+        for(AnimalBoard part :list){
+            AnimalBoardDTO dto = AnimalBoardDTO.builder()
+                    .animalBoardCode(part.getAnimalBoardCode())
+                    .animalBoardView(part.getAnimalBoardView())
+                    .animalBoardTitle(part.getAnimalBoardTitle())
+                    .animalBoardFavoriteCount(part.getAnimalBoardFavoriteCount())
+                    .user(UserDTO.builder()
+                            .userId(part.getUser().getUserId())
+                            .userImg(part.getUser().getUserImg())
+                            .userNickname(part.getUser().getUserNickname())
+                            .build())
+                    .build();
+            listDTO.add(dto);
+        }
+
+        return  ResponseEntity.ok(listDTO);
     }
     // 카테고리 불러오기
     @GetMapping("public/animal-board/animalCategory")
