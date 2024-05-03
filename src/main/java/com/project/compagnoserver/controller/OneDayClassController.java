@@ -3,7 +3,10 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.OneDayClass.ClassBoard;
 import com.project.compagnoserver.domain.OneDayClass.ClassBoardDTO;
 import com.project.compagnoserver.domain.OneDayClass.ClassBoardMainImage;
+import com.project.compagnoserver.domain.OneDayClass.QClassBoard;
 import com.project.compagnoserver.service.OneDayClassService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,40 +45,54 @@ public class OneDayClassController {
     @PostMapping("/public/ClassBoard")
     public ResponseEntity<ClassBoard> insert(ClassBoardDTO dto) throws IOException, ParseException {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate = sdf.parse(dto.getOdcStartDate());
-        Date lastDate = sdf.parse(dto.getOdcLastDate());
+        // 날짜 관련 로직 !!===============================================
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        Date startDate = sdf.parse(dto.getOdcStartDate());
+//        Date lastDate = sdf.parse(dto.getOdcLastDate());
 
-        String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
-        String uuid = UUID.randomUUID().toString();  // UUID
-        String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-        Path savePath = Paths.get(saveName);
-        dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
+        log.info("dto : " + dto);
 
-        ClassBoard vo = ClassBoard.builder()
-                .odcTitle(dto.getOdcTitle())
-                .odcContent(dto.getOdcContent())
-                .odcStartDate(startDate)
-                .odcLastDate(lastDate)
-                .odcAccompaying('Y')
-                .build();
-
-        ClassBoard result = service.insert(vo); // 등록할때 사용자가 직접 적어서 DB로 넣는걸 저장 사키고
-        
-        ClassBoardMainImage mainImage = new ClassBoardMainImage(); // 객체를 생성해서
-        mainImage.setOdcMainImage(saveName); // 그객체에다가 파일을 담겠다
-
-        mainImage.setClassBoard(ClassBoard.builder()
-                        .odcCode(result.getOdcCode())
-                .build());
-        // 그리고 객체에 저장된것중에 테이블 코드를 가져와서 넣고 mainImage에 보내서 담고
-
-
-        service.create(mainImage); // 마지막으로 저장
-
-        if (result != null){
-            return ResponseEntity.status(HttpStatus.CREATED).body(result);
-        }
+        // 우리는 사용자에게 입력받는게 어떤건지
+//        ClassBoard vo = ClassBoard.builder()
+//                .odcTitle(dto.getOdcTitle())
+//                .odcContent(dto.getOdcContent())
+//                .odcStartDate(dto.getOdcStartDate())
+//                .odcLastDate(dto.getOdcLastDate())
+//                .odcAccompaying('Y')
+//                .build();
+////
+//        ClassBoard result = service.insert(vo); // 등록할때 사용자가 직접 적어서 DB로 넣는걸 저장 사키고
+////
+//        if (dto.getFiles() !=null){
+//            for (MultipartFile file : dto.getFiles()){
+//                ClassBoardMainImage imgVo = new ClassBoardMainImage(); // 객체 생성해서 받아내겠다.
+//
+//                // 파일 업로드 관련 ==================================================
+//                String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+//                String uuid = UUID.randomUUID().toString();  // UUID
+//                String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
+//                Path savePath = Paths.get(saveName);
+//                dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
+//
+//                imgVo.setOdcMainImage(saveName);
+//                imgVo.setClassBoard(result);
+//
+//                service.createImg(imgVo);
+//            }
+//        }
+//
+//        ClassBoardMainImage mainImage = new ClassBoardMainImage(); // 객체를 생성해서
+////        mainImage.setOdcMainImage(saveName); // 그객체에다가 파일을 담겠다
+//        mainImage.setClassBoard(ClassBoard.builder()
+//                .odcCode(result.getOdcCode())
+//                .build());
+//        // 그리고 객체에 저장된것중에 테이블 코드를 가져와서 넣고 mainImage에 보내서 담고
+//        service.createImg(mainImage); // 마지막으로 저장
+//
+//
+//        if (result != null){
+//            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+//        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
@@ -83,6 +101,13 @@ public class OneDayClassController {
     public ResponseEntity <List<ClassBoard>> viewAll(@RequestParam(name = "page", defaultValue = "1") int page){
         Sort sort = Sort.by("odcCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10);
+
+        // ????
+//        QClassBoard qClassBoard = QClassBoard.classBoard;
+//        BooleanBuilder builder = new BooleanBuilder();
+//        BooleanExpression expression = qClassBoard
+
+
        List<ClassBoard> list = service.viewAll();
        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
@@ -97,65 +122,81 @@ public class OneDayClassController {
 
     // 등록된 클래스 수정
     @PutMapping("/public/ClassBoard")
-    public ResponseEntity<ClassBoard> update(ClassBoardDTO dto) throws ParseException, IOException {
+    public ResponseEntity update(ClassBoardDTO dto) throws ParseException, IOException {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate = sdf.parse(dto.getOdcStartDate());
-        Date lastDate = sdf.parse(dto.getOdcLastDate());
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        Date startDate = sdf.parse(dto.getOdcStartDate());
+//        Date lastDate = sdf.parse(dto.getOdcLastDate());
 
-        // 기본에 있던 이미지 정보 가져오기
-        List<ClassBoardMainImage> images = service.viewImages(dto.getOdcCode());
+        // 기존에 있던 이미지 정보 가져오기
+        List<ClassBoardMainImage> images = service.viewImg(dto.getOdcCode());
 
+        // 클래스보드메인이미지 dto에 해당 이미지가 있는지에 대한 여부를 판단으로 돌린다
         for(ClassBoardMainImage image : images){
-
-            if ((dto.getFile()!=null && !dto.getFile().contains(image.getOdcMainImage())))
+            //   dto안에 파일이 존재하고 그리고
+            if ((dto.getFile()!=null && !dto.getFiles().contains(image.getOdcMainImage()))
+                    || dto.getFile() == null){
             File file = new File(image.getOdcMainImage());
-            file.
+            file.delete();
+
+            // 4. 파일 삭제와 동시에 테이블에서도 해당 정보 삭제
+                service.deleteImg(image.getOdcImageCode());
         }
 
+            // 위에서 삭제한다음에 => dto.files에 새로 추가된 사진들 추가한다
+            if (dto.getFiles() !=  null) {
+                for (MultipartFile file : dto.getFiles()){
+                    ClassBoardMainImage imgVo = new ClassBoardMainImage();
+
+                    String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+                    String uuid = UUID.randomUUID().toString();  // UUID
+                    String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
+                    Path savePath = Paths.get(saveName);
+                    file.transferTo(savePath);
+
+                    imgVo.setOdcMainImage(saveName);
+                    imgVo.setClassBoard(ClassBoard.builder().odcCode(dto.getOdcCode()).build());
+
+                    service.createImg(imgVo);
+                }
+            }
+        }
         ClassBoard vo = ClassBoard.builder()
                 .odcTitle(dto.getOdcTitle())
                 .odcContent(dto.getOdcContent())
-                .odcStartDate(startDate)
-                .odcLastDate(lastDate)
+                .odcStartDate(dto.getOdcStartDate())
+                .odcLastDate(dto.getOdcLastDate())
                 .odcAccompaying('Y')
                 .build();
 
-        ClassBoardMainImage prev = service.create(dto.getOdcCode());
+        service.insert(vo);
 
-        if (dto.getFile().isEmpty()){
-            // 새로운 사진이 없는 경우 -> 기존 경로로 vo에 담아낸다.
-            vo.setImages(prev.getImages());
-        } else {
-            // 기존에 있는거 삭제후 새로운거 업로드
-            File file = new File(prev.getImages());
-
-            file.delete();
-
-            String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
-            String uuid = UUID.randomUUID().toString();  // UUID
-            String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-            Path savePath = Paths.get(saveName);
-            dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
-
-            vo.setImages(saveName);
-        }
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     // 등록된 클래스 삭제 관련 !!
     @DeleteMapping("/public/ClassBoard/{odcCode}")
-    public ResponseEntity delete(@PathVariable("odcCode") int odcCode){
+    public ResponseEntity delete(@PathVariable(name = "odcCode") int odcCode){
         // 파일 삭제 로직
         ClassBoard prev = service.view(odcCode); // 파일을 삭제하기 위해서는 odcCode를 가져와야한다 !
 
-        File file = new File(prev.setImages(prev.getOdcCode());
-        file.delete();
+        // 코드는 : odcCode
+        // 삭제를 하기위해서는 이미지를 삭제하면서 리뷰이미지도 같이 삭제 !!
+        // 1 . 이미지 테이블(onedayClassMainImage)에 해당 odcCode에 대한 이미지들을 가지고 와야한다 List<ClassBoardMainImage>
+        //     ==>
 
-        ClassBoard result = service.delete(odcCode);
+        List<ClassBoardMainImage> images = service.viewImg(odcCode); // images변수에다가 정보를 저장
 
-        return (result != null) ?
-                ResponseEntity.status(HttpStatus.ACCEPTED).body(result) :
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        for (ClassBoardMainImage image : images) {
+            // 반복문을 돌려서 url로 객체에 delete사용
+            File file = new File(image.getOdcMainImage());
+            file.delete();
+
+            // 동시에 이미지 테이블 관련 이미지의 odcCode로 삭제 기능 진행
+            service.deleteImg(image.getOdcImageCode());
+        }
+        service.delete(odcCode);
+
+        return ResponseEntity.ok().build();
     }
 }

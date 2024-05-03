@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,9 +17,12 @@ public class ClassBoardDTO {
 
     private int odcCode;
     private String odcTitle;
+    private String odcAccompaying;
     private String odcContent;
     private MultipartFile file;
-    private String odcStartDate;
-    private String odcLastDate;
-
+    private Date odcStartDate;
+    private Date odcLastDate;
+    // ===============================
+    private List<MultipartFile> files;
+    private List<String> images;
 }

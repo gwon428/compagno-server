@@ -19,23 +19,29 @@ public class OneDayClassService {
     private ClassBoardMainImageDAO img;
 
     // 이미지 저장
-    public ClassBoardMainImage create(ClassBoardMainImage vo){
+    public ClassBoardMainImage createImg(ClassBoardMainImage vo){
         return img.save(vo);
     }
-    // 이미지 조회
-    public List<ClassBoardMainImage> viewImages(int odcImageCode){
-        return img.findByCode(odcImageCode);
+    // 이미지 조회 (메인이미지관련 정보 조회)
+    public List<ClassBoardMainImage> viewImg(int odcCode){
+        return img.findByCode(odcCode);
     }
 
     // 이미지 수정
     public ClassBoardMainImage updateImages(ClassBoardMainImage vo){
-        return img.
+        if (img.existsById(vo.getOdcImageCode())){
+            return img.save(vo);
+        }
+        return null;
     }
 
     // 이미지 삭제
-    public void deleImage(int )
+    public void deleteImg(int odcCode){
+        img.deleteById(odcCode);
+    }
 
-//    ============================================================================
+
+    // ============================================================================
     // 원데이 클래스 등록 insert
     public ClassBoard insert(ClassBoard vo){
         return dao.save(vo);
