@@ -414,7 +414,7 @@ public class LostBoardController {
 //        return ResponseEntity.ok(topList);
 //    }
 
-    @GetMapping("/lostBoard/comment/{lostBoardCode}")
+    @GetMapping("/public/lostBoard/comment/{lostBoardCode}")
     public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
         List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
         List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
