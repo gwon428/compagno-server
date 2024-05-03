@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -441,9 +443,11 @@ public class LostBoardController {
     // builder.build 공통부분 빼기
     public LostBoardCommentDTO commentDetail(LostBoardComment vo){
     log.info("vo : " + vo.getLostBoardCode());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//        String enrollDate = sdf.format(vo.getCommentDate());
         return LostBoardCommentDTO.builder()
                 .lostBoardCode(vo.getLostBoardCode())
-                .commentDate(vo.getCommentDate())
+                .commentDate(sdf.format(vo.getCommentDate()))
                 .commentContent(vo.getCommentContent())
                 .lostCommentCode(vo.getLostCommentCode())
                 .user(UserDTO.builder()
@@ -457,10 +461,9 @@ public class LostBoardController {
     // 수정
     @PutMapping("/lostBoard/comment")
     public ResponseEntity<LostBoardComment> updateComment(@RequestBody LostBoardCommentDTO dto){
-        log.info("dto : " + dto);
-        log.info("댓글번호 : " + dto.getLostCommentCode());
+
         LostBoardComment vo = comment.viewComment(dto.getLostCommentCode());
-        log.info("vo : " + vo.getCommentContent());
+        vo.setCommentDate(Timestamp.valueOf(dto.getCommentDate()));
         vo.setCommentContent(dto.getCommentContent());
         LostBoardComment result = comment.update(vo);
         return (result != null) ?
