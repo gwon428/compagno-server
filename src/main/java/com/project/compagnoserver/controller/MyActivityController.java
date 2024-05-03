@@ -34,8 +34,8 @@ public class MyActivityController {
     // 내 좋아요 목록 출력
     @GetMapping("/api/mypage/myactivity/{id}")
     public ResponseEntity<List<AnimalBoardFavorite>> myFavList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1") int page) {
-        Sort sort = Sort.by("animalFavoriteCode");
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        Sort sort = Sort.by("animalFavoriteDate").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
 
         QAnimalBoardFavorite qAnimalBoardFavorite = QAnimalBoardFavorite.animalBoardFavorite;
 
