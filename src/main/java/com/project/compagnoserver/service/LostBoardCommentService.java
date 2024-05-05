@@ -6,6 +6,7 @@ import com.project.compagnoserver.repo.LostBoard.LostBoardCommentDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,12 +34,14 @@ public class LostBoardCommentService {
     AND lost_board_code=1      게시물 코드 번호
     ORDER BY comment_date DESC;
      */
-    public List<LostBoardComment> topCommennts(int lostBoardCode){
+    public List<LostBoardComment> topComments(int lostBoardCode, int page){
         return queryFactory
                 .selectFrom(qLostBoardComment)
                 .where(qLostBoardComment.lostParentCode.eq(0))
                 .where(qLostBoardComment.lostBoardCode.eq(lostBoardCode))
                 .orderBy(qLostBoardComment.commentDate.desc())
+                .offset(5*(page-1))
+                .limit(5)
                 .fetch();
     }
 

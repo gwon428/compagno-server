@@ -409,19 +409,14 @@ public class LostBoardController {
     }
 
     // 게시물 1개 따른 댓글 조회
-//    @GetMapping("/lostBoard/comment/{lostBoardCode}/comment")
-//    public ResponseEntity<List<LostBoardComment>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
-//        List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
-////        List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
-//        return ResponseEntity.ok(topList);
-//    }
-
     @GetMapping("/public/lostBoard/comment/{lostBoardCode}")
-    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
-        List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
+    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode, @RequestParam(name="page")int page){
+        List<LostBoardComment> topList = comment.topComments(lostBoardCode, page);
         List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
         return ResponseEntity.ok(response);
     }
+
+
 
 
     // 나머지 공통 부분 빼기
