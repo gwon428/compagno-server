@@ -74,21 +74,16 @@ public class LostBoardController {
         lost.setLostRegiDate(dto.getLostRegiDate());
 
         LostBoard result = service.create(lost);
-        log.info("dto : " + dto);
-        log.info("getImagessss : " + dto.getImages());
-        if(dto.getImages()!=null){
-            log.info("getImages : " + dto.getImages());
 
+        if(dto.getImages()!=null){
             for(MultipartFile file : dto.getImages()){
                 if(!file.getOriginalFilename().equals("")){
-                    //log.info("originName: " + file.getOriginalFilename());
                     LostBoardImage images = new LostBoardImage();
 
                     String fileName = file.getOriginalFilename();
                     String uuid = UUID.randomUUID().toString();
                     String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
-                    log.info("save : " + saveName);
                     file.transferTo(savePath);
 
                     if(result.getLostAnimalImage() == null){
@@ -107,12 +102,9 @@ public class LostBoardController {
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-    // 보기------------------------------------------------------------------------------
-    // 전체 보기 -------------------
-    // 검색 보기 -----------------------
-    // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
-    // 정렬 보기 -----------------------
-    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순)
+    // 전체 보기------------------------------------------------------------------------------
+    // 검색 : 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
+    // 정렬 : 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순)
     @GetMapping("/public/lostBoard")
     public ResponseEntity<Page<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page,
                                                    @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
@@ -200,89 +192,7 @@ public class LostBoardController {
         LostBoard lost = service.view(lostBoardCode);
         return ResponseEntity.status(HttpStatus.OK).body(lost);
     }
-
-    // 검색 보기 -----------------------
-    // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
-    // 정렬 보기 -----------------------
-    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
-//    @GetMapping("/public/lostBoard/search")
-//    public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
-//                                                        @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
-//                                                        @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
-//                                                        @RequestParam(name="userNickname", required = false) String userNickname,
-//                                                        @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
-//                                                        @RequestParam(name="lostLocation", required = false)String lostLocation,
-//                                                        @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
-//                                                        @RequestParam(name="sort", defaultValue = "0")int sortNum){
-//
-//        QLostBoard qLostBoard = QLostBoard.lostBoard;
-//        BooleanBuilder builder = new BooleanBuilder();
-//        BooleanExpression expression = null;
-//        if(lostAnimalKind != null){
-//            expression = qLostBoard.lostAnimalKind.contains(lostAnimalKind);
-//            builder.and(expression);
-//        }
-//        if(lostAnimalGender != null){
-//            expression = qLostBoard.lostAnimalGender.contains(lostAnimalGender);
-//            builder.and(expression);
-//        }
-//        if(userNickname != null){
-//            expression = qLostBoard.userNickname.contains(userNickname);
-//            builder.and(expression);
-//        }
-//        if(lostDate != null){
-//            expression = qLostBoard.lostDate.eq(lostDate);
-//            builder.and(expression);
-//        }
-//        if(lostLocation != null){
-//            expression = qLostBoard.lostLocation.contains(lostLocation);
-//            builder.and(expression);
-//        }
-//        if(lostAnimalName != null){
-//            expression = qLostBoard.lostAnimalName.contains(lostAnimalName);
-//            builder.and(expression);
-//        }
-//
-//
-//        Pageable pageable = PageRequest.of(page-1, 9);
-//
-//        // 작성일 순(선입, 후입)
-//        Sort lRegiDate = Sort.by("lostRegiDate");
-//        Sort lRegiDateD = Sort.by("lostRegiDate").descending();
-//
-//        if(sortNum==0){
-//            pageable = PageRequest.of(page-1, 9, lRegiDateD);
-//        }
-//        if(sortNum==1){
-//            pageable = PageRequest.of(page-1, 9, lRegiDate);
-//        }
-//
-//
-//        // 분실 날짜 순(선입, 후입)
-//        if(sortNum==2){
-//            Sort lDate = Sort.by("lostDate");
-//            pageable = PageRequest.of(page-1, 9, lDate);
-//        }
-//        if(sortNum==3){
-//            Sort lDateD = Sort.by("lostDate").descending();
-//            pageable = PageRequest.of(page-1, 9, lDateD);
-//        }
-//
-//        // 조회수순(낮은 순, 높은 순)
-//        Sort lViewCount = Sort.by("lostViewCount");
-//        Sort lViewCountD = Sort.by("lostViewCount").descending();
-//
-//        if(sortNum==4){
-//            pageable = PageRequest.of(page-1, 9, lViewCount);
-//        }
-//        if(sortNum==5){
-//            pageable = PageRequest.of(page-1, 9, lViewCountD);
-//        }
-//
-//        Page<LostBoard> list = service.viewBySearch(pageable, builder);
-//        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
-//    }
-
+    
     // 사진 수정(프론트에 맞춰 변경) 
     // 수정 ---------------------------------------------------------------------------------------
     @PutMapping("/lostBoard")
@@ -314,8 +224,6 @@ public class LostBoardController {
                 .lostAnimalRFID(dto.getLostAnimalRFID())
                 .lostRegiDate(dto.getLostRegiDate())
                 .build();
-
-
 
         for(LostBoardImage image : list){
 
@@ -417,7 +325,12 @@ public class LostBoardController {
     }
 
 
-
+    @GetMapping("/public/lostBoard/commentAll/{lostBoardCode}")
+    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
+        List<LostBoardComment> topList = comment.topAllComments(lostBoardCode);
+        List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
+        return ResponseEntity.ok(response);
+    }
 
     // 나머지 공통 부분 빼기
     public List<LostBoardCommentDTO> commentDetailList(List<LostBoardComment> comments, int lostBoardCode){

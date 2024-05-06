@@ -45,6 +45,15 @@ public class LostBoardCommentService {
                 .fetch();
     }
 
+    public List<LostBoardComment> topAllComments(int lostBoardCode){
+        return queryFactory
+                .selectFrom(qLostBoardComment)
+                .where(qLostBoardComment.lostParentCode.eq(0))
+                .where(qLostBoardComment.lostBoardCode.eq(lostBoardCode))
+                .orderBy(qLostBoardComment.commentDate.desc())
+                .fetch();
+    }
+
     // 하위 댓글 조회
     public List<LostBoardComment> bottomComments(int parent, int lostBoardCode){
         return queryFactory
