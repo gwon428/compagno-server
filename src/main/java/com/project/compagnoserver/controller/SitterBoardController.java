@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/compagno/*")
-@CrossOrigin(origins = {"*"}, maxAge = 6000)
+@CrossOrigin(origins = {"http://localhost:3000"}, maxAge = 6000, allowCredentials = "true")
 public class SitterBoardController {
 
     @Autowired
@@ -111,11 +111,35 @@ public class SitterBoardController {
 
     // 상세 보기
     @GetMapping("public/sitter/{code}")
-    public ResponseEntity<SitterBoard> sitterView(@PathVariable("code") int code) {
+    public ResponseEntity<SitterBoard> sitterView(@PathVariable("code") int code,
+                                                  HttpServletRequest req, HttpServletResponse res) {
         SitterBoard sitterBoard = sitterBoardService.sitterView(code);
-        log.info("sitterBoardUseId : " + sitterBoard.getUser().getUserId());
-        return ResponseEntity.status(HttpStatus.OK).body(sitterBoard);
+        sitterViewCount(code, req, res);
+        return ResponseEntity.ok().body(sitterBoard);
     }
+
+
+    // 조회수
+    public void sitterViewCount(int code, HttpServletRequest req, HttpServletResponse res) {
+        Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
+
+        Cookie cookie = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("sitterBoard"))
+                .findFirst()
+                .orElseGet(() -> {
+                    sitterBoardService.sitterViewCount(code);
+                    return new Cookie("sitterBoard", "[" + code + "]");
+                });
+
+        if(!cookie.getValue().contains("[" + code + "]")) {
+            sitterBoardService.sitterViewCount(code);
+            cookie.setValue(cookie.getValue() + "[" + code + "]");
+        }
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
+        res.addCookie(cookie);
+    }
+
 
     // 글 등록
     @PostMapping("sitter")
@@ -153,7 +177,8 @@ public class SitterBoardController {
                 file.transferTo((savePath));
 
                 sitterImg.setSitterBoard(result);
-                sitterImg.setSitterImg(saveName);
+
+                sitterImg.setSitterImg(saveName.substring(24));
                 sitterBoardService.sitterCreateImg(sitterImg);
             }
         }
@@ -191,7 +216,7 @@ public class SitterBoardController {
                 String saveName = uploadPath + File.separator + "sitterBoard" + File.separator + uuid + "_" + fileName;
                 Path savePath = Paths.get(saveName);
 
-                sitterBoardImageVo.setSitterImg(saveName);
+                sitterBoardImageVo.setSitterImg(saveName.substring(24));
                 sitterBoardImageVo.setSitterBoard(SitterBoard.builder().sitterBoardCode((sitterBoardDTO.getSitterBoardCode())).build());
 
                 sitterBoardService.sitterCreateImg(sitterBoardImageVo);
@@ -234,33 +259,13 @@ public class SitterBoardController {
     }
 
 
-    // 조회수
-    public void sitterViewCount(int code, HttpServletRequest req, HttpServletResponse res) {
-        Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
-
-        Cookie cookie = Arrays.stream(cookies)
-                .filter(c -> c.getName().equals("sitterBoardViewCount"))
-                .findFirst()
-                .orElseGet(() -> {
-                    sitterBoardService.sitterViewCount(code);
-                    return new Cookie("sitterBoardViewCount", "[" + code + "]");
-                });
-
-        if(!cookie.getValue().contains("[" + code + "]")) {
-            sitterBoardService.sitterViewCount(code);
-            cookie.setValue(cookie.getValue() + "[" + code + "]");
-        }
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24);
-        res.addCookie(cookie);
-    }
-
 
 //    ========================================== 댓글 ==========================================
 
     // 댓글 추가
     @PostMapping("sitter/comment")
     public ResponseEntity sitterCommentCreate(@RequestBody SitterBoardComment sitterBoardComment) {
+        log.info("comment : " + sitterBoardComment);
         Object principal = authentication();
 
         if(principal instanceof User) {
@@ -275,7 +280,6 @@ public class SitterBoardController {
     // 댓글 수정
     @PutMapping("sitter/comment")
     public ResponseEntity<SitterBoardComment> sitterCommentUpdate(SitterCommentDTO sitterCommentDTO) {
-        log.info("dto : " + sitterCommentDTO);
         SitterBoardComment comment = sitterBoardService.sitterCommentview(sitterCommentDTO.getSitterCommentCode());
 
         comment.setSitterCommentCode(sitterCommentDTO.getSitterCommentCode());
@@ -295,7 +299,6 @@ public class SitterBoardController {
     // 각 게시판에 대한 댓글 조회
     @GetMapping("public/sitter/{code}/comment")
     public ResponseEntity<List<SitterCommentDTO>> sitterViewAllComment(@PathVariable(name = "code") int code) {
-        log.info("code : " + code);
         List<SitterBoardComment> topList = sitterBoardService.getTopComments(code);
         List<SitterCommentDTO> response = new ArrayList<>();
 

@@ -69,6 +69,16 @@ public class SitterBoardService {
     }
 
 
+    // 조회수
+    @Transactional
+    public void sitterViewCount(int code) {
+        queryFactory.update(qSitterBoard)
+                .set(qSitterBoard.sitterViewCount, qSitterBoard.sitterViewCount.add(1))
+                .where(qSitterBoard.sitterBoardCode.eq(code))
+                .execute();
+    }
+
+
     // 글 등록
     public SitterBoard sitterCreate(SitterBoard sitter) {
         return sitterBoardDAO.save(sitter);
@@ -103,15 +113,6 @@ public class SitterBoardService {
                 .execute();
     }
 
-
-    // 조회수
-    @Transactional
-    public void sitterViewCount(int code) {
-        queryFactory.update(qSitterBoard)
-                .set(qSitterBoard.sitterViewCount, qSitterBoard.sitterViewCount.add(1))
-                .where(qSitterBoard.sitterBoardCode.eq(code))
-                .execute();
-    }
 
 
 // ====================================== 댓글 ======================================
