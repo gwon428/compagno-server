@@ -64,7 +64,6 @@ public class AdoptionBoardController {
                         .adopAnimalFeature(dto.getAdopAnimalFeature())
                         .adopCenterName(dto.getAdopCenterName())
                         .adopCenterPhone(dto.getAdopCenterPhone())
-                        .adopRegiDate(dto.getAdopRegiDate())
                         .build()
         );
 
