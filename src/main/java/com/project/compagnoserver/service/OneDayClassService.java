@@ -18,6 +18,8 @@ public class OneDayClassService {
     @Autowired
     private ClassBoardMainImageDAO img;
 
+    // 클래스 보드 이미지 클래스 관련 로직
+
     // 이미지 저장
     public ClassBoardMainImage createImg(ClassBoardMainImage vo){
         return img.save(vo);
@@ -42,6 +44,7 @@ public class OneDayClassService {
 
 
     // ============================================================================
+
     // 원데이 클래스 등록 insert
     public ClassBoard insert(ClassBoard vo){
         return dao.save(vo);

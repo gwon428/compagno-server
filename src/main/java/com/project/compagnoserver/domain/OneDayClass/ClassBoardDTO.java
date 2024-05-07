@@ -20,8 +20,8 @@ public class ClassBoardDTO {
     private String odcAccompaying;
     private String odcContent;
     private MultipartFile file;
-    private Date odcStartDate;
-    private Date odcLastDate;
+    private String odcStartDate;
+    private String odcLastDate;
     // ===============================
     private List<MultipartFile> files;
     private List<String> images;
