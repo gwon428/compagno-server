@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -42,9 +44,13 @@ public class QnaQBoard {
     @Column(name="qna_q_content")
     private String qnaQContent;
 
-    @CreationTimestamp
+    @CreationTimestamp // INSERT 시 자동으로 값을 채워줌
     @Column(name="qna_q_date")
     private Timestamp qnaQDate;
+
+    @UpdateTimestamp // UPDATE 시 자동으로 값을 채워줌
+    @Column(name="qna_q_date_update")
+    private Timestamp qnaQDateUpdate;
 
     @Column(name="qna_q_status")
     private String qnaQStatus;

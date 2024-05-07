@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -171,6 +172,7 @@ public class QnaQBoardController {
                 .qnaQCode(result.getQnaQCode())
                 .qnaQTitle(result.getQnaQTitle())
                 .qnaQContent(result.getQnaQContent())
+                .qnaQDate(result.getQnaQDateUpdate())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
                 .images(service.viewImg(code))
@@ -245,6 +247,7 @@ public class QnaQBoardController {
                     .qnaQCode(dto.getQnaQCode())
                     .qnaQTitle(dto.getQnaQTitle())
                     .qnaQContent(dto.getQnaQContent())
+                    .qnaQDateUpdate((Timestamp) dto.getQnaQDate())
                     .qnaQStatus("N")
                     .build();
             log.info("update vo : " + vo);
