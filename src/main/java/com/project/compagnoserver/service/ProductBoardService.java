@@ -88,7 +88,7 @@ public class ProductBoardService {
     @Transactional
     public void deleteImage(int code) {
         queryFactory.delete(qProductBoardImage)
-                .where(qProductBoardImage.productBoard.productBoardCode.eq(code))
+                .where(qProductBoardImage.productImageCode.eq(code))
                 .execute();
     }
 

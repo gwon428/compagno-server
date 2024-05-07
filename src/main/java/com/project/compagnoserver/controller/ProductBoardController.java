@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -110,7 +111,6 @@ public class ProductBoardController {
         ProductBoard prev = productBoard.viewBoard(code);
         if(prev.getProductMainImage()!=null) {
             File file = new File(uploadPath + File.separator + prev.getProductMainImage());
-            log.info("file : " +file);
             file.delete();
         }
 
@@ -163,6 +163,7 @@ public class ProductBoardController {
     public ResponseEntity<ProductBoard> update(ProductBoardDTO dto) throws IOException {
         ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
 
+        log.info("dtoImage : " + dto.getImages());
         // 게시판 수정
         ProductBoard vo = ProductBoard.builder()
                 .productBoardCode(dto.getProductBoardCode())
@@ -199,16 +200,14 @@ public class ProductBoardController {
         }
 
         ProductBoard result = productBoard.updateBoard(vo);
-
-
         // 나머지 이미지 삭제
         List<ProductBoardImage> prevImage = productBoard.viewImage(dto.getProductBoardCode());
         for(ProductBoardImage image : prevImage) {
-            if ((dto.getImages()!=null && !dto.getImages().contains(image.getProductImage()) || dto.getImages() == null)) {
+            if ((dto.getImages() != null && !dto.getImages().contains(image.getProductImage()) || dto.getImages() == null)) {
                 File file = new File(uploadPath + File.separator + image.getProductImage());
                 file.delete();
 
-                productBoard.deleteImage(dto.getProductBoardCode());
+                productBoard.deleteImage(image.getProductImageCode());
             }
 
         }
