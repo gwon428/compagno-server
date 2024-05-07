@@ -35,4 +35,6 @@ public class UserDTO {
 
     private Integer defaultImg;
 
+    private String userEnrollDate;
+
 }

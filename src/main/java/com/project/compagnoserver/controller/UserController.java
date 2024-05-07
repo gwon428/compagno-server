@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -47,7 +48,8 @@ public class UserController {
     public ResponseEntity create(@RequestBody User vo) {
 
         LocalDateTime localDateTime = LocalDateTime.now();
-        Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
+        String nowDate = java.sql.Timestamp.valueOf(localDateTime).toString();
+
         String uuid = UUID.randomUUID().toString();
 
         User user = User.builder()
@@ -80,6 +82,9 @@ public class UserController {
         if(user!=null) {
 
             String token = tokenProvider.create(user);
+            
+            // 가입일에서 년-월-일 만 표기
+            String[] showEnrollDate = user.getUserEnrollDate().split(" ");
 
             UserDTO responseDTO = UserDTO.builder()
                     .userId(user.getUserId())
@@ -90,6 +95,7 @@ public class UserController {
                     .userPhone(user.getUserPhone())
                     .userEmail(user.getUserEmail())
                     .userStatus(user.getUserStatus())
+                    .userEnrollDate(showEnrollDate[0])
                     .token(token)
                     .build();
             log.info("user : " + responseDTO);
