@@ -56,6 +56,8 @@ public class QAdoptionBoard extends EntityPathBase<AdoptionBoard> {
 
     public final StringPath userNickname = createString("userNickname");
 
+    public final StringPath userPhone = createString("userPhone");
+
     public QAdoptionBoard(String variable) {
         super(AdoptionBoard.class, forVariable(variable));
     }

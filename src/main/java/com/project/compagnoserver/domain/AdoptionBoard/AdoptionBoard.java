@@ -34,6 +34,9 @@ public class AdoptionBoard {
     @Column(name="user_nickname")
     private String userNickname;
 
+    @Column(name="user_phone")
+    private String userPhone;
+
     @Column(name="adoption_regi_date")
     private Date adopRegiDate;
 

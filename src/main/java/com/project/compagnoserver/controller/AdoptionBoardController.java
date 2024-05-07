@@ -8,14 +8,12 @@ import com.project.compagnoserver.service.AdoptionBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +53,7 @@ public class AdoptionBoardController {
                         .userId(dto.getUserId())
                         .userImg(dto.getUserImg())
                         .userNickname(dto.getUserNickname())
+                        .userPhone(dto.getUserPhone())
                         .adopAnimalKind(dto.getAdopAnimalKind())
                         .adopAnimalColor(dto.getAdopAnimalColor())
                         .adopAnimalFindplace(dto.getAdopAnimalFindplace())
@@ -168,6 +166,7 @@ public class AdoptionBoardController {
         AdoptionBoard adop = AdoptionBoard.builder()
                 .userId(dto.getUserId())
                 .userImg(dto.getUserImg())
+                .userPhone(dto.getUserPhone())
                 .userNickname(dto.getUserNickname())
                 .adopBoardCode(dto.getAdopBoardCode())
                 .adopAnimalKind(dto.getAdopAnimalKind())

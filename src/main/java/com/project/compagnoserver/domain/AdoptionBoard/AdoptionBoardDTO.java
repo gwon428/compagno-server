@@ -1,7 +1,5 @@
 package com.project.compagnoserver.domain.AdoptionBoard;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +17,7 @@ public class AdoptionBoardDTO {
     private int adopBoardCode;
     private String userId;
     private String userImg;
+    private String userPhone;
     private String userNickname;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date adopRegiDate;
