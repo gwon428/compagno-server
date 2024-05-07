@@ -48,7 +48,8 @@ public class AdoptionBoardController {
         //    private List<MultipartFile> images;
         //    private List<String> image;
 
-        AdoptionBoard result = service.create(
+
+        AdoptionBoard result =
                 AdoptionBoard.builder()
                         .userId(dto.getUserId())
                         .userImg(dto.getUserImg())
@@ -64,8 +65,8 @@ public class AdoptionBoardController {
                         .adopAnimalFeature(dto.getAdopAnimalFeature())
                         .adopCenterName(dto.getAdopCenterName())
                         .adopCenterPhone(dto.getAdopCenterPhone())
-                        .build()
-        );
+                        .build();
+
 
         if(dto.getImages()!=null){
             for(MultipartFile file : dto.getImages()){
@@ -78,6 +79,10 @@ public class AdoptionBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
+                    if(result.getAdopAnimalImage()==null){
+                        result.setAdopAnimalImage(saveName);
+                    }
+
                     images.setAdopImage(saveName);
                     images.setAdopBoardCode(result);
 
@@ -85,6 +90,9 @@ public class AdoptionBoardController {
                 }
             }
         }
+
+//        result.setAdopAnimalImage(mainImage.getFirst());
+        service.create(result);
         return result!=null?
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -22,7 +22,7 @@ public class AdoptionBoardImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int adopImageCode;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="adoption_board_code")
     @JsonIgnore
     private AdoptionBoard adopBoardCode;
