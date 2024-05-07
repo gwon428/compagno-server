@@ -2,7 +2,7 @@ package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.Animal.AnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
-import com.project.compagnoserver.repo.user.MyActivityDAO;
+import com.project.compagnoserver.repo.user.AnimalBoardFavDAO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -11,15 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 
 @Slf4j
 @Service
-public class MyActivityService {
+public class AnimalBoardFavService {
 
     @Autowired
-    private MyActivityDAO maDAO;
+    private AnimalBoardFavDAO abfDAO;
 
     @Autowired
     private JPAQueryFactory queryFactory;
@@ -28,7 +26,7 @@ public class MyActivityService {
 
     // 내 좋아요 목록 출력
     public Page<AnimalBoardFavorite> myFavList(Pageable pageable, BooleanBuilder builder) {
-        return maDAO.findAll(builder, pageable);
+        return abfDAO.findAll(builder, pageable);
     }
 
     // 내 좋아요 갯수 출력
@@ -40,5 +38,8 @@ public class MyActivityService {
                 .fetchOne();
 
     }
+
+    // 북마크한 상품 목록 출력
+
 
 }

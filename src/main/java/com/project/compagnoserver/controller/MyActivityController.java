@@ -1,13 +1,10 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.config.TokenProvider;
 import com.project.compagnoserver.domain.Animal.AnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
-import com.project.compagnoserver.service.MyActivityService;
+import com.project.compagnoserver.service.AnimalBoardFavService;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,11 +23,7 @@ import java.util.List;
 public class MyActivityController {
 
     @Autowired
-    private MyActivityService maService;
-
-    @Autowired
-    private TokenProvider tokenProvider;
-
+    private AnimalBoardFavService abfService;
 
 
     // 내 좋아요 목록 출력
@@ -47,7 +40,7 @@ public class MyActivityController {
 
         builder.and(expression);
 
-        Page<AnimalBoardFavorite> list = maService.myFavList(pageable, builder);
+        Page<AnimalBoardFavorite> list = abfService.myFavList(pageable, builder);
 
         return ResponseEntity.ok(list.getContent());
 
@@ -57,7 +50,7 @@ public class MyActivityController {
     // 내 좋아요 갯수 출력
     @GetMapping("/api/mypage/myactivity/countfav/{id}")
     public ResponseEntity countFav(@PathVariable("id") String id) {
-        return ResponseEntity.ok(maService.countFav(id));
+        return ResponseEntity.ok(abfService.countFav(id));
     }
 
 
