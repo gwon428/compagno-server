@@ -28,6 +28,8 @@ public class QQnaABoard extends EntityPathBase<QnaABoard> {
 
     public final DateTimePath<java.sql.Timestamp> qnaADate = createDateTime("qnaADate", java.sql.Timestamp.class);
 
+    public final DateTimePath<java.sql.Timestamp> qnaADateUpdate = createDateTime("qnaADateUpdate", java.sql.Timestamp.class);
+
     public final StringPath qnaATitle = createString("qnaATitle");
 
     public final com.project.compagnoserver.domain.QnaQ.QQnaQBoard qnaQCode;

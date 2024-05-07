@@ -164,6 +164,35 @@ public class QnaQBoardController {
         return ResponseEntity.badRequest().build();
     }
 
+    @GetMapping("/question/mypage")
+    public ResponseEntity<List<QnaQBoard>> viewMyQuestion(@RequestParam (name="page", defaultValue = "1") int page){
+
+        Object principal = authentication();
+
+        QnaQBoard vo = new QnaQBoard();
+
+        if(principal instanceof User) {
+
+            User user = (User) principal;
+
+            Sort sort = Sort.by("QnaQCode").descending();
+            Pageable pageable = PageRequest.of(page - 1, 10, sort);
+
+            QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
+            BooleanBuilder builder = new BooleanBuilder();
+
+            if (user.getUserId().equals(user.getUserId())) {
+                BooleanExpression expression = qQnaQBoard.userId.eq(user.getUserId());
+                builder.and(expression);
+            }
+
+            Page<QnaQBoard> list = service.viewAll(builder, pageable);
+
+            return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     // 질문 상세보기(질문 코드 통해서)
     @GetMapping("/public/question/{code}")
     public ResponseEntity<QnaQBoardDTO> view(@PathVariable(name="code") int code){
@@ -172,7 +201,7 @@ public class QnaQBoardController {
                 .qnaQCode(result.getQnaQCode())
                 .qnaQTitle(result.getQnaQTitle())
                 .qnaQContent(result.getQnaQContent())
-                .qnaQDate(result.getQnaQDateUpdate())
+                .qnaQDate(result.getQnaQDate())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
                 .images(service.viewImg(code))
