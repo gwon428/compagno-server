@@ -7,9 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -38,8 +42,13 @@ public class QnaABoard {
     @Column(name="qna_a_content")
     private String qnaAContent;
 
+    @CreationTimestamp
     @Column(name="qna_a_date")
     private Timestamp qnaADate;
+
+    @UpdateTimestamp
+    @Column(name="qna_a_date_update")
+    private Timestamp qnaADateUpdate;
 
 //    @OneToMany(mappedBy = "qnaACode")
 //    @JsonIgnore
