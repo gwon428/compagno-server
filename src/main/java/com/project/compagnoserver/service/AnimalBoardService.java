@@ -5,6 +5,7 @@ import com.project.compagnoserver.domain.user.QUser;
 import com.project.compagnoserver.repo.Animal.AnimalBoardDAO;
 import com.project.compagnoserver.repo.Animal.AnimalBoardImageDAO;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ public class AnimalBoardService {
     private final QUser qUser = QUser.user;
     private final QAnimalBoardImage qAnimalBoardImage = QAnimalBoardImage.animalBoardImage1;
 
+    private final QAnimalBoardComment qAnimalBoardComment = QAnimalBoardComment.animalBoardComment;
+
     // 자유게시판 글쓰기 - 1) 글쓰기
     public AnimalBoard write(AnimalBoard board){
         return animalBoardDAO.save(board);
@@ -45,7 +48,7 @@ public class AnimalBoardService {
     }
 
     // 자유게시판 글쓰기 - 2-2) 완성된 이미지 리스트 불러오기
-    public AnimalBoardImage getThumnailList(int boardCode){
+    public AnimalBoardImage getThumbnailList(int boardCode){
         log.info("받은 boardCode : " + boardCode);
         return queryFactory.selectFrom(qAnimalBoardImage)
                 .where(qAnimalBoardImage.animalBoard.animalBoardCode.eq(boardCode))
@@ -54,7 +57,8 @@ public class AnimalBoardService {
 
     // 자유게시판 글쓰기 - 2-3) 썸네일 저장
     @Transactional
-    public void saveThumnail(String image, AnimalBoard vo){
+    public void saveThumbnail(String image, AnimalBoard vo){
+        log.info("service thumbnail : " + image);
          queryFactory.update(qAnimalBoard)
                 .set(qAnimalBoard.animalMainImage, image)
                 .where(qAnimalBoard.animalBoardCode.eq(vo.getAnimalBoardCode()))
@@ -85,18 +89,28 @@ public class AnimalBoardService {
 
          // 자유게시판 전체보기
          public Page<AnimalBoard> viewAll(Pageable pageable, BooleanBuilder builder){
-            return animalBoardDAO.findAll(builder, pageable);
+//            Page<AnimalBoard> board =
+                    return animalBoardDAO.findAll(builder, pageable);
+//             JPAQuery<Long> countQuery = queryFactory.select(qAnimalBoardComment.count()).from(qAnimalBoardComment)
+//                     .where(qAnimalBoardComment.animalBoard.animalBoardCode.eq());
+
+
+
+
     }
 
-
-    // 자유게시판 - 카테고리별 전체보기
-        public List<AnimalBoard> viewCategory(int categoryCode, Pageable pageable){
+        // 자유게시판 - 좋아요 상위권 전체보기
+        public List<AnimalBoard> viewRankers(){
             return queryFactory.selectFrom(qAnimalBoard)
-                    .where(qAnimalCategory.animalCategoryCode.eq(categoryCode))
-                    .offset(pageable.getOffset())
-                    .limit(pageable.getPageSize())
+                    .orderBy(qAnimalBoard.animalBoardFavoriteCount.desc())
                     .fetch();
 
+        }
+
+
+        // 자유게시판 카테고리 불러오기
+        public List<AnimalCategory> viewCategory(){
+            return queryFactory.selectFrom(qAnimalCategory).fetch();
         }
 
         // 자유게시판 - 글 한개보기 = 상세페이지
