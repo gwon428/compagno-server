@@ -2,7 +2,7 @@ package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.Animal.AnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
-import com.project.compagnoserver.repo.user.AnimalBoardFavDAO;
+import com.project.compagnoserver.repo.user.MyAnimalBoardFavDAO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class AnimalBoardFavService {
+public class MyAnimalBoardFavService {
 
     @Autowired
-    private AnimalBoardFavDAO abfDAO;
+    private MyAnimalBoardFavDAO mabfDAO;
 
     @Autowired
     private JPAQueryFactory queryFactory;
@@ -26,7 +26,7 @@ public class AnimalBoardFavService {
 
     // 내 좋아요 목록 출력
     public Page<AnimalBoardFavorite> myFavList(Pageable pageable, BooleanBuilder builder) {
-        return abfDAO.findAll(builder, pageable);
+        return mabfDAO.findAll(builder, pageable);
     }
 
     // 내 좋아요 갯수 출력

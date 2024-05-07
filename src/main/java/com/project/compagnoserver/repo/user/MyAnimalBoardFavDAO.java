@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 
-public interface AnimalBoardFavDAO extends JpaRepository<AnimalBoardFavorite, Integer>, QuerydslPredicateExecutor<AnimalBoardFavorite> {
+public interface MyAnimalBoardFavDAO extends JpaRepository<AnimalBoardFavorite, Integer>, QuerydslPredicateExecutor<AnimalBoardFavorite> {
 
 
 }
