@@ -1,15 +1,21 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.RegisterPet.QRegisterPetLocation;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
 import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
+import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocation;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetFaqDAO;
+import com.project.compagnoserver.repo.RegisterPet.RegisterPetLocationDAO;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -24,14 +30,22 @@ import java.util.Map;
 public class RegisterPetService {
 
     @Autowired
+    private JPAQueryFactory queryFactory;
+
+    @Autowired
     private RegisterPetDAO dao;
 
     @Autowired
     private RegisterPetFaqDAO faqDao;
 
+    @Autowired
+    private RegisterPetLocationDAO registerPetLocationDAO;
+    private final QRegisterPetLocation qRegisterPetLocation = QRegisterPetLocation.registerPetLocation;
+
+
     // 대행기관 전체 보기
-    public List<RegisterPet> instList() {
-        return dao.findAll();
+    public Page<RegisterPet> instList(Pageable pageable) {
+        return dao.findAll(pageable);
     }
 
 
@@ -68,9 +82,6 @@ public class RegisterPetService {
 //    public List<RegisterPetFaq> getPublicFaq() {
 //        return faqDao.findByregiFaqStatus("Y");
 //    }
-
-
-
 
 
 
@@ -141,6 +152,22 @@ private String faqFileName = "동물등록 FAQ.xls";
     }
 
 
+
+// ====================================== Location ======================================
+
+    // 시도 조회
+    public List<RegisterPetLocation> registerGetProvinces() {
+    return queryFactory.selectFrom(qRegisterPetLocation)
+            .where(qRegisterPetLocation.locationParentCode.eq(0))
+            .fetch();
+    }
+
+    // 시도별 시군구 조회
+    public List<RegisterPetLocation> registerGetDistricts(int code) {
+        return queryFactory.selectFrom(qRegisterPetLocation)
+                .where(qRegisterPetLocation.locationParentCode.eq(code))
+                .fetch();
+    }
 
 
 }

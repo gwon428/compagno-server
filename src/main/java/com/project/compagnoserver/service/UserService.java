@@ -47,10 +47,28 @@ public class UserService {
         return checkNickResult;
     }
 
-    // 비밀번호 변경
-  public void updateUser(User user) {
+  // 회원 탈퇴
+    public int deleteUser(String id, String password, PasswordEncoder encoder) {
+      User user = userDao.findById(id).orElse(null);
+      if(user!= null && encoder.matches(password, user.getPassword())) {
+          userDao.deleteUserInfo(id);
+          // 1 리턴하면 회원탈퇴 성공
+          return 1;
+      }
+        // 0 리턴하면 회원정보 틀려서 탈퇴 실패
+        return 0;
+    }
+
+    // 프사제외 개인정보 변경
+    public void updateUser(User user) {
         userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
-  }
+    }
+
+    // 개인정보 + 프로필 변경
+    public void changeProfile(User user) {
+        userDao.changeProfile(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserImg(), user.getUserId());
+    }
+
 
 
 }

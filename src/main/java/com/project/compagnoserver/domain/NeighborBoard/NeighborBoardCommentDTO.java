@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.NeighborBoard;
 
 import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,8 +23,8 @@ public class NeighborBoardCommentDTO {
 
     private Date neighborCommentRegiDate;
 
-    private User user;
+    private UserDTO user;
 
-    private List<NeighborBoardCommentDTO> replies = new ArrayList<>();
+    private List<NeighborBoardCommentDTO> neighborReplies = new ArrayList<>();
 }
 

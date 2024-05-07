@@ -2,12 +2,15 @@ package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.Parsing.Parsing;
 import com.project.compagnoserver.repo.Parsing.ParsingDAO;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service @Slf4j
 public class ContentService {
@@ -15,26 +18,14 @@ public class ContentService {
     @Autowired
     private ParsingDAO dao;
 
-    public List<Parsing> findAll(){
-        return dao.findAll();
-    }
-    public List<Parsing> findByMainCateCode(int code){
-        return dao.findByMainCateCode(code);
+    @Autowired
+    private JPAQueryFactory queryFactory;
+
+    public Page<Parsing> viewAll(BooleanBuilder builder, Pageable pageable){
+            return dao.findAll(builder, pageable);
     }
 
-    public List<Parsing> findBySubCateCode(int code) {
-        return dao.findBySubCateCode(code);
-    }
-
-    public List<Parsing> findByMainReg(int code) {
-        return dao.findByMainReg(code);
-    }
-
-    public Optional<Parsing> findById(int code){
-        return dao.findById(code);
-    }
-
-    public List<Parsing> findByMainCateReg(int code, int reg){
-        return dao.findByMainCateReg(code, reg);
-    }
+public Parsing view(int code){
+        return dao.findById(code).orElse(null);
+}
 }

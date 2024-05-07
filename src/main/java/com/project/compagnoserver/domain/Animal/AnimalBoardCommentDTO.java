@@ -22,6 +22,7 @@ public class AnimalBoardCommentDTO {
     private int animalCommentCode;
     private String animalCommentContent;
     private Date animalCommentDate;
+    private String animalCommentTag;
     private int animalParentCode; // postman 실험용
     private AnimalCategoryDTO animalCategory;
     private UserDTO user;

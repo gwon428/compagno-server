@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.QnaA;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +24,10 @@ public class QnaABoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int qnaACode;
 
-    @Column(name="qna_q_code")
-    private int qnaQCode;
+    @OneToOne
+    @JsonIgnore
+    @JoinColumn(name="qna_q_code")
+    private QnaQBoard qnaQCode;
 
     @Column(name="user_id")
     private String userId;
@@ -38,7 +41,7 @@ public class QnaABoard {
     @Column(name="qna_a_date")
     private Timestamp qnaADate;
 
-    @OneToMany(mappedBy = "qnaACode")
-    @JsonIgnore
-    private List<QnaABoardImage> files;
+//    @OneToMany(mappedBy = "qnaACode")
+//    @JsonIgnore
+//    private List<QnaABoardImage> files;
 }

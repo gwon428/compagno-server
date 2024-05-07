@@ -15,6 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -55,7 +58,7 @@ public class UserController {
                 .userEnrollDate(nowDate)
                 .userStatus("n")
                 .userRole("ROLE_USER")
-                .userImg(uploadPath + File.separator + "user" + File.separator + "defaultImage.jpg") // LostBoardComment 확인 위해
+                .userImg("user" + File.separator + "defaultImage.png") // LostBoardComment 확인 위해
                 .build();
 
         User result = userService.create(user);
@@ -94,7 +97,7 @@ public class UserController {
     }
 
     // 마이페이지 내 정보 가져오기
-    @GetMapping("/myinfo/{id}")
+    @GetMapping("/api/mypage/myinfo/{id}")
     public ResponseEntity myPageInfo(@PathVariable("id") String id) {
         return ResponseEntity.ok(userService.myPageInfo(id));
     }
@@ -111,20 +114,64 @@ public class UserController {
         return ResponseEntity.ok(userService.checkUserNick(nickname));
     }
 
-    // 이메일 변경
+    // 회원 탈퇴
     @Transactional
-    @PutMapping("/mypage/myinfo")
-    public ResponseEntity updateUser(@RequestBody User vo) {
-        User user = User.builder()
-                .userEmail(vo.getUserEmail())
-                .userPhone(vo.getUserPhone())
-                .userPwd(passwordEncoder.encode(vo.getUserPwd()))
-                .userId(vo.getUserId())
-                .build();
+    @PutMapping("/api/mypage/myinfo/quit")
+    public ResponseEntity quitUser(@RequestBody User vo) {
 
-       log.info("컨트롤러에서 입력값 : " + user);
-        userService.updateUser(user);
-        return ResponseEntity.status(HttpStatus.OK).build();
+            // result가 1 이면 회원탈퇴 성공, 0 이면 회원탈퇴 조건 미충족으로 실패
+           int result =  userService.deleteUser(vo.getUserId(), vo.getUserPwd(), passwordEncoder);
+           if(result == 1) {
+
+               return ResponseEntity.ok().build();
+           }
+           return ResponseEntity.badRequest().build();
    }
+
+    // 개인정보 + 프사 변경
+    @Transactional
+    @PutMapping("/api/mypage/myinfo/updateProfile")
+    public ResponseEntity changeProfile(UserDTO dto) throws IOException {
+
+        User user = User.builder()
+                .userEmail(dto.getUserEmail())
+                .userPhone(dto.getUserPhone())
+                .userPwd(passwordEncoder.encode(dto.getUserPwd()))
+                .userId(dto.getUserId())
+                .build();
+        log.info("defaultImg : " + dto.getDefaultImg());
+
+
+        // 프로필사진도 변경할때
+       if(dto.getFile()!=null ) {
+            String fileName = dto.getFile().getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+
+           String saveName = "user" + File.separator + uuid + "_" + fileName;
+
+            String saveNameWithPath = uploadPath + File.separator + "user" + File.separator + uuid + "_" + fileName;
+
+            Path savePath = Paths.get(saveNameWithPath);
+            dto.getFile().transferTo(savePath);
+
+            user.setUserImg(saveName);
+
+            userService.changeProfile(user);
+        }
+
+       // 기본 프로필사진으로 변경할때
+        else if(dto.getDefaultImg().equals("true")) {
+            String saveName2 = "user" + File.separator + "defaultImage.png";
+           user.setUserImg(saveName2);
+
+           userService.changeProfile(user);
+       }
+
+       else {
+           userService.updateUser(user);
+       }
+
+        return ResponseEntity.ok().build();
+    }
 
 }

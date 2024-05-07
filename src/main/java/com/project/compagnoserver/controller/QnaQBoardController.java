@@ -49,87 +49,88 @@ public class QnaQBoardController {
         return authentication.getPrincipal();
     }
     // 질문 등록
-    @PostMapping("/public/question")
+    @PostMapping("/question")
     public ResponseEntity<QnaQBoardDTO> create(QnaQBoardDTO dto) throws IOException {
 
-        Object principal = authentication();
+        log.info("dto : " + dto);
+//        Object principal = authentication();
 
-//        QnaQBoard vo = new QnaQBoard();
+        QnaQBoard vo = new QnaQBoard();
 
-//        if(principal instanceof User){
-//
+//        if(principal instanceof User) {
+
 //            User user = (User) principal;
 
-//            vo.setUserId(user.getUserId());
-//            vo.setUserNickname(user.getUserNickname());
+            vo.setUserId(dto.getUserId());
+            vo.setUserNickname(dto.getUserNickname());
 
-//            vo.setQnaQCode(dto.getQnaQCode());
-//            vo.setQnaQTitle(dto.getQnaQTitle());
-//            vo.setQnaQContent(dto.getQnaQContent());
+            vo.setQnaQTitle(dto.getQnaQTitle());
+            vo.setQnaQContent(dto.getQnaQContent());
 
             // 비밀글의 경우
-            if(dto.getSecret() == null || dto.getSecret().equals("")){
+            if (dto.getSecret() == null || dto.getSecret().equals("")) {
                 log.info("dto : " + dto);
                 dto.setSecret("");
-//                log.info("secret : " + dto.getSecret());
-//                log.info("vosecret : " + vo.getSecret());
             } else {
                 dto.setSecret(dto.getSecret());
             }
 
             QnaQBoard result = service.create(QnaQBoard.builder()
-                            .qnaQContent(dto.getQnaQContent())
-                            .qnaQTitle(dto.getQnaQTitle())
-                            .userNickname(dto.getUserNickname())
-                            .userId(dto.getUserId())
-                            .secret(dto.getSecret())
+                    .qnaQContent(dto.getQnaQContent())
+                    .qnaQTitle(dto.getQnaQTitle())
+                    .qnaQCode(dto.getQnaQCode())
+                    .userNickname(dto.getUserNickname())
+                    .userId(dto.getUserId())
+                    .secret(dto.getSecret())
                     .build());
+            log.info("result : " + result);
 
-            if(dto.getFiles()!= null) {
+            if (dto.getFiles() != null) {
                 log.info("files 있음");
                 for (MultipartFile file : dto.getFiles()) {
-                    if(file.getOriginalFilename() != "") {
+                    if (file.getOriginalFilename() != "") {
                         QnaQBoardImage img = new QnaQBoardImage();
 
                         String fileName = file.getOriginalFilename();
                         String uuid = UUID.randomUUID().toString();
+//                        uploadPath = "http:////192.168.10.28:8081";
                         String saveName = uploadPath + File.separator + "QnaQ" + File.separator + uuid + "_" + fileName;
 
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
                         img.setQnaQUrl(saveName.substring(27));
                         img.setQnaQCode(result.getQnaQCode());
+
                         service.createImg(img);
                         log.info("imageCREATED!!");
                     }
                 }
             }
-
-
-            return result != null ? ResponseEntity.status(HttpStatus.CREATED).build() :
-                    ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
+//        }
+        log.info("heyyyyyyyy");
+            return ResponseEntity.ok().build();
     }
 
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
     @GetMapping("/public/question")
-    public ResponseEntity<List<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
+    public ResponseEntity<Page<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
         Sort sort = Sort.by("QnaQCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
-
+        BooleanExpression expression;
         if(!StringUtils.isEmpty(title)){
-            BooleanExpression expression = qQnaQBoard.qnaQTitle.contains(title);
+            expression = qQnaQBoard.qnaQTitle.contains(title);
             builder.and(expression);
-        } else if (!StringUtils.isEmpty(content)){
-            BooleanExpression expression = qQnaQBoard.qnaQContent.contains(content);
+        }
+        if (!StringUtils.isEmpty(content)) {
+            expression = qQnaQBoard.qnaQContent.contains(content);
             builder.and(expression);
         }
 
         Page<QnaQBoard> list = service.viewAll(builder, pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     @GetMapping("/question/manage")
@@ -180,7 +181,7 @@ public class QnaQBoardController {
     }
 
     // 질문 수정
-    @PutMapping("/public/question")
+    @PutMapping("/question")
     public ResponseEntity update(QnaQBoardDTO dto) throws IOException {
 
             log.info("dto 제목 : " + dto.getQnaQTitle());
@@ -190,7 +191,6 @@ public class QnaQBoardController {
                 List<String> imagesList = dto.getImages()
                         .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
                 log.info("imagesList : " + imagesList);
-
 
                 List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
                 log.info("list :  " + list);
@@ -203,8 +203,9 @@ public class QnaQBoardController {
 //                log.info("compare  " + image.compareTo())
 
                     if ((dto.getImages() != null && !imagesList.contains(image.getQnaQUrl())) || (dto.getImages() == null)) {
-                        File file = new File(image.getQnaQUrl());
-                        file.delete();
+//                    if((dto.getImages() != null && !list.contains(image.getQnaQUrl())) || dto.getImages() == null){
+                    File file = new File(image.getQnaQUrl());
+                    file.delete();
 
                         service.deleteImg(image.getQnaQImgCode());
                         log.info("삭제!");
@@ -214,6 +215,7 @@ public class QnaQBoardController {
 
             if (dto.getFiles() != null) {
                 for (MultipartFile file : dto.getFiles()) {
+                    log.info("이나ㅓ리ㅏ넝리ㅏ넝");
                     QnaQBoardImage img = new QnaQBoardImage();
 
                     String fileName = file.getOriginalFilename();
@@ -251,7 +253,7 @@ public class QnaQBoardController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/public/question/{code}")
+    @DeleteMapping("/question/{code}")
     public ResponseEntity<QnaQBoardDTO> delete(@PathVariable(name="code") int code){
         List<QnaQBoardImage> list = service.viewImg(code);
 

@@ -28,6 +28,8 @@ public class QAnimalBoard extends EntityPathBase<AnimalBoard> {
 
     public final DateTimePath<java.util.Date> animalBoardDate = createDateTime("animalBoardDate", java.util.Date.class);
 
+    public final NumberPath<Integer> animalBoardFavoriteCount = createNumber("animalBoardFavoriteCount", Integer.class);
+
     public final StringPath animalBoardTitle = createString("animalBoardTitle");
 
     public final NumberPath<Integer> animalBoardView = createNumber("animalBoardView", Integer.class);

@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.NeighborBoard;
 
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
+import com.project.compagnoserver.domain.Parsing.LocationParsing;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,8 +31,9 @@ public class NeighborBoard {
     @JoinColumn(name = "animal_category_code")
     private AnimalCategory animalCategoryCode;
 
-    @Column(name = "neighbor_location")
-    private String neighborLocation;
+    @ManyToOne
+    @JoinColumn(name = "location_code")
+    private LocationParsing location;
 
     @Column(name = "neighbor_title")
     private String neighborBoardTitle;

@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Date;
 
 
 @Data
@@ -16,6 +19,7 @@ public class UserDTO {
 
     private String userId;
     private String userPersonName;
+    private String userPwd;
 
     // LostBoardComment에 필요
     private String userNickname;
@@ -26,5 +30,9 @@ public class UserDTO {
     private String userEmail;
 
     private String userStatus;
-    private String userPwd;
+
+    private MultipartFile file;
+
+    private String defaultImg;
+
 }

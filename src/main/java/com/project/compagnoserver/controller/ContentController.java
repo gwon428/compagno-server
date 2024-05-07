@@ -1,67 +1,74 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.Parsing.Parsing;
+import com.project.compagnoserver.domain.Parsing.QParsing;
 import com.project.compagnoserver.service.ContentService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/content")
+@RequestMapping("/compagno/public/*")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class ContentController {
 
     @Autowired
     private ContentService service;
 
+    @Value("${spring.servlet.multipart.location}")
+    private String uploadPath;
+
+
     // 전체보기
-    @GetMapping("/view")
-    public ResponseEntity<List<Parsing>> view(){
-        List<Parsing> list = service.findAll();
+    @GetMapping("/content")
+    public ResponseEntity<Page<Parsing>> view(@RequestParam(name="mainCate", required = true) int mainCate,
+                                              @RequestParam(name="subCate", required = true, defaultValue = "0") int subCate,
+                                              @RequestParam(name="mainReg", required = true, defaultValue = "0") int mainReg,
+                                              @RequestParam(name="page", required = false, defaultValue = "1") int page){
+
+        Sort sort = Sort.by(Sort.Order.asc("latitude"), Sort.Order.asc(("longtitude")));
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        QParsing qParsing = QParsing.parsing;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression;
+        if(mainCate != 0){
+            expression = qParsing.mainCateCode.eq(mainCate);
+            builder.and(expression);
+        }
+        if(subCate != 0){
+            expression = qParsing.subCateCode.eq(subCate);
+            builder.and(expression);
+        }
+        if(mainReg != 0){
+            expression = qParsing.mainregCode.eq(mainReg);
+            builder.and(expression);
+        }
+
+
+        Page<Parsing> list = service.viewAll(builder, pageable);
+
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
-    // 메인카테고리별
-    @GetMapping("/view/mainCate/{code}")
-    public ResponseEntity<List<Parsing>> viewMain(@PathVariable(name="code") int code){
-        List<Parsing> list = service.findByMainCateCode(code);
-        return ResponseEntity.status(HttpStatus.OK).body(list);
+    // 상세 페이지
+    @GetMapping("/content/{code}")
+    public ResponseEntity<Parsing> view(@PathVariable(name="code") int code){
+        Parsing result = service.view(code);
+        log.info("result : " + result);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    // 서브카테고리별
-    @GetMapping("/view/subCate/{code}")
-    public ResponseEntity<List<Parsing>> viewSub(@PathVariable(name="code") int code){
-        List<Parsing> list = service.findBySubCateCode(code);
-        return ResponseEntity.status(HttpStatus.OK).body(list);
-    }
-
-    //지역별
-    @GetMapping("/view/mainReg/{code}")
-    public ResponseEntity<List<Parsing>> viewreg(@PathVariable(name="code")int code){
-        List<Parsing> list = service.findByMainReg(code);
-        return ResponseEntity.status(HttpStatus.OK).body(list);
-    }
-
-    // 한개씩 보기(상세정보)
-    @GetMapping("/view/num/{code}")
-    public ResponseEntity<Optional<Parsing>> view(@PathVariable(name="code") int code){
-        Optional<Parsing> vo = service.findById(code);
-        return ResponseEntity.status(HttpStatus.OK).body(vo);
-    }
-
-    @GetMapping("/view/{code}/{reg}")
-    public ResponseEntity<List<Parsing>> viewMainReg(@PathVariable(name="code") int code, @PathVariable(name="reg") int reg){
-        List<Parsing> list = service.findByMainCateReg(code, reg);
-        return ResponseEntity.status(HttpStatus.OK).body(list);
-    }
 }
