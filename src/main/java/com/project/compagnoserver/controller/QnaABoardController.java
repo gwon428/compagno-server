@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class QnaABoardController {
                     .qnaACode(vo.getQnaACode())
                     .qnaATitle(vo.getQnaATitle())
                     .qnaAContent(vo.getQnaAContent())
+                    .qnaADate(vo.getQnaADateUpdate())
                     .userId(vo.getUserId())
                     .images(service.viewImg(vo.getQnaACode()))
                     .build();
@@ -95,6 +97,9 @@ public class QnaABoardController {
             QnaQBoard update = questionService.view(dto.getQnaQCode());
             update.setQnaACode(result);
             update.setQnaQStatus("Y");
+            // 수정 때문에..
+            update.setQnaQDateUpdate(update.getQnaQDate());
+            log.info("date : " + update.getQnaQDate());
             log.info("상태 업데이트했어요");
 
             questionService.update(update);
@@ -173,6 +178,7 @@ public class QnaABoardController {
                 .qnaACode(dto.getQnaACode())
                 .qnaATitle(dto.getQnaATitle())
                 .qnaAContent(dto.getQnaAContent())
+                .qnaADate((Timestamp) dto.getQnaADate())
                 .build();
 
         service.update(vo);

@@ -20,6 +20,7 @@ public class ProductBoardDTO {
     private String productBoardTitle;
 
     private MultipartFile productMainFile;
+
     private String mainImage;
 
     private String productName;

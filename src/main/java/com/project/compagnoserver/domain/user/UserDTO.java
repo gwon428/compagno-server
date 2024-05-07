@@ -33,6 +33,8 @@ public class UserDTO {
 
     private MultipartFile file;
 
-    private String defaultImg;
+    private Integer defaultImg;
+
+    private String userEnrollDate;
 
 }

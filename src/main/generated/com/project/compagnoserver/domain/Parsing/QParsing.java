@@ -23,6 +23,8 @@ public class QParsing extends EntityPathBase<Parsing> {
 
     public final StringPath fee = createString("fee");
 
+    public final StringPath holiday = createString("holiday");
+
     public final StringPath latitude = createString("latitude");
 
     public final StringPath longtitude = createString("longtitude");
@@ -38,6 +40,8 @@ public class QParsing extends EntityPathBase<Parsing> {
     public final StringPath name = createString("name");
 
     public final NumberPath<Integer> num = createNumber("num", Integer.class);
+
+    public final StringPath OperatingHours = createString("OperatingHours");
 
     public final StringPath parking = createString("parking");
 

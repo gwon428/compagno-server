@@ -21,7 +21,7 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath userEmail = createString("userEmail");
 
-    public final DateTimePath<java.util.Date> userEnrollDate = createDateTime("userEnrollDate", java.util.Date.class);
+    public final StringPath userEnrollDate = createString("userEnrollDate");
 
     public final StringPath userId = createString("userId");
 

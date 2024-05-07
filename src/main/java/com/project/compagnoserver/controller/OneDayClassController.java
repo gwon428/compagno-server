@@ -58,7 +58,7 @@ public class OneDayClassController {
                 .odcContent(dto.getOdcContent())
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
-                .odc
+//                .odc
                 .odcAccompaying('Y')
                 .build();
 //

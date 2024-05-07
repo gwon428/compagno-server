@@ -28,6 +28,7 @@ public class AnimalBoardDTO {
     private AnimalCategory animalCategory; // 게시글 볼때(detail/edit) 정보 보내기
 
     private int animalBoardFavoriteCount; //게시글 좋아요 수
+    private int animalCommentCount; // 얘는 컬럼명 없음
 
     // 자유게시판 글쓰기 DTO
 }

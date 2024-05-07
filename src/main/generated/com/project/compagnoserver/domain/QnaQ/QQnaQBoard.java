@@ -30,6 +30,8 @@ public class QQnaQBoard extends EntityPathBase<QnaQBoard> {
 
     public final DateTimePath<java.sql.Timestamp> qnaQDate = createDateTime("qnaQDate", java.sql.Timestamp.class);
 
+    public final DateTimePath<java.sql.Timestamp> qnaQDateUpdate = createDateTime("qnaQDateUpdate", java.sql.Timestamp.class);
+
     public final StringPath qnaQStatus = createString("qnaQStatus");
 
     public final StringPath qnaQTitle = createString("qnaQTitle");

@@ -18,7 +18,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,13 +42,14 @@ public class UserController {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    LocalDateTime localDateTime = LocalDateTime.now();
-    Date nowDate = java.sql.Timestamp.valueOf(localDateTime);
-
 
     // 회원가입
     @PostMapping("/signUp")
     public ResponseEntity create(@RequestBody User vo) {
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String nowDate = java.sql.Timestamp.valueOf(localDateTime).toString();
+
         String uuid = UUID.randomUUID().toString();
 
         User user = User.builder()
@@ -73,9 +77,14 @@ public class UserController {
     // 로그인
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody User vo) {
+
         User user = userService.login(vo.getUserId(), vo.getPassword(), passwordEncoder);
         if(user!=null) {
+
             String token = tokenProvider.create(user);
+            
+            // 가입일에서 년-월-일 만 표기
+            String[] showEnrollDate = user.getUserEnrollDate().split(" ");
 
             UserDTO responseDTO = UserDTO.builder()
                     .userId(user.getUserId())
@@ -86,6 +95,7 @@ public class UserController {
                     .userPhone(user.getUserPhone())
                     .userEmail(user.getUserEmail())
                     .userStatus(user.getUserStatus())
+                    .userEnrollDate(showEnrollDate[0])
                     .token(token)
                     .build();
             log.info("user : " + responseDTO);
@@ -131,7 +141,7 @@ public class UserController {
     // 개인정보 + 프사 변경
     @Transactional
     @PutMapping("/api/mypage/myinfo/updateProfile")
-    public ResponseEntity changeProfile(UserDTO dto) throws IOException {
+    public ResponseEntity changeProfile(UserDTO dto) throws IOException, ParseException {
 
         User user = User.builder()
                 .userEmail(dto.getUserEmail())
@@ -139,10 +149,8 @@ public class UserController {
                 .userPwd(passwordEncoder.encode(dto.getUserPwd()))
                 .userId(dto.getUserId())
                 .build();
-        log.info("defaultImg : " + dto.getDefaultImg());
 
-
-        // 프로필사진도 변경할때
+//        // 프로필사진도 변경할때
        if(dto.getFile()!=null ) {
             String fileName = dto.getFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
@@ -160,7 +168,7 @@ public class UserController {
         }
 
        // 기본 프로필사진으로 변경할때
-        else if(dto.getDefaultImg().equals("true")) {
+        else if(dto.getFile()==null && dto.getDefaultImg() == 1) {
             String saveName2 = "user" + File.separator + "defaultImage.png";
            user.setUserImg(saveName2);
 

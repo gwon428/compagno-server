@@ -2,6 +2,7 @@ package com.project.compagnoserver.domain.LostBoard;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -13,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -36,10 +38,6 @@ public class LostBoard {
 
     @Column(name="user_phone")
     private String userPhone;
-
-//    @Column(name="lost_title")
-//    private String lostTitle;
-
 
     @Column(name="lost_regi_date")
     private Date lostRegiDate;

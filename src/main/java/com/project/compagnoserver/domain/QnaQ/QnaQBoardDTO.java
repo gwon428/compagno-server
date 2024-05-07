@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data @NoArgsConstructor @AllArgsConstructor
@@ -17,7 +18,8 @@ public class QnaQBoardDTO {
     private String userNickname;
     private String qnaQTitle;
     private String qnaQContent;
-    private Timestamp qnaQDate;
+
+    private Date qnaQDate;
     private String qnaQStatus;
     private String secret;
 

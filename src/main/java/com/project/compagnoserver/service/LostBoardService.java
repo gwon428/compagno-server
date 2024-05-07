@@ -43,7 +43,9 @@ public class LostBoardService {
 //        return boardDAO.findAll(pageable);
 //    }
 
-
+    // lostBoardCode로 이미지 테이블에서 찾기
+    public List<LostBoardImage> findByCode(int lostBoardCode) {return imagesDAO.findByCode(lostBoardCode);}
+    public void deleteImage(int lostImageCode){imagesDAO.deleteById(lostImageCode);}
     // 수정 ---------------------------------------------------------
     public LostBoard update(LostBoard vo) {
 //        if(boardDAO.existsById(vo.getLostBoardCode())){
@@ -55,6 +57,7 @@ public class LostBoardService {
     public LostBoardImage update(LostBoardImage image){
         return imagesDAO.save(image);
     }
+
 
 
     // 삭제 ---------------------------------------------------------------

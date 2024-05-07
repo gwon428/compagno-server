@@ -30,7 +30,8 @@ public class TokenProvider {
                         "userRole", user.getUserRole(),
                         "userPhone", user.getUserPhone(),
                         "userEmail", user.getUserEmail(),
-                        "userStatus",user.getUserStatus()
+                        "userStatus",user.getUserStatus(),
+                        "userEnrollDate", user.getUserEnrollDate()
 
                 ))
                 .setIssuedAt(new Date())
@@ -52,6 +53,7 @@ public class TokenProvider {
                 .userPhone((String) claims.get("userPhone"))
                 .userEmail((String) claims.get("userEmail"))
                 .userStatus((String) claims.get("userStatus"))
+                .userEnrollDate((String) claims.get("userEnrollDate"))
                 .build();
     }
 }

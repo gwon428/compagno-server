@@ -1,8 +1,10 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.Parsing.LocationParsing;
 import com.project.compagnoserver.domain.Parsing.QLocationParsing;
 import com.project.compagnoserver.domain.SitterBoard.*;
+import com.project.compagnoserver.repo.Animal.AnimalCategoryDAO;
 import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardDAO;
 import com.project.compagnoserver.repo.SitterBoard.SitterBoardImageDAO;
@@ -33,6 +35,9 @@ public class SitterBoardService {
     private SitterCategoryDAO sitterCategoryDAO;
 
     @Autowired
+    private AnimalCategoryDAO animalCategoryDAO;
+
+    @Autowired
     private SitterBoardImageDAO sitterBoardImageDAO;
     private final QSitterBoardImage qSitterBoardImage = QSitterBoardImage.sitterBoardImage;
 
@@ -48,6 +53,11 @@ public class SitterBoardService {
     // 카테고리 전체보기
     public List<SitterCategory> sitterCategoryView() {
         return sitterCategoryDAO.findAll();
+    }
+
+    // 동물 카테고리 전체보기
+    public List<AnimalCategory> animalCategoryView() {
+        return animalCategoryDAO.findAll();
     }
 
 
@@ -66,6 +76,16 @@ public class SitterBoardService {
         return queryFactory.selectFrom(qSitterBoardImage)
                 .where(qSitterBoardImage.sitterBoard.sitterBoardCode.eq(code))
                 .fetch();
+    }
+
+
+    // 조회수
+    @Transactional
+    public void sitterViewCount(int code) {
+        queryFactory.update(qSitterBoard)
+                .set(qSitterBoard.sitterViewCount, qSitterBoard.sitterViewCount.add(1))
+                .where(qSitterBoard.sitterBoardCode.eq(code))
+                .execute();
     }
 
 
@@ -104,15 +124,6 @@ public class SitterBoardService {
     }
 
 
-    // 조회수
-    @Transactional
-    public void sitterViewCount(int code) {
-        queryFactory.update(qSitterBoard)
-                .set(qSitterBoard.sitterViewCount, qSitterBoard.sitterViewCount.add(1))
-                .where(qSitterBoard.sitterBoardCode.eq(code))
-                .execute();
-    }
-
 
 // ====================================== 댓글 ======================================
 
@@ -128,18 +139,31 @@ public class SitterBoardService {
 
     // 댓글 수정
     public void sitterCommentUpdate(SitterBoardComment sitterBoardComment) {
+//        if(sitterCommentDAO.existsById(sitterBoardComment.getSitterCommentCode())) {
+//            sitterCommentDAO.save(sitterBoardComment);
+//        } else {
+//        }
         if(sitterCommentDAO.existsById(sitterBoardComment.getSitterCommentCode())) {
-            sitterCommentDAO.save(sitterBoardComment);
-        } else {
+            queryFactory.update(qSitterBoardComment)
+                    .set(qSitterBoardComment.sitterCommentContent, sitterBoardComment.getSitterCommentContent())
+                    .where(qSitterBoardComment.sitterCommentCode.eq(sitterBoardComment.getSitterCommentCode()))
+                    .execute();
         }
     }
 
     // 댓글 삭제
+    @Transactional
     public void sitterCommentDelete(int commentCode) {
         SitterBoardComment target = sitterCommentDAO.findById(commentCode).orElse(null);
         if(target != null) {
             sitterCommentDAO.delete(target);
         }
+//        if(sitterCommentDAO.existsById(commentCode)) {
+//            queryFactory.update(qSitterBoardComment)
+//                    .set(qSitterBoardComment.sitterCommentStatus, "N")
+//                    .where(qSitterBoardComment.sitterCommentCode.eq(commentCode))
+//                    .execute();
+//        }
     }
 
     // 원 댓글만 조회
@@ -147,7 +171,7 @@ public class SitterBoardService {
         return queryFactory.selectFrom(qSitterBoardComment)
                 .where(qSitterBoardComment.sitterCommentParentCode.eq(0))
                 .where(qSitterBoardComment.sitterBoardCode.eq(code))
-                .orderBy(qSitterBoardComment.sitterCommentCode.desc())
+                .orderBy(qSitterBoardComment.sitterCommentCode.asc())
                 .fetch();
     }
 

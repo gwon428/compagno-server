@@ -20,7 +20,6 @@ public class LostBoardDTO {
     private String userImg;
     private String userPhone;
     private String userNickname;
-//    private String lostTitle;
     private String lostAnimalImage;
     private String lostAnimalName;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -37,4 +36,5 @@ public class LostBoardDTO {
     private Date lostRegiDate;
 
     private List<MultipartFile> images;
+    private List<String> image;
 }

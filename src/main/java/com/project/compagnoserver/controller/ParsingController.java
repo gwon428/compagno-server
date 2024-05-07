@@ -95,6 +95,8 @@ public class ParsingController {
                 String url = vo.getString("홈페이지");
                 String parking = vo.getString("주차 가능여부");
                 String fee = vo.getString("입장(이용료)가격 정보");
+                String holiday = vo.getString("휴무일");
+                String operatingHours = vo.getString("운영시간");
                 Parsing loca = new Parsing();
 
                 loca.setName(name);
@@ -110,6 +112,8 @@ public class ParsingController {
                 loca.setUrl(url);
                 loca.setParking(parking);
                 loca.setFee(fee);
+                loca.setHoliday(holiday);
+                loca.setOperatingHours(operatingHours);
 
                 service.create(loca);
             }

@@ -69,4 +69,11 @@ public class Parsing {
 
     @Column
     private String fee;
+
+    // 휴무, 운영시간 추가
+    @Column
+    private String holiday;
+
+    @Column(name="operating_hours")
+    private String OperatingHours;
 }

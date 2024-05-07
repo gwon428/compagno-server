@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
 import java.util.List;
 
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
@@ -16,6 +17,8 @@ public class QnaABoardDTO {
     private String userNickname;
     private String qnaATitle;
     private String qnaAContent;
+
+    private Date qnaADate;
 
     private List<MultipartFile> files;
     private List<QnaABoardImage> images;

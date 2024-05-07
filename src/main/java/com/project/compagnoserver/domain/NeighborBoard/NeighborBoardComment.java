@@ -21,6 +21,7 @@ public class NeighborBoardComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int neighborCommentCode;
 
+//    @ManyToOne
     @Column(name = "neighbor_board_code")
     private int neighborBoardCode;
 

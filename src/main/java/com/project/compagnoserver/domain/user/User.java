@@ -48,7 +48,7 @@ public class User implements UserDetails {
     private String userStatus;
 
     @Column(name = "user_enroll_date")
-    private Date userEnrollDate;
+    private String userEnrollDate;
 
     @Column(name = "user_quit_date")
     private Date userQuitDate;
