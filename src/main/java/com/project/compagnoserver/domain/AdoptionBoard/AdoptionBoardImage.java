@@ -1,7 +1,6 @@
-package com.project.compagnoserver.domain.LostBoard;
+package com.project.compagnoserver.domain.AdoptionBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.compagnoserver.domain.LostBoard.LostBoard;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,20 +14,20 @@ import org.hibernate.annotations.DynamicInsert;
 @AllArgsConstructor
 @DynamicInsert
 @Builder
-@Table(name="lost_board_image")
-public class LostBoardImage {
+@Table(name="adoption_board_image")
+public class AdoptionBoardImage {
 
     @Id
-    @Column(name="lost_image_code")
+    @Column(name="adoption_image_code")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int lostImageCode;
+    private int adopImageCode;
 
     @ManyToOne
-    @JoinColumn(name="lost_board_code")
+    @JoinColumn(name="adoption_board_code")
     @JsonIgnore
-    private LostBoard lostBoardCode;
+    private AdoptionBoard adopBoardCode;
 
-    @Column(name="lost_image")
-    private String lostImage;
+    @Column(name="adoption_image")
+    private String adopImage;
 
 }

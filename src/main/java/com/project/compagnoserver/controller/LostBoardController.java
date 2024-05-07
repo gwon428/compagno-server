@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,21 +74,16 @@ public class LostBoardController {
         lost.setLostRegiDate(dto.getLostRegiDate());
 
         LostBoard result = service.create(lost);
-        log.info("dto : " + dto);
-        log.info("getImagessss : " + dto.getImages());
-        if(dto.getImages()!=null){
-            log.info("getImages : " + dto.getImages());
 
+        if(dto.getImages()!=null){
             for(MultipartFile file : dto.getImages()){
                 if(!file.getOriginalFilename().equals("")){
-                    //log.info("originName: " + file.getOriginalFilename());
                     LostBoardImage images = new LostBoardImage();
 
                     String fileName = file.getOriginalFilename();
                     String uuid = UUID.randomUUID().toString();
                     String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
-                    log.info("save : " + saveName);
                     file.transferTo(savePath);
 
                     if(result.getLostAnimalImage() == null){
@@ -105,12 +102,9 @@ public class LostBoardController {
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-    // 보기------------------------------------------------------------------------------
-    // 전체 보기 -------------------
-    // 검색 보기 -----------------------
-    // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
-    // 정렬 보기 -----------------------
-    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순)
+    // 전체 보기------------------------------------------------------------------------------
+    // 검색 : 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
+    // 정렬 : 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순)
     @GetMapping("/public/lostBoard")
     public ResponseEntity<Page<LostBoard>> viewAll(@RequestParam(name="page", defaultValue = "1")int page,
                                                    @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
@@ -155,8 +149,9 @@ public class LostBoardController {
         Pageable pageable = PageRequest.of(page-1, 12);
 
         // 작성일 순(선입, 후입)
+        Sort lRegiDateD = Sort.by("lostBoardCode").descending();
         Sort lRegiDate = Sort.by("lostRegiDate");
-        Sort lRegiDateD = Sort.by("lostRegiDate").descending();
+
 
         if(sortNum==0){
             pageable = PageRequest.of(page-1, 12, lRegiDateD);
@@ -197,155 +192,87 @@ public class LostBoardController {
         LostBoard lost = service.view(lostBoardCode);
         return ResponseEntity.status(HttpStatus.OK).body(lost);
     }
-
-    // 검색 보기 -----------------------
-    // 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
-    // 정렬 보기 -----------------------
-    // 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순) / 저장순(최다저장/최소저장)
-//    @GetMapping("/public/lostBoard/search")
-//    public ResponseEntity<List<LostBoard>> viewBySearch(@RequestParam(name="page", defaultValue = "1")int page,
-//                                                        @RequestParam(name="lostAnimalKind", required = false)String lostAnimalKind,
-//                                                        @RequestParam(name="lostAnimalGender", required = false)String lostAnimalGender,
-//                                                        @RequestParam(name="userNickname", required = false) String userNickname,
-//                                                        @RequestParam(name="lostDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date lostDate,
-//                                                        @RequestParam(name="lostLocation", required = false)String lostLocation,
-//                                                        @RequestParam(name="lostAnimalName", required = false)String lostAnimalName,
-//                                                        @RequestParam(name="sort", defaultValue = "0")int sortNum){
-//
-//        QLostBoard qLostBoard = QLostBoard.lostBoard;
-//        BooleanBuilder builder = new BooleanBuilder();
-//        BooleanExpression expression = null;
-//        if(lostAnimalKind != null){
-//            expression = qLostBoard.lostAnimalKind.contains(lostAnimalKind);
-//            builder.and(expression);
-//        }
-//        if(lostAnimalGender != null){
-//            expression = qLostBoard.lostAnimalGender.contains(lostAnimalGender);
-//            builder.and(expression);
-//        }
-//        if(userNickname != null){
-//            expression = qLostBoard.userNickname.contains(userNickname);
-//            builder.and(expression);
-//        }
-//        if(lostDate != null){
-//            expression = qLostBoard.lostDate.eq(lostDate);
-//            builder.and(expression);
-//        }
-//        if(lostLocation != null){
-//            expression = qLostBoard.lostLocation.contains(lostLocation);
-//            builder.and(expression);
-//        }
-//        if(lostAnimalName != null){
-//            expression = qLostBoard.lostAnimalName.contains(lostAnimalName);
-//            builder.and(expression);
-//        }
-//
-//
-//        Pageable pageable = PageRequest.of(page-1, 9);
-//
-//        // 작성일 순(선입, 후입)
-//        Sort lRegiDate = Sort.by("lostRegiDate");
-//        Sort lRegiDateD = Sort.by("lostRegiDate").descending();
-//
-//        if(sortNum==0){
-//            pageable = PageRequest.of(page-1, 9, lRegiDateD);
-//        }
-//        if(sortNum==1){
-//            pageable = PageRequest.of(page-1, 9, lRegiDate);
-//        }
-//
-//
-//        // 분실 날짜 순(선입, 후입)
-//        if(sortNum==2){
-//            Sort lDate = Sort.by("lostDate");
-//            pageable = PageRequest.of(page-1, 9, lDate);
-//        }
-//        if(sortNum==3){
-//            Sort lDateD = Sort.by("lostDate").descending();
-//            pageable = PageRequest.of(page-1, 9, lDateD);
-//        }
-//
-//        // 조회수순(낮은 순, 높은 순)
-//        Sort lViewCount = Sort.by("lostViewCount");
-//        Sort lViewCountD = Sort.by("lostViewCount").descending();
-//
-//        if(sortNum==4){
-//            pageable = PageRequest.of(page-1, 9, lViewCount);
-//        }
-//        if(sortNum==5){
-//            pageable = PageRequest.of(page-1, 9, lViewCountD);
-//        }
-//
-//        Page<LostBoard> list = service.viewBySearch(pageable, builder);
-//        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
-//    }
-
+    
     // 사진 수정(프론트에 맞춰 변경) 
     // 수정 ---------------------------------------------------------------------------------------
     @PutMapping("/lostBoard")
     public ResponseEntity<LostBoard> update(LostBoardDTO dto) throws IOException {
         log.info("dto : " + dto);
 
-        LostBoard prev = service.view(dto.getLostBoardCode());
-        LostBoard lost = service.view(dto.getLostBoardCode());;
+//        LostBoard prev = service.view(dto.getLostBoardCode());
+//        LostBoard lost = service.view(dto.getLostBoardCode());;
 
-        lost.setUserId(dto.getUserId());
-        lost.setUserImg(dto.getUserImg());
-        lost.setUserNickname(dto.getUserNickname());
-        lost.setUserPhone(dto.getUserPhone());
-//        lost.setLostTitle(dto.getLostTitle());
-        lost.setLostAnimalImage(dto.getLostAnimalImage());
-        lost.setLostAnimalName(dto.getLostAnimalName());
-        lost.setLostDate(dto.getLostDate());
-        lost.setLostLocation(dto.getLostLocation());
-        lost.setLostLocationDetail(dto.getLostLocationDetail());
-        lost.setLostAnimalKind(dto.getLostAnimalKind());
-        lost.setLostAnimalColor(dto.getLostAnimalColor());
-        lost.setLostAnimalGender(dto.getLostAnimalGender());
-        lost.setLostAnimalAge(dto.getLostAnimalAge());
-        lost.setLostAnimalFeature(dto.getLostAnimalFeature());
-        lost.setLostAnimalRFID(dto.getLostAnimalRFID());
+        List<LostBoardImage> list = service.findByCode(dto.getLostBoardCode());
 
+        List<String> mainImage = new ArrayList<>();
 
-        LostBoard result = service.update(lost);
+        LostBoard lost = LostBoard.builder()
+                .lostBoardCode(dto.getLostBoardCode())
+                .userId(dto.getUserId())
+                .userImg(dto.getUserImg())
+                .userNickname(dto.getUserNickname())
+                .userPhone(dto.getUserPhone())
+                .lostAnimalName(dto.getLostAnimalName())
+                .lostDate(dto.getLostDate())
+                .lostLocation(dto.getLostLocation())
+                .lostLocationDetail(dto.getLostLocationDetail())
+                .lostAnimalKind(dto.getLostAnimalKind())
+                .lostAnimalColor(dto.getLostAnimalColor())
+                .lostAnimalGender(dto.getLostAnimalGender())
+                .lostAnimalAge(dto.getLostAnimalAge())
+                .lostAnimalFeature(dto.getLostAnimalFeature())
+                .lostAnimalRFID(dto.getLostAnimalRFID())
+                .lostRegiDate(dto.getLostRegiDate())
+                .build();
+
+        for(LostBoardImage image : list){
+
+            if(dto.getImage()!=null&&!dto.getImage().contains(image.getLostImage()) || dto.getImage()==null) {
+                File file = new File(image.getLostImage());
+                file.delete();
+                service.deleteImage(image.getLostImageCode());
+            } else {
+                mainImage.add(image.getLostImage());
+            }
+        }
 
         if(dto.getImages()!=null){
-            // 1) 추가 사진 O
-            if(prev.getImages()!=null){
-                // -> 기존 사진 O : 기존 사진 삭제 + 추가 사진 넣기
-                service.imageDelete(dto.getLostBoardCode());
-            } else{// -> 기존 사진 X : 추가 사진 넣기
+
+            for(LostBoardImage image : list){
+                File file = new File(image.getLostImage());
+                file.delete();
+                service.deleteImage(image.getLostImageCode());
+                mainImage.remove(0);
             }
-                for(MultipartFile file : dto.getImages()){
-                    LostBoardImage images = new LostBoardImage();
+            for(MultipartFile file : dto.getImages()){
 
-                    String fileName = file.getOriginalFilename();
-                    String uuid = UUID.randomUUID().toString();
+                String fileName =  file.getOriginalFilename();
+                String uuid = UUID.randomUUID().toString();
 
-                    String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
+                String saveName = uploadPath + File.separator + "lostBoard" + File.separator + uuid + "_" + fileName;
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    images.setLostImage(saveName);
-                    images.setLostBoardCode(result);
-                    service.update(images);
-                }
+                    service.createImages(LostBoardImage.builder()
+                            .lostImage(saveName)
+                            .lostBoardCode(LostBoard.builder().lostBoardCode(dto.getLostBoardCode()).build())
+                            .build());
 
-        } else {// 2) 추가 사진 X
-            // -> 기존 사진 O : 기존 사진 남기기 (사진 처리X)
-            // -> 기존 사진 x : 사진 처리X
-            if(prev.getImages()!=null){
-                log.info(prev.getImages().toString());
-            } else {}
+                mainImage.add(saveName);
 
-            // 기존 사진 있을 경우 글만 변경 원하고 추가 사진 없으며 기존 사진 삭제 원할 때
-            //if(!file.getOriginalFilename().equals("")) 해당 조건 사용하기!
+            }
 
+//            log.info(vo.getLostImage());
+            log.info(dto.getImages().toString());
         }
-       // log.info("result : " + result.getLostTitle());
-        return result!=null?
-                ResponseEntity.status(HttpStatus.CREATED).body(result):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        lost.setLostAnimalImage(mainImage.getFirst());
+
+        service.create(lost);
+
+    return ResponseEntity.ok().build();
+//        return result!=null?
+//                ResponseEntity.status(HttpStatus.CREATED).body(result):
+//                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
     }
 
@@ -390,20 +317,20 @@ public class LostBoardController {
     }
 
     // 게시물 1개 따른 댓글 조회
-//    @GetMapping("/lostBoard/comment/{lostBoardCode}/comment")
-//    public ResponseEntity<List<LostBoardComment>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
-//        List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
-////        List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
-//        return ResponseEntity.ok(topList);
-//    }
-
-    @GetMapping("/lostBoard/comment/{lostBoardCode}")
-    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
-        List<LostBoardComment> topList = comment.topCommennts(lostBoardCode);
+    @GetMapping("/public/lostBoard/comment/{lostBoardCode}")
+    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode, @RequestParam(name="page")int page){
+        List<LostBoardComment> topList = comment.topComments(lostBoardCode, page);
         List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
         return ResponseEntity.ok(response);
     }
 
+
+    @GetMapping("/public/lostBoard/commentAll/{lostBoardCode}")
+    public ResponseEntity<List<LostBoardCommentDTO>> viewComment(@PathVariable(name="lostBoardCode")int lostBoardCode){
+        List<LostBoardComment> topList = comment.topAllComments(lostBoardCode);
+        List<LostBoardCommentDTO> response = commentDetailList(topList, lostBoardCode);
+        return ResponseEntity.ok(response);
+    }
 
     // 나머지 공통 부분 빼기
     public List<LostBoardCommentDTO> commentDetailList(List<LostBoardComment> comments, int lostBoardCode){
@@ -424,9 +351,11 @@ public class LostBoardController {
     // builder.build 공통부분 빼기
     public LostBoardCommentDTO commentDetail(LostBoardComment vo){
     log.info("vo : " + vo.getLostBoardCode());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//        String enrollDate = sdf.format(vo.getCommentDate());
         return LostBoardCommentDTO.builder()
                 .lostBoardCode(vo.getLostBoardCode())
-                .commentDate(vo.getCommentDate())
+                .commentDate(sdf.format(vo.getCommentDate()))
                 .commentContent(vo.getCommentContent())
                 .lostCommentCode(vo.getLostCommentCode())
                 .user(UserDTO.builder()
@@ -440,10 +369,9 @@ public class LostBoardController {
     // 수정
     @PutMapping("/lostBoard/comment")
     public ResponseEntity<LostBoardComment> updateComment(@RequestBody LostBoardCommentDTO dto){
-        log.info("dto : " + dto);
-        log.info("댓글번호 : " + dto.getLostCommentCode());
+
         LostBoardComment vo = comment.viewComment(dto.getLostCommentCode());
-        log.info("vo : " + vo.getCommentContent());
+        vo.setCommentDate(Timestamp.valueOf(dto.getCommentDate()));
         vo.setCommentContent(dto.getCommentContent());
         LostBoardComment result = comment.update(vo);
         return (result != null) ?
