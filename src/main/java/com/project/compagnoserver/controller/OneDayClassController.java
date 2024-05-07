@@ -58,37 +58,40 @@ public class OneDayClassController {
                 .odcContent(dto.getOdcContent())
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
-//                .odc
-                .odcAccompaying('Y')
+                .odcAccompaying(dto.getOdcAccompaying().charAt(0))
                 .build();
 //
         ClassBoard result = service.insert(vo); // 등록할때 사용자가 직접 적어서 DB로 넣는걸 저장 사키고
 //
-        if (dto.getFiles() !=null){
-            for (MultipartFile file : dto.getFiles()){
-                ClassBoardMainImage imgVo = new ClassBoardMainImage(); // 객체 생성해서 받아내겠다.
+        if (dto.getFile() !=null){
+            log.info("file : " + dto.getFile());
+//            for (MultipartFile file : dto.getFiles()){ // <-- for문 필요 없이 file -> dto.getFile()
+            ClassBoardMainImage imgVo = new ClassBoardMainImage(); // 객체 생성해서 받아내겠다.
 
-                // 파일 업로드 관련 ==================================================
-                String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
-                String uuid = UUID.randomUUID().toString();  // UUID
-                String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-                Path savePath = Paths.get(saveName);
-                dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
+            // 파일 업로드 관련 ==================================================
+            String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+            String uuid = UUID.randomUUID().toString();  // UUID
 
-                imgVo.setOdcMainImage(saveName);
-                imgVo.setClassBoard(result);
+            String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
+            Path savePath = Paths.get(saveName);
 
-                service.createImg(imgVo);
 
-                ClassBoardMainImage mainImage = new ClassBoardMainImage(); // 객체를 생성해서
-                mainImage.setOdcMainImage(saveName); // 그객체에다가 파일을 담겠다
-                mainImage.setClassBoard(ClassBoard.builder()
-                        .odcCode(result.getOdcCode())
-                        .build());
-                // 그리고 객체에 저장된것중에 테이블 코드를 가져와서 넣고 mainImage에 보내서 담고
-                service.createImg(mainImage); // 마지막으로 저장
-            }
+            dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
+
+            imgVo.setOdcMainImage(saveName);
+            imgVo.setClassBoard(result);
+
+            service.createImg(imgVo);
+
+            ClassBoardMainImage mainImage = new ClassBoardMainImage(); // 객체를 생성해서
+            mainImage.setOdcMainImage(saveName); // 그객체에다가 파일을 담겠다
+            mainImage.setClassBoard(ClassBoard.builder()
+                    .odcCode(result.getOdcCode())
+                    .build());
+            // 그리고 객체에 저장된것중에 테이블 코드를 가져와서 넣고 mainImage에 보내서 담고
+            service.createImg(mainImage); // 마지막으로 저장
         }
+
 
         if (result != null){
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -108,8 +111,8 @@ public class OneDayClassController {
 //        BooleanExpression expression = qClassBoard
 
 
-       List<ClassBoard> list = service.viewAll();
-       return ResponseEntity.status(HttpStatus.OK).body(list);
+        List<ClassBoard> list = service.viewAll();
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
 
@@ -127,35 +130,35 @@ public class OneDayClassController {
         List<ClassBoardMainImage> images = service.viewImg(dto.getOdcCode());
 
         // 클래스보드메인이미지 dto에 해당 이미지가 있는지에 대한 여부를 판단으로 돌린다
-        for(ClassBoardMainImage image : images){
-            //   dto안에 파일이 존재하고 그리고
-            if ((dto.getFile()!=null && !dto.getFiles().contains(image.getOdcMainImage()))
-                    || dto.getFile() == null){
-            File file = new File(image.getOdcMainImage());
-            file.delete();
+//        for(ClassBoardMainImage image : images){
+//            //   dto안에 파일이 존재하고 그리고
+//            if ((dto.getFile()!=null && !dto.getFile().contains(image.getOdcMainImage()))
+//                    || dto.getFile() == null){
+//                File file = new File(image.getOdcMainImage());
+//                file.delete();
+//
+//                // 4. 파일 삭제와 동시에 테이블에서도 해당 정보 삭제
+//                service.deleteImg(image.getOdcImageCode());
+//            }
+//
+//            // 위에서 삭제한다음에 => dto.files에 새로 추가된 사진들 추가한다
+//            if (dto.getFile() !=  null) {
+////                for (MultipartFile file : dto.getFile()){
+//                ClassBoardMainImage imgVo = new ClassBoardMainImage();
+//
+//                String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+//                String uuid = UUID.randomUUID().toString();  // UUID
+//                String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
+//                Path savePath = Paths.get(saveName);
+//                file.transferTo(savePath);
+//
+//                imgVo.setOdcMainImage(saveName);
+//                imgVo.setClassBoard(ClassBoard.builder().odcCode(dto.getOdcCode()).build());
+//
+//                service.createImg(imgVo);
+//            }
+//        }
 
-            // 4. 파일 삭제와 동시에 테이블에서도 해당 정보 삭제
-                service.deleteImg(image.getOdcImageCode());
-        }
-
-            // 위에서 삭제한다음에 => dto.files에 새로 추가된 사진들 추가한다
-            if (dto.getFiles() !=  null) {
-                for (MultipartFile file : dto.getFiles()){
-                    ClassBoardMainImage imgVo = new ClassBoardMainImage();
-
-                    String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
-                    String uuid = UUID.randomUUID().toString();  // UUID
-                    String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-                    Path savePath = Paths.get(saveName);
-                    file.transferTo(savePath);
-
-                    imgVo.setOdcMainImage(saveName);
-                    imgVo.setClassBoard(ClassBoard.builder().odcCode(dto.getOdcCode()).build());
-
-                    service.createImg(imgVo);
-                }
-            }
-        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = sdf.parse(dto.getOdcStartDate());
         Date lastDate = sdf.parse(dto.getOdcLastDate());
@@ -165,7 +168,7 @@ public class OneDayClassController {
                 .odcContent(dto.getOdcContent())
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
-                .odcAccompaying('Y')
+                .odcAccompaying(dto.getOdcAccompaying().charAt(0))
                 .build();
 
         service.insert(vo);

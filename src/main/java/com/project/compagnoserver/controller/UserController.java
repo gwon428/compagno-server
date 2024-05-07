@@ -155,7 +155,7 @@ public class UserController {
             String fileName = dto.getFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
 
-           String saveName = "user" + File.separator + uuid + "_" + fileName;
+            String saveName = "user" + File.separator + uuid + "_" + fileName;
 
             String saveNameWithPath = uploadPath + File.separator + "user" + File.separator + uuid + "_" + fileName;
 
