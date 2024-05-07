@@ -166,11 +166,10 @@ public class AnimalBoardCommentController {
         log.info("comments : " + comments);
         return ResponseEntity.ok(comments);
     }
-//    // 하위 댓글만 불러오기
-//    @GetMapping("/public/animal-board/{animalBoardCode}/comment")
-//    public ResponseEntity<List<AnimalBoardCommentDTO>> getBottomLevelComment(@PathVariable(name = "animalBoardCode") int boardCode){
-//        List<AnimalBoardComment> topList = animalBoardCommentService.topLevelComments(boardCode);
-//        List<AnimalBoardCommentDTO> comments = new ArrayList<>();
-//        return ResponseEntity.ok().build();
-//    }
+    // 댓글 개수
+    @GetMapping("/public/animal-board/{animalBoardCode}/countComment")
+    public ResponseEntity<Integer> countComment (@PathVariable(name = "animalBoardCode") int boardCode){
+        Integer count = animalBoardCommentService.countComment(boardCode);
+        return ResponseEntity.ok(count);
+    }
 }
