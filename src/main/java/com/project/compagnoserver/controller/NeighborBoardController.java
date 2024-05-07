@@ -35,7 +35,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/compagno/*")
 @Slf4j
-@CrossOrigin(origins = {"*"}, maxAge = 6000)
+@CrossOrigin(origins = {"http://localhost:3000"}, maxAge = 6000, allowCredentials = "true")
 public class NeighborBoardController {
 
     @Autowired
@@ -74,9 +74,33 @@ public class NeighborBoardController {
 
     // 상세 페이지
     @GetMapping("public/neighbor/{code}")
-    public ResponseEntity<NeighborBoard> neighborView(@PathVariable(name = "code") int code) {
+    public ResponseEntity<NeighborBoard> neighborView(@PathVariable(name = "code") int code,
+                                                      HttpServletRequest req, HttpServletResponse res) {
         NeighborBoard vo = neighborBoardService.neighborView(code);
-        return ResponseEntity.status(HttpStatus.OK).body(vo);
+        neighborViewCount(code, req, res);
+        return ResponseEntity.ok().body(vo);
+    }
+
+
+    // 조회수
+    public void neighborViewCount(int code, HttpServletRequest req, HttpServletResponse res) {
+        Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
+
+        Cookie cookie = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("neighborBoard"))
+                .findFirst()
+                .orElseGet(() -> {
+                    neighborBoardService.neighborViewCount(code);
+                    return new Cookie("neighborBoard", "[" + code + "]");
+                });
+
+        if(!cookie.getValue().contains("[" + code + "]")) {
+            neighborBoardService.neighborViewCount(code);
+            cookie.setValue(cookie.getValue() + "[" + code + "]");
+        }
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
+        res.addCookie(cookie);
     }
 
 
@@ -106,7 +130,7 @@ public class NeighborBoardController {
                 file.transferTo(savePath);
 
                 neighborImgVo.setNeighborBoard(result);
-                neighborImgVo.setNeighborImage(saveName);
+                neighborImgVo.setNeighborImage(saveName.substring(24));
                 neighborBoardService.neighborCreateImg(neighborImgVo);
             }
         }
@@ -151,7 +175,7 @@ public class NeighborBoardController {
                 String saveName = uploadPath + File.separator + "neighborBoard" + File.separator + uuid + "_" + fileName;
                 Path savePath = Paths.get(saveName);
 
-                neighborImgVo.setNeighborImage(saveName);
+                neighborImgVo.setNeighborImage(saveName.substring(24));
                 neighborImgVo.setNeighborBoard(NeighborBoard.builder().neighborBoardCode(neighborBoardDTO.getNeighborBoardCode()).build());
 
                 neighborBoardService.neighborCreateImg(neighborImgVo);

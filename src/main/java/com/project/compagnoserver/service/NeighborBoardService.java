@@ -61,6 +61,16 @@ public class NeighborBoardService {
     }
 
 
+    // 조회수
+    @Transactional
+    public void neighborViewCount(int code) {
+        queryFactory.update(qNeighborBoard)
+                .set(qNeighborBoard.neighborBoardViewCount, qNeighborBoard.neighborBoardViewCount.add(1))
+                .where(qNeighborBoard.neighborBoardCode.eq(code))
+                .execute();
+    }
+
+
     // 게시글 등록
     public NeighborBoard neighborCreate(NeighborBoard neighborBoardVo) {
         return neighborBoardDAO.save(neighborBoardVo);
@@ -89,16 +99,6 @@ public class NeighborBoardService {
         if(neighborBoardDAO.existsById(code)) {
             neighborBoardDAO.deleteById(code);
         }
-    }
-
-
-    // 게시글 조회수
-    @Transactional
-    public void neighborViewCount(int code) {
-        queryFactory.update(qNeighborBoard)
-                .set(qNeighborBoard.neighborBoardViewCount, qNeighborBoard.neighborBoardViewCount.add(1))
-                .where(qNeighborBoard.neighborBoardCode.eq(code))
-                .execute();
     }
 
 

@@ -59,4 +59,8 @@ public class SitterBoard {
 
     @OneToMany(mappedBy = "sitterBoard", orphanRemoval = true)
     private List<SitterBoardImage> images;
+
+//    @OneToMany(mappedBy = "sitterBoard")
+//    private List<SitterBoardComment> comments;
+
 }
