@@ -28,8 +28,6 @@ public class QClassBoardMainImage extends EntityPathBase<ClassBoardMainImage> {
 
     public final StringPath odcMainImage = createString("odcMainImage");
 
-    public final com.project.compagnoserver.domain.user.QUser user;
-
     public QClassBoardMainImage(String variable) {
         this(ClassBoardMainImage.class, forVariable(variable), INITS);
     }
@@ -48,8 +46,7 @@ public class QClassBoardMainImage extends EntityPathBase<ClassBoardMainImage> {
 
     public QClassBoardMainImage(Class<? extends ClassBoardMainImage> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.classBoard = inits.isInitialized("classBoard") ? new QClassBoard(forProperty("classBoard"), inits.get("classBoard")) : null;
-        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
+        this.classBoard = inits.isInitialized("classBoard") ? new QClassBoard(forProperty("classBoard")) : null;
     }
 
 }

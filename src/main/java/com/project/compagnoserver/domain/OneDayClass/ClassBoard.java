@@ -1,20 +1,24 @@
 package com.project.compagnoserver.domain.OneDayClass;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @DynamicInsert
+@Builder
 @Table(name="oneday_class_board")
 public class ClassBoard {
 
@@ -38,7 +42,7 @@ public class ClassBoard {
 
     // 원데이 클래스 등록 날짜
     @Column(name = "odc_regi_date")
-    private Timestamp odcRegiDate;
+    private Date odcRegiDate;
 
     // 원데이 클래스 시작 날짜
     @Column(name = "odc_start_date")
@@ -49,8 +53,12 @@ public class ClassBoard {
     private Date odcLastDate;
 
     // 사용자 ID
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user;
+//    @JoinColumn(name="user_id")
+//    private User user;
+
+//    =====================================
+
+    @OneToMany(mappedBy ="classBoard")
+    private List<ClassBoardMainImage> images;
 
 }

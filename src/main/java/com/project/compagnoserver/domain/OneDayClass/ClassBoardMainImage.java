@@ -22,18 +22,18 @@ public class ClassBoardMainImage {
     private int odcImageCode;
     // 원데이 클래스 메인 이미지 코드
 
-    @Column(name = "odc_main_image")
-    private String odcMainImage;
-    // 원데이클래스 메인이미지
-
     @ManyToOne
     @JoinColumn(name = "odc_code")
     @JsonIgnore
     private ClassBoard classBoard;
     // ClassBoard랑 조인 !!
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-    // 유저 아이디
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    private User user;
+//    // 유저 아이디
+
+    @Column(name="odc_main_image")
+    private String odcMainImage;
+    // 원데이클래스 메인이미지 URL
 }
