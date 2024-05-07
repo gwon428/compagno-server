@@ -58,6 +58,13 @@ public class SitterBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(sitterCategoryList);
     }
 
+    // 동물 카테고리 전체보기
+    @GetMapping("public/sitter/animal-category")
+    public ResponseEntity<List<AnimalCategory>> animalCategoryView() {
+        List<AnimalCategory> animalCategoryList = sitterBoardService.animalCategoryView();
+        return ResponseEntity.ok().body(animalCategoryList);
+    }
+
     // 전체 보기
     @GetMapping("public/sitter")
     public ResponseEntity<Page<SitterBoard>> sitterViewAll(@RequestParam(name="sitterCategory", required = false) Integer sitterCateCode,
@@ -291,10 +298,11 @@ public class SitterBoardController {
 
     // 댓글 삭제
     @DeleteMapping("sitter/comment/{commentCode}")
-    public ResponseEntity<SitterBoardComment> sitterCommentDelete(@PathVariable("commentCode") int commentCode) {
+    public ResponseEntity sitterCommentDelete(@PathVariable("commentCode") int commentCode) {
         sitterBoardService.sitterCommentDelete(commentCode);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
+
 
     // 각 게시판에 대한 댓글 조회
     @GetMapping("public/sitter/{code}/comment")
@@ -313,6 +321,7 @@ public class SitterBoardController {
                         .sitterCommentCode(reply.getSitterCommentCode())
                         .sitterCommentContent(reply.getSitterCommentContent())
                         .sitterCommentRegiDate(reply.getSitterCommentRegiDate())
+                        .sitterCommentStatus(reply.getSitterCommentStatus())
                         .user(UserDTO.builder()
                                 .userId(reply.getUser().getUserId())
                                 .build())
@@ -325,6 +334,7 @@ public class SitterBoardController {
                     .sitterCommentCode(top.getSitterCommentCode())
                     .sitterCommentContent(top.getSitterCommentContent())
                     .sitterCommentRegiDate(top.getSitterCommentRegiDate())
+                    .sitterCommentStatus(top.getSitterCommentStatus())
                     .user(UserDTO.builder()
                             .userId(top.getUser().getUserId())
                             .build())
