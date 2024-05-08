@@ -43,12 +43,6 @@ public class AdoptionBoardController {
     @PostMapping("/adoptionBoard")
     public ResponseEntity<AdoptionBoard> create(AdoptionBoardDTO dto) throws IOException {
 
-        //    private int adopViewCount;
-        //    private String adopAnimalImage;
-        //    private List<MultipartFile> images;
-        //    private List<String> image;
-
-
         AdoptionBoard result =
                 AdoptionBoard.builder()
                         .userId(dto.getUserId())
@@ -67,6 +61,7 @@ public class AdoptionBoardController {
                         .adopCenterPhone(dto.getAdopCenterPhone())
                         .build();
 
+        AdoptionBoard results = service.create(result);
 
         if(dto.getImages()!=null){
             for(MultipartFile file : dto.getImages()){
@@ -79,21 +74,25 @@ public class AdoptionBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    if(result.getAdopAnimalImage()==null){
-                        result.setAdopAnimalImage(saveName);
+                    if(results.getAdopAnimalImage()==null){
+
+                        results.setAdopAnimalImage(saveName);
+
                     }
 
                     images.setAdopImage(saveName);
+
                     images.setAdopBoardCode(result);
 
+
                     service.createImg(images);
+
                 }
             }
         }
 
-//        result.setAdopAnimalImage(mainImage.getFirst());
-        service.create(result);
-        return result!=null?
+
+        return results!=null?
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }

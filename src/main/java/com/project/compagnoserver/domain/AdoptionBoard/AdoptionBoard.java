@@ -81,7 +81,8 @@ public class AdoptionBoard {
     @Column(name="adoption_center_phone")
     private String adopCenterPhone;
 
-    @OneToMany(mappedBy = "adopBoardCode", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "adopBoardCode", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "adopBoardCode")
     private List<AdoptionBoardImage> images;
 
 }
