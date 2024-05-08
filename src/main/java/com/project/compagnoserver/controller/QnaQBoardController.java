@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,6 +63,7 @@ public class QnaQBoardController {
 
             vo.setUserId(dto.getUserId());
             vo.setUserNickname(dto.getUserNickname());
+            vo.setUserImg(dto.getUserImg());
 
             vo.setQnaQTitle(dto.getQnaQTitle());
             vo.setQnaQContent(dto.getQnaQContent());
@@ -83,6 +82,7 @@ public class QnaQBoardController {
                     .qnaQCode(dto.getQnaQCode())
                     .userNickname(dto.getUserNickname())
                     .userId(dto.getUserId())
+                    .userImg(dto.getUserImg())
                     .secret(dto.getSecret())
                     .build());
             log.info("result : " + result);
@@ -100,8 +100,8 @@ public class QnaQBoardController {
 
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
-                        img.setQnaQUrl(saveName.substring(27));
-//                        img.setQnaQUrl(saveName.subString(34));
+//                        img.setQnaQUrl(saveName.substring(27));
+                        img.setQnaQUrl(saveName.substring(30));
                         img.setQnaQCode(result.getQnaQCode());
 
                         service.createImg(img);
@@ -214,15 +214,25 @@ public class QnaQBoardController {
                 .qnaQCode(result.getQnaQCode())
                 .qnaQTitle(result.getQnaQTitle())
                 .qnaQContent(result.getQnaQContent())
+                .qnaQStatus(result.getQnaQStatus())
                 // 답변 달렸을때에만 update가 아닌 첫 생성 date가 들어가도록..
-                .qnaQDate(result.getQnaQDateUpdate())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
+                .userImg(result.getUserImg())
                 .images(service.viewImg(code))
                 .build();
+
+//                .qnaQDate(result.getQnaQDateUpdate())
+        if(result.getQnaQDate() == null){
+            dto.setQnaQDate(result.getQnaQDateUpdate());
+            log.info("dto.date : " + dto.getQnaQDate());
+        } else {
+            dto.setQnaQDate(result.getQnaQDate());
+        }
        // QnaQBoardDTO result = service.view(code);
        // result.setImages(service.viewImg(code));
         ///log.info("viewImg : " + service.viewImg(code));
+        log.info("status : " + dto.getQnaQStatus());
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
@@ -230,10 +240,7 @@ public class QnaQBoardController {
     @PutMapping("/question")
     public ResponseEntity update(QnaQBoardDTO dto) throws IOException {
 
-            log.info("dto 제목 : " + dto.getQnaQTitle());
-            log.info("dto 내용 : " + dto.getQnaQContent());
-            log.info("dto images : " + dto.getImages());
-            if (dto.getImages() != null) {
+        if (dto.getImages() != null) {
                 List<String> imagesList = dto.getImages()
                         .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
                 log.info("imagesList : " + imagesList);
@@ -241,7 +248,7 @@ public class QnaQBoardController {
                 List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
                 log.info("list :  " + list);
 
-                // 이전 이미지 전체 삭제
+                // 이전 이미지 삭제
                 for (QnaQBoardImage image : list) {
                     log.info("image : " + image);
                     log.info("image : " + image.getQnaQUrl());
@@ -257,7 +264,17 @@ public class QnaQBoardController {
                         log.info("삭제!");
                     }
                 }
+            } else {
+            List<QnaQBoardImage> list = service.viewImg(dto.getQnaQCode());
+            for (QnaQBoardImage image : list) {
+                    File file = new File(image.getQnaQUrl());
+                    file.delete();
+
+                    service.deleteImg(image.getQnaQImgCode());
+                    log.info("다삭제해걍");
+                }
             }
+
 
             if (dto.getFiles() != null) {
                 for (MultipartFile file : dto.getFiles()) {
@@ -271,13 +288,15 @@ public class QnaQBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    img.setQnaQUrl(saveName.substring(27));
+//                    img.setQnaQUrl(saveName.substring(27));
+                    img.setQnaQUrl(saveName.substring(30));
                     img.setQnaQCode(dto.getQnaQCode());
 
                     service.createImg(img);
                 }
             } else {
                 log.info("추가하는 이미지 없음");
+
             }
 
 
@@ -286,6 +305,7 @@ public class QnaQBoardController {
             QnaQBoard vo = QnaQBoard.builder()
                     .userId(dto.getUserId())
                     .userNickname(dto.getUserNickname())
+                    .userImg(dto.getUserImg())
                     .qnaQCode(dto.getQnaQCode())
                     .qnaQTitle(dto.getQnaQTitle())
                     .qnaQContent(dto.getQnaQContent())

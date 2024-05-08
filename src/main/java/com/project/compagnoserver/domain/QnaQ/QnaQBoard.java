@@ -38,6 +38,9 @@ public class QnaQBoard {
     @Column(name="user_nickname")
     private String userNickname;
 
+    @Column(name="user_img")
+    private String userImg;
+
     @Column(name="qna_q_title")
     private String qnaQTitle;
 
