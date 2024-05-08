@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -115,23 +116,35 @@ public class QnaQBoardController {
 
     // 질문 목록 보기 (제목, 내용으로 검색 + 페이징처리)
     @GetMapping("/public/question")
-    public ResponseEntity<Page<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title, @RequestParam(name="content", required = false) String content, @RequestParam (name="page", defaultValue = "1") int page){
+    public ResponseEntity<Page<QnaQBoard>> viewAll(@RequestParam(name="title", required = false) String title,
+                                                   @RequestParam(name="content", required = false) String content,
+                                                   @RequestParam(name="id", required = false) String id,
+                                                   @RequestParam (name="page", defaultValue = "1") int page){
         Sort sort = Sort.by("QnaQCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression;
-        if(!StringUtils.isEmpty(title)){
-            expression = qQnaQBoard.qnaQTitle.contains(title);
+
+        log.info("title : " + title);
+
+        if(title != null){
+            expression = qQnaQBoard.qnaQTitle.like("%" + title + "%");
             builder.and(expression);
         }
-        if (!StringUtils.isEmpty(content)) {
-            expression = qQnaQBoard.qnaQContent.contains(content);
+        if(id != null){
+            expression = qQnaQBoard.userId.like("%"+id+"%");
+            builder.and(expression);
+        }
+        if (content != null) {
+            expression = qQnaQBoard.qnaQContent.like("%"+content+"%");
             builder.and(expression);
         }
 
+        log.info("builder : " + builder);
         Page<QnaQBoard> list = service.viewAll(builder, pageable);
+        log.info("list : " + list);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
@@ -201,7 +214,8 @@ public class QnaQBoardController {
                 .qnaQCode(result.getQnaQCode())
                 .qnaQTitle(result.getQnaQTitle())
                 .qnaQContent(result.getQnaQContent())
-                .qnaQDate(result.getQnaQDate())
+                // 답변 달렸을때에만 update가 아닌 첫 생성 date가 들어가도록..
+                .qnaQDate(result.getQnaQDateUpdate())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
                 .images(service.viewImg(code))
@@ -269,14 +283,14 @@ public class QnaQBoardController {
 
             // 추가하는 이미지가 비어있지 않을 때
         log.info("null?" + (dto.getFiles() == null));
-//
             QnaQBoard vo = QnaQBoard.builder()
                     .userId(dto.getUserId())
                     .userNickname(dto.getUserNickname())
                     .qnaQCode(dto.getQnaQCode())
                     .qnaQTitle(dto.getQnaQTitle())
                     .qnaQContent(dto.getQnaQContent())
-                    .qnaQDateUpdate((Timestamp) dto.getQnaQDate())
+                    // null~
+//                    .qnaQDateUpdate((Timestamp) dto.getQnaQDate())
                     .qnaQStatus("N")
                     .build();
             log.info("update vo : " + vo);
