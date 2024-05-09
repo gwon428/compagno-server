@@ -100,8 +100,8 @@ public class QnaQBoardController {
 
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
-//                        img.setQnaQUrl(saveName.substring(27));
-                        img.setQnaQUrl(saveName.substring(30));
+                        img.setQnaQUrl(saveName.substring(27));
+//                        img.setQnaQUrl(saveName.substring(30));
                         img.setQnaQCode(result.getQnaQCode());
 
                         service.createImg(img);
@@ -142,9 +142,7 @@ public class QnaQBoardController {
             builder.and(expression);
         }
 
-        log.info("builder : " + builder);
         Page<QnaQBoard> list = service.viewAll(builder, pageable);
-        log.info("list : " + list);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
@@ -225,7 +223,6 @@ public class QnaQBoardController {
 //                .qnaQDate(result.getQnaQDateUpdate())
         if(result.getQnaQDate() == null){
             dto.setQnaQDate(result.getQnaQDateUpdate());
-            log.info("dto.date : " + dto.getQnaQDate());
         } else {
             dto.setQnaQDate(result.getQnaQDate());
         }
@@ -278,7 +275,6 @@ public class QnaQBoardController {
 
             if (dto.getFiles() != null) {
                 for (MultipartFile file : dto.getFiles()) {
-                    log.info("이나ㅓ리ㅏ넝리ㅏ넝");
                     QnaQBoardImage img = new QnaQBoardImage();
 
                     String fileName = file.getOriginalFilename();
@@ -288,9 +284,10 @@ public class QnaQBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-//                    img.setQnaQUrl(saveName.substring(27));
-                    img.setQnaQUrl(saveName.substring(30));
+                    img.setQnaQUrl(saveName.substring(27));
+//                    img.setQnaQUrl(saveName.substring(30));
                     img.setQnaQCode(dto.getQnaQCode());
+
 
                     service.createImg(img);
                 }
