@@ -29,6 +29,7 @@ public class MyProductBoardFavService {
     // 북마크한 상품 목록 출력
     public Page<ProductBoardBookmark> myFavList(Pageable pageable, BooleanBuilder builder) {
 
+
         return mpbfDAO.findAll(builder, pageable);
     }
 

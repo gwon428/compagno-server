@@ -2,7 +2,9 @@ package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.Animal.AnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
+import com.project.compagnoserver.domain.Animal.QAnimalCategory;
 import com.project.compagnoserver.domain.ProductBoard.ProductBoardBookmark;
+import com.project.compagnoserver.domain.ProductBoard.QProductBoard;
 import com.project.compagnoserver.domain.ProductBoard.QProductBoardBookmark;
 import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
@@ -74,10 +76,13 @@ public class MyActivityController {
         Pageable pageable = PageRequest.of(page-1, 5, sort);
 
             QProductBoardBookmark qProductBoardBookmark = QProductBoardBookmark.productBoardBookmark;
+            QProductBoard qProductBoard = QProductBoard.productBoard;
+            QAnimalCategory qAnimalCategory = QAnimalCategory.animalCategory;
 
             BooleanBuilder builder = new BooleanBuilder();
 
             BooleanExpression expression = qProductBoardBookmark.user.userId.eq(id);
+            
 
             builder.and(expression);
 
