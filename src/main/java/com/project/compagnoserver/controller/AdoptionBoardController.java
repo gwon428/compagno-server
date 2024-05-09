@@ -1,11 +1,8 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.AdoptionBoard.*;
-import com.project.compagnoserver.domain.LostBoard.LostBoardComment;
-import com.project.compagnoserver.domain.LostBoard.LostBoardCommentDTO;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
-import com.project.compagnoserver.repo.AdoptionBoard.AdoptionBoardCommentDAO;
 import com.project.compagnoserver.service.AdoptionBoardCommentService;
 import com.project.compagnoserver.service.AdoptionBoardService;
 import com.querydsl.core.BooleanBuilder;
@@ -29,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +57,7 @@ public class AdoptionBoardController {
                         .userImg(dto.getUserImg())
                         .userNickname(dto.getUserNickname())
                         .userPhone(dto.getUserPhone())
+                        .adopRegiDate(Timestamp.valueOf(dto.getAdopRegiDate()))
                         .adopAnimalKind(dto.getAdopAnimalKind())
                         .adopAnimalColor(dto.getAdopAnimalColor())
                         .adopAnimalFindplace(dto.getAdopAnimalFindplace())
@@ -195,7 +192,7 @@ public class AdoptionBoardController {
                 .adopAnimalFeature(dto.getAdopAnimalFeature())
                 .adopCenterName(dto.getAdopCenterName())
                 .adopCenterPhone(dto.getAdopCenterPhone())
-                .adopRegiDate(dto.getAdopRegiDate())
+                .adopRegiDate(Timestamp.valueOf(dto.getAdopRegiDate()))
                 .build();
 
         for(AdoptionBoardImage image : list){

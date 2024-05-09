@@ -3,10 +3,8 @@ package com.project.compagnoserver.domain.AdoptionBoard;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -19,8 +17,8 @@ public class AdoptionBoardDTO {
     private String userImg;
     private String userPhone;
     private String userNickname;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date adopRegiDate;
+
+    private String adopRegiDate;
     private int adopViewCount;
     private String adopAnimalImage;
     private String adopAnimalKind;
