@@ -1,6 +1,9 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.UserQnaBoard.*;
+import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
+import com.project.compagnoserver.service.UserQnaAnswerBoardService;
 import com.project.compagnoserver.service.UserQnaQuestionBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -14,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -29,13 +36,17 @@ import java.util.stream.Collectors;
 @RestController @CrossOrigin(origins = {"*"}, maxAge = 6000)
 @RequestMapping("/compagno/*")
 @Slf4j
-public class UserQnaQuestionBoardController {
+public class UserQnaBoardController {
     @Autowired
     private UserQnaQuestionBoardService service;
+
+    @Autowired
+    private UserQnaAnswerBoardService answerService;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
+    // Question =============================================================================================
     // 1. 질문 등록
     @PostMapping("/userQuestion")
     public ResponseEntity<UserQnaQuestionBoard> create(UserQnaQuestionBoardDTO dto) throws IOException {
@@ -221,4 +232,88 @@ public class UserQnaQuestionBoardController {
         service.delete(code);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+
+    // answer =============================================================================================
+    // 1. answer 작성
+    @PostMapping("/userQuestion/answer")
+    public ResponseEntity createAnswer(@RequestBody UserQnaAnswerBoard vo){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof User){
+            User user = (User) principal;
+            vo.setUser(user);
+            vo.setUserNickname(user.getUserNickname());
+            vo.setUserImg(user.getUserImg());
+            return ResponseEntity.ok().body(answerService.create(vo));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 2. answer 조회
+    @GetMapping("/public/userQuestion/answer/{code}")
+    public ResponseEntity<List<UserQnaAnswerBoardDTO>> viewAnswers(@PathVariable(name="code") int code){
+        List<UserQnaAnswerBoard> topList = answerService.getTopLevelAnswers(code);
+        List<UserQnaAnswerBoardDTO> response = AnswerDetailList(topList, code);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // 반복적인 메서드 빼기
+    public UserQnaAnswerBoardDTO reanswerDetail(UserQnaAnswerBoard vo){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return UserQnaAnswerBoardDTO.builder()
+                .userQuestionBoardCode(vo.getUserQuestionBoardCode())
+                .userAnswerBoardCode(vo.getUserAnswerBoardCode())
+                .userAnswerContent(vo.getUserAnswerContent())
+                .userAnswerDate(vo.getUserAnswerDate())
+                .user(UserDTO.builder()
+                        .userId(vo.getUser().getUserId())
+                        .userNickname(vo.getUser().getUserNickname())
+                        .userImg(vo.getUser().getUserImg())
+                        .build())
+                .build();
+    }
+
+    // 재귀법을 위해 메서드 분리
+    public List<UserQnaAnswerBoardDTO> AnswerDetailList(List<UserQnaAnswerBoard> answers, int code){
+        List<UserQnaAnswerBoardDTO> response = new ArrayList<>();
+        for(UserQnaAnswerBoard item : answers) {
+            List<UserQnaAnswerBoard> reanswers = answerService.getBottomLevelAnswers(item.getUserAnswerBoardCode(), code);
+            List<UserQnaAnswerBoardDTO> reanswersDTO = AnswerDetailList(reanswers, code);
+
+            UserQnaAnswerBoardDTO dto = reanswerDetail(item);
+            dto.setAnswers(reanswersDTO);
+
+            response.add(dto);
+        }
+        return response;
+    }
+
+    // 3. answer 수정
+    @PutMapping("/userQuestion/answer")
+    public ResponseEntity<UserQnaAnswerBoard> updateAnswer(@RequestBody UserQnaAnswerBoardDTO dto){
+        UserQnaAnswerBoard vo = answerService.viewAnswer(dto.getUserAnswerBoardCode());
+        vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
+        vo.setUserAnswerContent(dto.getUserAnswerContent());
+
+        UserQnaAnswerBoard result = answerService.update(vo);
+        return (result != null) ?
+                ResponseEntity.status(HttpStatus.ACCEPTED).body(result)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    // 4. answer 삭제
+    @DeleteMapping("/userQuestion/answer/{code}")
+    public ResponseEntity<UserQnaAnswerBoard> deleteAnswer(@PathVariable(name="code") int code){
+        UserQnaAnswerBoard vo = answerService.viewAnswer(code);
+        if(vo != null){
+            answerService.deleteAnswer(code);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
 }
