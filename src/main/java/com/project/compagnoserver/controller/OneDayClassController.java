@@ -4,6 +4,7 @@ import com.project.compagnoserver.domain.OneDayClass.ClassBoard;
 import com.project.compagnoserver.domain.OneDayClass.ClassBoardDTO;
 import com.project.compagnoserver.domain.OneDayClass.ClassBoardMainImage;
 import com.project.compagnoserver.domain.OneDayClass.QClassBoard;
+import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.service.OneDayClassService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,7 +46,7 @@ public class OneDayClassController {
     private String uploadPath; // D:\\upload   // 파일 업로드 관련 위치!
 
     // 클래스 등록 + 사진 DTO로해서 가져오기
-    @PostMapping("/public/ClassBoard")
+    @PostMapping("/ClassBoard")
     public ResponseEntity<ClassBoard> insert(ClassBoardDTO dto) throws IOException, ParseException {
 
         // 날짜 관련 로직 !!===============================================
@@ -53,11 +57,14 @@ public class OneDayClassController {
 
         // 사용자에게 입력받을거 !!
         ClassBoard vo = ClassBoard.builder()
+                .user(userInfo())
                 .odcTitle(dto.getOdcTitle())
                 .odcContent(dto.getOdcContent())
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
                 .odcAccompaying(dto.getOdcAccompaying().charAt(0))
+                .user(User.builder()
+                        .userId(userInfo().getUserId()).build())
                 .build();
 
         ClassBoard result = service.insert(vo); // 등록할때 사용자가 적은걸 저장시키겠다 !
@@ -103,65 +110,56 @@ public class OneDayClassController {
     }
 
     // 등록된 클래스 수정
-    @PutMapping("/public/ClassBoard")
+    @PutMapping("/ClassBoard")
     public ResponseEntity update(ClassBoardDTO dto) throws ParseException, IOException {
 
-        ClassBoard prev = service.view(dto.getOdcCode()); // 기존에 있는 등록된 클래스 한개를 가져올때 담은 정보들
+        // 기존에 등록되어 있던 원데이클래스 클래스중 하나의 정보를 가져오겠다 !!
+//        ClassBoard prev = service.view(dto.getOdcCode());
+        // prev라는 변수에다가 <= 클래스코드로 한개보기한 정보를 닮아 내겠다 !!
         // 기존에 있던 이미지 정보 가져오기
         List<ClassBoardMainImage> images = service.viewImg(dto.getOdcCode());
 
-//        for(ClassBoardMainImage file : files){
-//            if ((dto.getFile()!=null && !dto.getFile().contains())
-//                    || dto.getFile() == null){
-//
-//
-//            }
-//        }
-//
-//
-//
-//        // 클래스보드메인이미지 dto에 해당 이미지가 있는지에 대한 여부를 판단으로 돌린다
-//        if (dto.getFile().isEmpty()) {
-//            // 4. 파일 삭제와 동시에 테이블에서도 해당 정보 삭제
-//            vo.setImages(prev.getImages());
-//        } else {
-//            // 기존에 사진 삭제하고 새로운 사진 추가
-//            File file = new File(prev.getImages(dt));
-//
-//            ClassBoardMainImage imgVo = new ClassBoardMainImage();
-//
-//
-//            String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
-//            String uuid = UUID.randomUUID().toString();  // UUID
-//            String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-//            Path savePath = Paths.get(saveName);
-//            dto.getFile().transferTo(savePath);
-//
-//            imgVo.setOdcMainImage(saveName);
-//            imgVo.setClassBoard(ClassBoard.builder().odcCode(dto.getOdcCode()).build());
-//
-//            service.createImg(imgVo);
-//        }
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        Date startDate = sdf.parse(dto.getOdcStartDate());
-//        Date lastDate = sdf.parse(dto.getOdcLastDate());
-//
-//        // 원데이 클래스 수정할것들
-//        ClassBoard vo = ClassBoard.builder()
-//                .odcTitle(dto.getOdcTitle())
-//                .odcContent(dto.getOdcContent())
-//                .odcStartDate(startDate)
-//                .odcLastDate(lastDate)
-//                .odcAccompaying(dto.getOdcAccompaying().charAt(0))
-//                .build();
-////        service.insert(vo);
+        for (ClassBoardMainImage image : images) {
+            if (dto.getFile() != null) {
+                File file = new File(image.getOdcMainImage());
+                file.delete();
+            } else {
+                ClassBoardMainImage imgVo = new ClassBoardMainImage(); // 객체 생성해서 받아내겠다.
+
+                String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+                String uuid = UUID.randomUUID().toString();  // UUID
+                String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
+                Path savePath = Paths.get(saveName);
+                dto.getFile().transferTo(savePath);
+            }
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = sdf.parse(dto.getOdcStartDate());
+        Date lastDate = sdf.parse(dto.getOdcLastDate());
+
+        // 원데이 클래스 수정할것들
+        ClassBoard vo = ClassBoard.builder()
+                .user(User.builder()
+                        .userId(userInfo().getUserId()).build())
+                .odcTitle(dto.getOdcTitle())
+                .odcContent(dto.getOdcContent())
+                .odcStartDate(startDate)
+                .odcLastDate(lastDate)
+                .odcAccompaying(dto.getOdcAccompaying().charAt(0))
+                .build();
+
+        service.insert(vo);
+
 
         return ResponseEntity.ok().build();
+
+
     }
 
     // 등록된 클래스 삭제 관련 !!
-    @DeleteMapping("/public/ClassBoard/{odcCode}")
-    public ResponseEntity delete(@PathVariable(name = "odcCode") int odcCode){
+    @DeleteMapping("/ClassBoard/{odcCode}")
+    public ResponseEntity delete(@PathVariable(name = "odcCode") int odcCode) {
         // 파일 삭제 로직
         ClassBoard prev = service.view(odcCode); // 파일을 삭제하기 위해서는 odcCode를 가져와야한다 !
 
@@ -183,5 +181,18 @@ public class OneDayClassController {
         service.delete(odcCode);
 
         return ResponseEntity.ok().build();
+    }
+
+    // 로그인 정보 가져오기
+    public User userInfo() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof User) {
+            User user = (User) principal;
+            return user;
+        }
+        return null;
     }
 }
