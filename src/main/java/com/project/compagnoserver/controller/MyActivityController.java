@@ -4,7 +4,10 @@ import com.project.compagnoserver.domain.Animal.AnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
 import com.project.compagnoserver.domain.ProductBoard.ProductBoardBookmark;
 import com.project.compagnoserver.domain.ProductBoard.QProductBoardBookmark;
+import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
+import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.service.MyAnimalBoardFavService;
+import com.project.compagnoserver.service.MyPageQnaService;
 import com.project.compagnoserver.service.MyProductBoardFavService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -25,11 +28,17 @@ import java.util.List;
 @CrossOrigin(origins = {"*"}, maxAge = 6000)
 public class MyActivityController {
 
+    // 동물게시판 서비스
     @Autowired
     private MyAnimalBoardFavService mabfService;
 
+    // 상품목록 게시판 서비스
     @Autowired
     private MyProductBoardFavService mpbfService;
+
+    // QnA 서비스
+    @Autowired
+    private MyPageQnaService myQnaService;
 
 
     // 최애 동물 좋아요 목록 출력
@@ -49,8 +58,6 @@ public class MyActivityController {
         Page<AnimalBoardFavorite> list = mabfService.myFavList(pageable, builder);
 
         return ResponseEntity.ok(list.getContent());
-
-
     }
 
     // 최애 동물 좋아요 갯수 출력
@@ -71,12 +78,59 @@ public class MyActivityController {
             BooleanBuilder builder = new BooleanBuilder();
 
             BooleanExpression expression = qProductBoardBookmark.user.userId.eq(id);
+
             builder.and(expression);
 
             Page<ProductBoardBookmark> list = mpbfService.myFavList(pageable, builder);
 
             return ResponseEntity.ok(list.getContent());
         }
+
+    // 일반유저 - 내가 작성한 질문 리스트
+    @GetMapping("/api/mypage/myactivity/myqna/{id}")
+    public ResponseEntity<List<QnaQBoard>> userQnaList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1") int page) {
+        Sort sort = Sort.by("qnaQCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qQnaQBoard.userId.eq(id);
+       builder.and(expression);
+
+       Page<QnaQBoard> list = myQnaService.userQnaList(pageable, builder);
+
+
+        return ResponseEntity.ok(list.getContent());
+
+    }
+    // 일반유저 - 페이징 위해 내가 작성한 질문 갯수
+    @GetMapping("/api/mypage/myactivity/myqna/count/{id}")
+    public ResponseEntity countQna(@PathVariable("id") String id) {
+        return ResponseEntity.ok(myQnaService.countQna(id));
+    }
+
+    // 관리자 - 미답변 질문 리스트
+    @GetMapping("/api/mypage/myactivity/manageqna")
+    public ResponseEntity managerQnaList(@RequestParam(name = "page",defaultValue = "1") int page) {
+        Sort sort = Sort.by("qnaQCode");
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qQnaQBoard.qnaQStatus.eq("N");
+        builder.and(expression);
+
+        Page<QnaQBoard> list = myQnaService.managerQnaList(pageable, builder);
+
+        return ResponseEntity.ok(list.getContent());
+    }
+
+    // 관리자 - 미답변 질문 갯수
+    @GetMapping("/api/mypage/myactivity/manageqna/count")
+    public ResponseEntity countmanagerQna() {
+        return ResponseEntity.ok(myQnaService.countmanagerQna());
+
+    }
 
 
 }
