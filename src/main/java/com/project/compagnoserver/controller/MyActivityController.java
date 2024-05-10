@@ -81,15 +81,16 @@ public class MyActivityController {
             QAnimalCategory qAnimalCategory = QAnimalCategory.animalCategory;
 
             BooleanBuilder builder = new BooleanBuilder();
-
             BooleanExpression expression = qProductBoardBookmark.user.userId.eq(id);
-
-
             builder.and(expression);
-
             Page<ProductBoardBookmark> list = mpbfService.myFavList(pageable, builder);
 
             return ResponseEntity.ok(list.getContent());
+        }
+
+        @GetMapping("/api/mypage/myactivity/productfav/count/{id}")
+        public ResponseEntity countBookmark(@PathVariable("id") String id) {
+            return ResponseEntity.ok(mpbfService.countBookmark(id));
         }
 
 
