@@ -127,9 +127,9 @@ public class AnimalBoardController {
                     if(image.contains("\"")){
                         String[] finalizedArr = image.split("\"");
                         String finalizedImage = finalizedArr[0];
-                        log.info("db에 저장될 이미지 : " + image);
-                        log.info("2차 처리 이미지 배열: " + finalizedArr[0]);
-                        log.info("2차 처리 이미지 최종본: " + finalizedImage);
+//                        log.info("db에 저장될 이미지 : " + image);
+//                        log.info("2차 처리 이미지 배열: " + finalizedArr[0]);
+//                        log.info("2차 처리 이미지 최종본: " + finalizedImage);
                         images.add(finalizedImage);
                         // image-resize가 적용될 경우 split을 통해서 이미지 문자열만 2차 재추출 해야함.
                     }else{
@@ -287,9 +287,18 @@ public class AnimalBoardController {
 //    log.info("getdto : " + getBoardDTO);
         return getBoardDTO!=null ? ResponseEntity.ok(getBoardDTO) : ResponseEntity.notFound().build();
     }
+    // 자유게시판 수정 : 기존 이미지 가져오기
+    @GetMapping("public/animal-board/{animalBoardCode}/prevImages")
+    public ResponseEntity<List<AnimalBoardImage>> getPrevImages(@PathVariable(name = "animalBoardCode")int boardCode){
+        log.info("글 수정 boardCOde: " + boardCode);
+        List<AnimalBoardImage> prevImages = animalBoardService.getPrevImages(boardCode);
+        log.info("prevImages : " + prevImages);
+        return prevImages!=null ?  ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
     public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardDTO dto) throws IOException {
+        log.info("수정 dto : " + dto);
         Date nowDate = currentDate();
         Object principal = Authentication();
         if(principal instanceof  User) {
@@ -326,18 +335,31 @@ public class AnimalBoardController {
             // 매칭된 문자열 추출
             while(matcher.find()) {
                 if(matcher.group().startsWith("<img")) {
-                    String image = matcher.group().substring(35, matcher.group().length() - 2);
-                    images.add(image); // 매칭된 이미지들 images에 추가
-                    // matcher 가 정규표현식이 매칭되는 이미지태그의 이미지를 iamges 리스트에 담아줌
-                    // 얘가 DB에 저장되어야할 아이
+                    String image = matcher.group().substring(35, matcher.group().length() - 2); //image-resize에 안 들어간 경우
+                    if(image.contains("\"")){
+                        String[] finalizedArr = image.split("\"");
+                        String finalizedImage = finalizedArr[0];
+                        log.info("db에 저장될 이미지 : " + image);
+                        log.info("2차 처리 이미지 배열: " + finalizedArr[0]);
+                        log.info("2차 처리 이미지 최종본: " + finalizedImage);
+                        images.add(finalizedImage);
+                        // image-resize가 적용될 경우 split을 통해서 이미지 문자열만 2차 재추출 해야함.
+                    }else{
+                        images.add(image); // 매칭된 이미지들 images에 추가
+                        // matcher 가 정규표현식이 매칭되는 이미지태그의 이미지를 iamges 리스트에 담아줌
+                        // 얘가 DB에 저장되어야할 아이
+                    }
                 }
             }
+            log.info("수정 후 이미지 리스트 : " + images);
             /* =================================================================================== */
             // animal_board_code 가 null 인 이미지 가져오기
-            List<AnimalBoardImage> list = animalBoardService.viewImages();
+            List<AnimalBoardImage> list = animalBoardService.viewImages(); // 여기에 userId=? 조건도 같이 붙으면 여러명이 써도 상관 x
             // 일단 그냥 막 들어와진 이미지들
 
             for(AnimalBoardImage image : list){
+                log.info("imageg where code=null from db : " + image);
+                log.info("새로 들어온 이미지 : " + image.getAnimalBoardImage());
                 if(images.contains(image.getAnimalBoardImage())){
                     // 확실이 들어가야하는 이미지리스트와 막무가내 리스트 비교, 두 비교값이 같다면?
                     // 즉, DB에 저장되어야 하는 값을 발견했을때는 true
@@ -356,11 +378,31 @@ public class AnimalBoardController {
             // 마지막으로 DB상에서 animal_board_Code가 null인 image, image 테이블에서 삭제
             animalBoardService.deleteAnimalNoImages();
 
+            // 완성된 이미지 리스트 불러오기 - 추후에 리스트로 변경하여 사용자에게 선택권한을 줌
+            AnimalBoardImage thumbnail = animalBoardService.getThumbnailList(response.getAnimalBoardCode());
+            log.info("thumbnail : " + thumbnail);
+            if(thumbnail!=null){
+                animalBoardService.saveThumbnail(thumbnail.getAnimalBoardImage(), response);
+            } else{
+                animalBoardService.saveThumbnail("animalDefault.jpg", response);
+            }
+
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.badRequest().build();
     }
     // 자유게시판 - 글 삭제
+    @DeleteMapping("/animal-board/{animalBoardCode}")
+    public ResponseEntity<?> deleteBoard(@PathVariable(name = "animalBoardCode")int boardCode){
+        // 삭제하기전 실제 파일 삭제.
+        List<AnimalBoardImage> currentList = animalBoardService.getCurrentFiles(boardCode);
+        for(AnimalBoardImage image : currentList){
+            File file =new File(uploadPath+image.getAnimalBoardImage());
+            file.delete();
+        }
+        animalBoardService.deleteBoard(boardCode);
+        return ResponseEntity.ok().build();
+    }
 
     // 조회수
 //    @GetMapping("/animal-board/view/{animalBoardCode}")
