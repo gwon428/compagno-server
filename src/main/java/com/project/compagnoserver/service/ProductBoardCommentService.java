@@ -52,6 +52,12 @@ public class ProductBoardCommentService {
 
     // 댓글 조회
     public List<ProductBoardComment> getTopLevelComments(int code) {
+        queryFactory.selectFrom(qProductBoardComment)
+                .where(qProductBoardComment.productParentCode.eq(0))
+                .where(qProductBoardComment.productBoard.productBoardCode.eq(code))
+                .orderBy(qProductBoardComment.productCommentRegiDate.asc())
+                .fetch();
+
         return queryFactory.selectFrom(qProductBoardComment)
                 .where(qProductBoardComment.productParentCode.eq(0))
                 .where(qProductBoardComment.productBoard.productBoardCode.eq(code))

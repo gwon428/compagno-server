@@ -139,6 +139,7 @@ public class ProductBoardController {
 
     // 조회수
     public void viewCountUp(int code, HttpServletRequest req, HttpServletResponse res) {
+
         Cookie[] cookies = Optional.ofNullable(req.getCookies()).orElseGet(() -> new Cookie[0]);
 
         Cookie cookie = Arrays.stream(cookies)
@@ -162,8 +163,7 @@ public class ProductBoardController {
     @PatchMapping("/productBoard")
     public ResponseEntity<ProductBoard> update(ProductBoardDTO dto) throws IOException {
         ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
-
-        log.info("dtoImage : " + dto.getImages());
+        
         // 게시판 수정
         ProductBoard vo = ProductBoard.builder()
                 .productBoardCode(dto.getProductBoardCode())
@@ -183,6 +183,8 @@ public class ProductBoardController {
         if(prev.getProductMainImage() != null && !prev.getProductMainImage().equals(dto.getMainImage())) {
             File file = new File(uploadPath + File.separator + prev.getProductMainImage());
             file.delete();
+        } else {
+            vo.setProductMainImage(prev.getProductMainImage());
         }
 
         // 메인 이미지 업로드
