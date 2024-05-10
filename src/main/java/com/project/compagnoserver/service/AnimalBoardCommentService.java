@@ -1,8 +1,6 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.Animal.AnimalBoardComment;
-import com.project.compagnoserver.domain.Animal.AnimalBoardCommentDTO;
-import com.project.compagnoserver.domain.Animal.QAnimalBoardComment;
+import com.project.compagnoserver.domain.Animal.*;
 import com.project.compagnoserver.repo.Animal.AnimalBoardCommentDAO;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,6 +19,7 @@ public class AnimalBoardCommentService {
     private JPAQueryFactory jpaQueryFactory;
 
     private final QAnimalBoardComment qAnimalBoardComment = QAnimalBoardComment.animalBoardComment;
+    private  final QAnimalBoardImage qAnimalBoardImage = QAnimalBoardImage.animalBoardImage1;
 
     // 게시글에 댓글 쓰기
     public AnimalBoardComment writeComment(AnimalBoardComment vo){
@@ -70,4 +69,5 @@ public class AnimalBoardCommentService {
                 .fetchFirst());
 
     }
+
 }

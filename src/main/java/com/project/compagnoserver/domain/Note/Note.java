@@ -2,13 +2,11 @@ package com.project.compagnoserver.domain.Note;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
@@ -35,9 +33,8 @@ public class Note {
     @Column
     private String receiver;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name="note_regi_date")
-    private Date noteRegiDate;
+    private Timestamp noteRegiDate;
 
     @Column(name="deleted_by_sender")
     private Boolean deletedBySender;  // 기본 false

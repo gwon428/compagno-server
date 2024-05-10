@@ -66,6 +66,9 @@ public class UserController {
                 .build();
 
         User result = userService.create(user);
+
+                    userService.setLogic(user);
+
         UserDTO dto = UserDTO.builder()
                 .userId(result.getUserId())
                 .userPersonName(result.getUserPersonName())

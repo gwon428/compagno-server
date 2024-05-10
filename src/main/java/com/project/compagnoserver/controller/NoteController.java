@@ -3,7 +3,6 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.Note.Note;
 import com.project.compagnoserver.domain.Note.NoteDTO;
 import com.project.compagnoserver.domain.Note.NoteFIle;
-
 import com.project.compagnoserver.domain.Note.QNote;
 import com.project.compagnoserver.service.NoteService;
 import com.querydsl.core.BooleanBuilder;
@@ -25,13 +24,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @Slf4j
 @RequestMapping("/compagno/*")
+@CrossOrigin(origins={"*"}, maxAge = 6000)
 public class NoteController {
 
     @Autowired
@@ -48,6 +48,7 @@ public class NoteController {
        note.setNoteContent(dto.getNoteContent());
        note.setSender(dto.getSender());
        note.setReceiver(dto.getReceiver());
+       note.setNoteRegiDate(Timestamp.valueOf(dto.getNoteRegiDate()));
 
        Note result = service.create(note);
         if(dto.getFiles()!=null) {
@@ -74,11 +75,36 @@ public class NoteController {
     // 보기 ------------------------------------
     // viewAll(전체보기) - 전체쪽지함
     @GetMapping("/note")
-    public ResponseEntity<List<Note>> viewAll(@RequestParam(name="page", defaultValue = "1") int page){
+    public ResponseEntity<Page<Note>> viewAll(@RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Timestamp noteRegiDate){
+
+
         Sort sort = Sort.by("noteCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 10);
-        Page<Note> list = service.viewAll(pageable);
-        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+        QNote qNote = QNote.note;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = null;
+        if(sender!=null){
+            expression = qNote.sender.contains(sender);
+            builder.and(expression);
+        }
+
+        if(receiver!=null){
+            expression = qNote.receiver.contains(receiver);
+            builder.and(expression);
+        }
+        if(noteTitle!=null){
+            expression = qNote.noteTitle.contains(noteTitle);
+            builder.and(expression);
+        }
+        if(noteRegiDate!=null){
+            expression = qNote.noteRegiDate.eq(noteRegiDate);
+            builder.and(expression);
+        }
+
+        return ResponseEntity.ok(service.viewAll(pageable, builder));
+//        Page<Note> list = service.viewAll(pageable);
+//        return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
+
     }
 
     // viewSendBox(보낸 쪽지함)
@@ -113,14 +139,15 @@ public class NoteController {
         Page<Note> list = service.viewReceiveBox(pageable, builder);
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
 
+
     }
 
     // 검색 쪽지함
     @GetMapping("/note/search")
-    public ResponseEntity<List<Note>> findBySearch(@RequestParam(name="page", defaultValue = "1")int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date noteRegiDate){
+    public ResponseEntity<List<Note>> findBySearch(@RequestParam(name="page", defaultValue = "1")int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Timestamp noteRegiDate){
 
         Pageable pageable = PageRequest.of(page-1, 10);
-    log.info("sender : " + sender);
+
         QNote qNote = QNote.note;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression = null;
@@ -141,7 +168,7 @@ public class NoteController {
             expression = qNote.noteRegiDate.eq(noteRegiDate);
             builder.and(expression);
         }
-        log.info("builder : " + builder);
+//        log.info("builder : " + builder);
         Page<Note> list = service.findBySearch(pageable, builder);
         return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
     }

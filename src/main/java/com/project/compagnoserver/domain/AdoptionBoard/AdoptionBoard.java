@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -38,7 +38,7 @@ public class AdoptionBoard {
     private String userPhone;
 
     @Column(name="adoption_regi_date")
-    private Date adopRegiDate;
+    private Timestamp adopRegiDate;
 
     @Column(name="adoption_view_count")
     private int adopViewCount;
@@ -81,6 +81,7 @@ public class AdoptionBoard {
     @Column(name="adoption_center_phone")
     private String adopCenterPhone;
 
+//    @OneToMany(mappedBy = "adopBoardCode", cascade = CascadeType.ALL)
     @OneToMany(mappedBy = "adopBoardCode")
     private List<AdoptionBoardImage> images;
 

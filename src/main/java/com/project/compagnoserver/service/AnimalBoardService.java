@@ -120,13 +120,30 @@ public class AnimalBoardService {
 //        log.info("board : " + board);
             return animalBoardDAO.findById(animalBoardCode).orElse(null);
         }
-
+        // 자유게시판 - 글 수정 - 기존 이미지 가져오기
+        public List<AnimalBoardImage> getPrevImages(int boardCode){
+//            return animalBoardImageDAO.prevImages(boardCode);
+            return queryFactory.selectFrom(qAnimalBoardImage)
+                    .where(qAnimalBoardImage.animalBoard.animalBoardCode.eq(boardCode))
+                    .fetch();
+        }
         // 자유게시판 - 글 수정
         public AnimalBoard boardUpdate(AnimalBoard board){
             return animalBoardDAO.existsById(board.getAnimalBoardCode()) ? animalBoardDAO.save(board) : null;
         }
 
         // 자유게시판 - 글 삭제
+        @Transactional
+        public void deleteBoard(int boardCode){
+            animalBoardDAO.deleteById(boardCode);
+        }
+        // 자유게시판 - 글 삭제 2, 현재 이미지 불러오기
+        public List<AnimalBoardImage> getCurrentFiles(int boardCode){
+        return queryFactory.selectFrom(qAnimalBoardImage)
+                .where(qAnimalBoard.animalBoardCode.eq(boardCode))
+                .fetch();
+        }
+
 
         // 자유게시판 - 조회수
         @Transactional

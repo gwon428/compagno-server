@@ -30,7 +30,7 @@ public class QNote extends EntityPathBase<Note> {
 
     public final StringPath noteContent = createString("noteContent");
 
-    public final DateTimePath<java.util.Date> noteRegiDate = createDateTime("noteRegiDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> noteRegiDate = createDateTime("noteRegiDate", java.sql.Timestamp.class);
 
     public final StringPath noteTitle = createString("noteTitle");
 

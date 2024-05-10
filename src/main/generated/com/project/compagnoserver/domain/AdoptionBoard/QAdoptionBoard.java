@@ -44,7 +44,7 @@ public class QAdoptionBoard extends EntityPathBase<AdoptionBoard> {
 
     public final StringPath adopCenterPhone = createString("adopCenterPhone");
 
-    public final DateTimePath<java.util.Date> adopRegiDate = createDateTime("adopRegiDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> adopRegiDate = createDateTime("adopRegiDate", java.sql.Timestamp.class);
 
     public final NumberPath<Integer> adopViewCount = createNumber("adopViewCount", Integer.class);
 

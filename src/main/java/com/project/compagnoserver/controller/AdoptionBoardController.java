@@ -1,9 +1,9 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.AdoptionBoard.AdoptionBoard;
-import com.project.compagnoserver.domain.AdoptionBoard.AdoptionBoardDTO;
-import com.project.compagnoserver.domain.AdoptionBoard.AdoptionBoardImage;
-import com.project.compagnoserver.domain.AdoptionBoard.QAdoptionBoard;
+import com.project.compagnoserver.domain.AdoptionBoard.*;
+import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.user.UserDTO;
+import com.project.compagnoserver.service.AdoptionBoardCommentService;
 import com.project.compagnoserver.service.AdoptionBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -16,6 +16,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,21 +44,20 @@ public class AdoptionBoardController {
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
+    @Autowired
+    private AdoptionBoardCommentService comment;
+
     // 추가
     @PostMapping("/adoptionBoard")
     public ResponseEntity<AdoptionBoard> create(AdoptionBoardDTO dto) throws IOException {
 
-        //    private int adopViewCount;
-        //    private String adopAnimalImage;
-        //    private List<MultipartFile> images;
-        //    private List<String> image;
-
-        AdoptionBoard result = service.create(
+        AdoptionBoard result =
                 AdoptionBoard.builder()
                         .userId(dto.getUserId())
                         .userImg(dto.getUserImg())
                         .userNickname(dto.getUserNickname())
                         .userPhone(dto.getUserPhone())
+                        .adopRegiDate(Timestamp.valueOf(dto.getAdopRegiDate()))
                         .adopAnimalKind(dto.getAdopAnimalKind())
                         .adopAnimalColor(dto.getAdopAnimalColor())
                         .adopAnimalFindplace(dto.getAdopAnimalFindplace())
@@ -64,9 +68,9 @@ public class AdoptionBoardController {
                         .adopAnimalFeature(dto.getAdopAnimalFeature())
                         .adopCenterName(dto.getAdopCenterName())
                         .adopCenterPhone(dto.getAdopCenterPhone())
-                        .adopRegiDate(dto.getAdopRegiDate())
-                        .build()
-        );
+                        .build();
+
+        AdoptionBoard results = service.create(result);
 
         if(dto.getImages()!=null){
             for(MultipartFile file : dto.getImages()){
@@ -79,18 +83,27 @@ public class AdoptionBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
+                    if(results.getAdopAnimalImage()==null){
+
+                        results.setAdopAnimalImage(saveName);
+
+                    }
+
                     images.setAdopImage(saveName);
+
                     images.setAdopBoardCode(result);
 
+
                     service.createImg(images);
+
                 }
             }
         }
-        return result!=null?
+
+        return results!=null?
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
 
     // 전체보기(페이징, 검색, 정렬)
     // 검색 : 종류(전체, 강아지, 고양이, 그외) / 성별 /  입양 동물 중성화 유무 / 센터 이름 / 입양 동물 발견 장소
@@ -179,7 +192,7 @@ public class AdoptionBoardController {
                 .adopAnimalFeature(dto.getAdopAnimalFeature())
                 .adopCenterName(dto.getAdopCenterName())
                 .adopCenterPhone(dto.getAdopCenterPhone())
-                .adopRegiDate(dto.getAdopRegiDate())
+                .adopRegiDate(Timestamp.valueOf(dto.getAdopRegiDate()))
                 .build();
 
         for(AdoptionBoardImage image : list){
@@ -231,5 +244,95 @@ public class AdoptionBoardController {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
+
+    // [댓글 관련 로직] ---------------------------------------------------------
+    // 추가
+    @PostMapping("/adoptionBoard/comment")
+    public ResponseEntity createComment(@RequestBody AdoptionBoardComment vo){
+        // 시큐리티 담은 로그인한 사용자의 정보 가져오기
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof User){
+            User user = (User) principal;
+            vo.setUser(user);
+            vo.setUserNickname(user.getUserNickname());
+            vo.setUserImg(user.getUserImg());
+            return ResponseEntity.ok().body(comment.create(vo));
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
+    // 페이징 처리 안한 댓글 전체 보기
+    @GetMapping("/public/adoptionBoard/commentAll/{adopBoardCode}")
+    public ResponseEntity<List<AdoptionBoardCommentDTO>> viewComment(@PathVariable(name="adopBoardCode")int adopBoardCode){
+        List<AdoptionBoardComment> topList = comment.topAllComments(adopBoardCode);
+        List<AdoptionBoardCommentDTO> response = commentDetailList(topList, adopBoardCode);
+        return ResponseEntity.ok(response);
+    }
+
+    // (게시물 1개에 대한 전체)댓글 보기
+    @GetMapping("/public/adoptionBoard/comment/{adopBoardCode}")
+    public ResponseEntity<List<AdoptionBoardCommentDTO>> viewComment(@PathVariable(name="adopBoardCode")int adopBoardCode, @RequestParam(name="page")int page){
+        List<AdoptionBoardComment> topList = comment.topComments(adopBoardCode, page);
+        List<AdoptionBoardCommentDTO> response = commentDetailList(topList, adopBoardCode);
+        return ResponseEntity.ok(response);
+    }
+
+    // 나머지 공통 빼기
+    public List<AdoptionBoardCommentDTO> commentDetailList(List<AdoptionBoardComment> comments, int adopBoardCode){
+        List<AdoptionBoardCommentDTO> response = new ArrayList<>();
+        for(AdoptionBoardComment item : comments){
+            List<AdoptionBoardComment> replies = comment.bottomComments(item.getAdopCommentCode(), adopBoardCode);
+            List<AdoptionBoardCommentDTO> repliesDTO = commentDetailList(replies, adopBoardCode);
+            AdoptionBoardCommentDTO dto = commentDetail(item);
+            dto.setReplies(repliesDTO);
+            response.add(dto);
+        }
+        return response;
+    }
+
+    // builder.build 공통 빼기
+    public AdoptionBoardCommentDTO commentDetail(AdoptionBoardComment vo){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        return AdoptionBoardCommentDTO.builder()
+                .adopBoardCode(vo.getAdopBoardCode())
+                .commentDate(sdf.format(vo.getCommentDate()))
+                .commentContent(vo.getCommentContent())
+                .adopCommentCode(vo.getAdopCommentCode())
+                .user(UserDTO.builder()
+                        .userId(vo.getUser().getUserId())
+                        .userNickname(vo.getUserNickname())
+                        .userImg(vo.getUserImg())
+                        .build())
+                .build();
+    }
+
+    // 수정
+    @PutMapping("/adoptionBoard/comment")
+    public ResponseEntity<AdoptionBoardComment> updateComment(@RequestBody AdoptionBoardCommentDTO dto){
+        AdoptionBoardComment vo = comment.viewComment(dto.getAdopCommentCode());
+        vo.setCommentDate(Timestamp.valueOf(dto.getCommentDate()));
+        vo.setCommentContent(dto.getCommentContent());
+        AdoptionBoardComment result = comment.update(vo);
+        return(result!=null) ?
+                ResponseEntity.status(HttpStatus.ACCEPTED).body(result)
+                : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+
+    // 삭제
+    @DeleteMapping("/adoptionBoard/comment/{adopCommentCode}")
+    public ResponseEntity<AdoptionBoardComment> deleteComment(@PathVariable(name="adopCommentCode") int adopCommentCode){
+        AdoptionBoardComment vo = comment.viewComment(adopCommentCode);
+        if(vo!=null){
+            comment.deleteComment(adopCommentCode);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
 
 }
