@@ -72,6 +72,7 @@ public class SitterBoardService {
     public SitterBoard sitterView(int code) {
         return sitterBoardDAO.findById(code).orElse(null);
     }
+
     public List<SitterBoardImage> sitterViewImg(int code) {
         return queryFactory.selectFrom(qSitterBoardImage)
                 .where(qSitterBoardImage.sitterBoard.sitterBoardCode.eq(code))
@@ -117,7 +118,10 @@ public class SitterBoardService {
             sitterBoardDAO.delete(target);
         }
     }
+
+    @Transactional
     public void sitterDeleteImg(int code) {
+        log.info("code : " + code);
         queryFactory.delete(qSitterBoardImage)
                 .where(qSitterBoardImage.sitterBoard.sitterBoardCode.eq(code))
                 .execute();
@@ -171,7 +175,7 @@ public class SitterBoardService {
         return queryFactory.selectFrom(qSitterBoardComment)
                 .where(qSitterBoardComment.sitterCommentParentCode.eq(0))
                 .where(qSitterBoardComment.sitterBoardCode.eq(code))
-                .orderBy(qSitterBoardComment.sitterCommentCode.asc())
+                .orderBy(qSitterBoardComment.sitterCommentCode.desc())
                 .fetch();
     }
 
@@ -180,7 +184,7 @@ public class SitterBoardService {
         return queryFactory.selectFrom(qSitterBoardComment)
                 .where(qSitterBoardComment.sitterCommentParentCode.eq(parent))
                 .where(qSitterBoardComment.sitterBoardCode.eq(code))
-                .orderBy(qSitterBoardComment.sitterCommentRegiDate.asc())
+                .orderBy(qSitterBoardComment.sitterCommentRegiDate.desc())
                 .fetch();
     }
 

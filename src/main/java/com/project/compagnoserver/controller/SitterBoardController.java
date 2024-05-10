@@ -13,7 +13,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -34,9 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -69,7 +66,8 @@ public class SitterBoardController {
     @GetMapping("public/sitter")
     public ResponseEntity<Page<SitterBoard>> sitterViewAll(@RequestParam(name="sitterCategory", required = false) Integer sitterCateCode,
                                                            @RequestParam(name="animalCategory", required = false) Integer animalCateCode,
-                                                           @RequestParam(name = "location", required = false) String locationName,
+                                                           @RequestParam(name = "locationProvince", required = false) Integer provinceCode,
+                                                           @RequestParam(name = "locationDistrict", required = false) Integer districtCode,
                                                            @RequestParam(name = "page", defaultValue = "1") int page,
                                                            @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
 
@@ -86,8 +84,12 @@ public class SitterBoardController {
              expression = qSitterBoard.animalCategoryCode.animalCategoryCode.eq(animalCateCode);
              builder.and(expression);
         }
-        if(locationName!=null){
-            expression = qSitterBoard.location.locationName.like(locationName);
+        if(provinceCode!=null){
+            expression = qSitterBoard.location.parent.locationCode.eq(provinceCode);
+            builder.and(expression);
+        }
+        if(districtCode!=null){
+            expression = qSitterBoard.location.locationCode.eq(districtCode);
             builder.and(expression);
         }
 
@@ -96,14 +98,17 @@ public class SitterBoardController {
         // ================================ 정렬 ================================
         Sort sort = null;
         switch (sortBy) {
-            case 1: // 최신순
+            case 1: // 작성일 내림차순(최신순)
                 sort = Sort.by("sitterRegiDate").descending();
                 break;
-            case 2: // 조회순
+            case 2: // 작성일 오름차순
+                sort = Sort.by("sitterRegiDate").ascending();
+                break;
+            case 3: // 조회수 내림차순(조회순)
                 sort = Sort.by("sitterViewCount").descending();
                 break;
-            case 3: //
-                sort = Sort.by("sitterTitle").descending();
+            case 4: // 조회수 오름차순
+                sort = Sort.by("sitterViewCount").ascending();
                 break;
             default:
                 // 기본 정렬 설정: 최신순
@@ -158,6 +163,7 @@ public class SitterBoardController {
         }
 
         Date now = new Date();
+        log.info("dto : " + sitterBoardDTO);
 
         SitterBoard sitter = SitterBoard.builder()
                 .animalCategoryCode(AnimalCategory.builder()
@@ -165,7 +171,7 @@ public class SitterBoardController {
                 .location(LocationParsing.builder()
                         .locationCode(sitterBoardDTO.getLocationCode()).build())
                 .sitterCategory(SitterCategory.builder()
-                        .sitterCategoryCode(sitterBoardDTO.getSitterCategoryCode()).build())
+                        .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
                 .user(User.builder().userId(((UserDetails) principal).getUsername()).build())
@@ -174,7 +180,7 @@ public class SitterBoardController {
 
         SitterBoard result = sitterBoardService.sitterCreate(sitter);
 
-        if(!sitterBoardDTO.getFiles().isEmpty()) {
+        if(sitterBoardDTO.getFiles() != null) {
             for (MultipartFile file : sitterBoardDTO.getFiles()) {
                 String fileName = file.getOriginalFilename();
                 SitterBoardImage sitterImg = new SitterBoardImage();
@@ -195,7 +201,7 @@ public class SitterBoardController {
 
     // 글 수정
     @PutMapping("sitter")
-    public ResponseEntity<SitterBoard> sitterUpdate(SitterBoardDTO sitterBoardDTO) {
+    public ResponseEntity<SitterBoard> sitterUpdate(SitterBoardDTO sitterBoardDTO) throws IOException {
 
         Object principal = authentication();
         if(principal == null || !(principal instanceof UserDetails)) {
@@ -208,20 +214,23 @@ public class SitterBoardController {
             if((sitterBoardDTO.getImages()!=null && !sitterBoardDTO.getImages().contains(image.getSitterImg())) || sitterBoardDTO.getImages() == null) {
                 File file = new File(image.getSitterImg());
                 file.delete();
+                log.info("이미지 삭제~");
 
-                sitterBoardService.sitterDeleteImg(image.getSitterImgCode());
+                sitterBoardService.sitterDeleteImg(sitterBoardDTO.getSitterBoardCode());
             }
         }
 
         // 새로운 이미지 등록
         if(sitterBoardDTO.getFiles() != null) {
             for(MultipartFile file : sitterBoardDTO.getFiles()) {
+                log.info("file~"  + file);
                 SitterBoardImage sitterBoardImageVo = new SitterBoardImage();
 
                 String fileName = file.getOriginalFilename();
                 String uuid = UUID.randomUUID().toString();
                 String saveName = uploadPath + File.separator + "sitterBoard" + File.separator + uuid + "_" + fileName;
                 Path savePath = Paths.get(saveName);
+                file.transferTo(savePath);
 
                 sitterBoardImageVo.setSitterImg(saveName.substring(24));
                 sitterBoardImageVo.setSitterBoard(SitterBoard.builder().sitterBoardCode((sitterBoardDTO.getSitterBoardCode())).build());
@@ -230,21 +239,26 @@ public class SitterBoardController {
             }
         }
 
+        SitterBoard sitterBoard = sitterBoardService.sitterView(sitterBoardDTO.getSitterBoardCode());
+
         // 게시글 수정
         SitterBoard sitter = SitterBoard.builder()
                 .sitterBoardCode(sitterBoardDTO.getSitterBoardCode())
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(sitterBoardDTO.getAnimalCategoryCode()).build())
-                .location(LocationParsing.builder()
-                        .locationCode(sitterBoardDTO.getLocationCode()).build())
+//                .location(LocationParsing.builder()
+//                        .locationCode(sitterBoardDTO.getLocationCode()).build())
+                .location(sitterBoard.getLocation())
                 .sitterCategory(SitterCategory.builder()
-                        .sitterCategoryCode(sitterBoardDTO.getSitterCategoryCode()).build())
+                        .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
+                .sitterRegiDate(sitterBoard.getSitterRegiDate())
                 .user(User.builder()
                         .userId(sitterBoardDTO.getUserId()).build())
                 .build();
-        sitterBoardService.sitterCreate(sitter);
+
+        sitterBoardService.sitterUpdate(sitter);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -272,7 +286,6 @@ public class SitterBoardController {
     // 댓글 추가
     @PostMapping("sitter/comment")
     public ResponseEntity sitterCommentCreate(@RequestBody SitterBoardComment sitterBoardComment) {
-        log.info("comment : " + sitterBoardComment);
         Object principal = authentication();
 
         if(principal instanceof User) {
