@@ -53,8 +53,9 @@ public class ClassBoard {
     private Date odcLastDate;
 
     // 사용자 ID
-//    @JoinColumn(name="user_id")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User user;
 
 //    =====================================
 

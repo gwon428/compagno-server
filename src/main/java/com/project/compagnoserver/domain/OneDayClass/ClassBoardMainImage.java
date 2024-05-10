@@ -32,8 +32,8 @@ public class ClassBoardMainImage {
 //    @JoinColumn(name = "user_id")
 //    private User user;
 //    // 유저 아이디
-
-    @Column(name="odc_main_image")
-    private String odcMainImage;
+@Column(name="odc_main_image")
+private String odcMainImage;
     // 원데이클래스 메인이미지 URL
 }
+
