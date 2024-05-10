@@ -1,5 +1,7 @@
 package com.project.compagnoserver.controller;
 
+import com.project.compagnoserver.domain.AdoptionBoard.AdoptionBoard;
+import com.project.compagnoserver.domain.AdoptionBoard.QAdoptionBoard;
 import com.project.compagnoserver.domain.Animal.AnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalCategory;
@@ -8,6 +10,7 @@ import com.project.compagnoserver.domain.ProductBoard.QProductBoard;
 import com.project.compagnoserver.domain.ProductBoard.QProductBoardBookmark;
 import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.service.MyAdoptionService;
 import com.project.compagnoserver.service.MyAnimalBoardFavService;
 import com.project.compagnoserver.service.MyPageQnaService;
 import com.project.compagnoserver.service.MyProductBoardFavService;
@@ -42,6 +45,10 @@ public class MyActivityController {
     // QnA 서비스
     @Autowired
     private MyPageQnaService myQnaService;
+
+    // 입양공고 서비스
+    @Autowired
+    private MyAdoptionService adopService;
 
 
     // 최애 동물 좋아요 목록 출력
@@ -140,6 +147,30 @@ public class MyActivityController {
         return ResponseEntity.ok(myQnaService.countmanagerQna());
 
     }
+
+    // 내 입양공고 리스트 출력
+    @GetMapping("/api/mypage/myactivity/myadoption/{id}")
+    public ResponseEntity myAdopList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1") int page) {
+        Sort sort = Sort.by("adopBoardCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QAdoptionBoard qAdoptionBoard = QAdoptionBoard.adoptionBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qAdoptionBoard.userId.eq(id);
+        builder.and(expression);
+
+        Page<AdoptionBoard> list = adopService.myAdopList(pageable, builder);
+
+        return ResponseEntity.ok(list.getContent());
+    }
+
+    // 내 입양공고 갯수 불러오기
+    @GetMapping("/api/mypage/myactivity/myadoption/count/{id}")
+    public  ResponseEntity countMyAdoption(@PathVariable("id") String id) {
+        return ResponseEntity.ok(adopService.countMyAdoption(id));
+    }
+
+
 
 
 }
