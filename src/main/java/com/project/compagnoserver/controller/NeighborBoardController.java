@@ -3,10 +3,11 @@ package com.project.compagnoserver.controller;
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.NeighborBoard.*;
 import com.project.compagnoserver.domain.Parsing.LocationParsing;
-import com.project.compagnoserver.domain.Parsing.LocationParsingDTO;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.NeighborBoardService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +23,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,20 +45,53 @@ public class NeighborBoardController {
     private String uploadPath;
 
 
+    // 동물 카테고리 전체보기
+    @GetMapping("public/neighbor/animal-category")
+    public ResponseEntity<List<AnimalCategory>> animalCategoryView() {
+        List<AnimalCategory> animalCategoryList = neighborBoardService.animalCategoryView();
+        return ResponseEntity.ok().body(animalCategoryList);
+    }
+
     // 전체 보기
     @GetMapping("public/neighbor")
-    public ResponseEntity<Page<NeighborBoard>> neighborViewAll(@RequestParam(name = "page", defaultValue = "1") int page,
+    public ResponseEntity<Page<NeighborBoard>> neighborViewAll(@RequestParam(name = "animalCategory", required = false) Integer animalCateCode,
+                                                               @RequestParam(name = "locationProvince", required = false) Integer provinceCode,
+                                                               @RequestParam(name = "locationDistrict", required = false) Integer districtCode,
+                                                               @RequestParam(name = "page", defaultValue = "1") int page,
                                                                @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
+        // ================================ 검색 ================================
+        QNeighborBoard qNeighborBoard = QNeighborBoard.neighborBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression;
+
+        if(animalCateCode!=null) {
+            expression = qNeighborBoard.animalCategoryCode.animalCategoryCode.eq(animalCateCode);
+            builder.and(expression);
+        }
+        if(provinceCode!=null){
+            expression = qNeighborBoard.location.parent.locationCode.eq(provinceCode);
+            builder.and(expression);
+        }
+
+        if(districtCode!=null){
+            expression = qNeighborBoard.location.locationCode.eq(districtCode);
+            builder.and(expression);
+        }
+
+        // ================================ 정렬 ================================
         Sort sort = null;
         switch (sortBy) {
-            case 1: // 최신순
+            case 1: // 작성일 내림차순(최신순)
                 sort = Sort.by("neighborBoardRegiDate").descending();
                 break;
-            case 2: // 조회순
+            case 2: // 작성일 오름차순
+                sort = Sort.by("neighborBoardRegiDate").ascending();
+                break;
+            case 3: // 조회수 내림차순(조회순)
                 sort = Sort.by("neighborBoardViewCount").descending();
                 break;
-            case 3: // 제목순
-                sort = Sort.by("neighborBoardTitle").ascending();
+            case 4: // 조회수 오름차순
+                sort = Sort.by("neighborBoardViewCount").ascending();
                 break;
             default:
                 // 기본 정렬 설정: 최신순
@@ -67,7 +100,7 @@ public class NeighborBoardController {
         }
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
-        Page<NeighborBoard> list = neighborBoardService.neighborViewAll(pageable);
+        Page<NeighborBoard> list = neighborBoardService.neighborViewAll(pageable, builder);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
@@ -261,9 +294,9 @@ public class NeighborBoardController {
 
     // 댓글 삭제
     @DeleteMapping("neighbor/comment/{commentCode}")
-    public ResponseEntity<NeighborBoardComment> neighborCommentDelete(@PathVariable("commentCode") int commentCode) {
+    public ResponseEntity neighborCommentDelete(@PathVariable("commentCode") int commentCode) {
         neighborBoardService.neighborCommentDelete(commentCode);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.ok().build();
     }
 
     // 각 게시판에 대한 댓글 조회
@@ -307,6 +340,7 @@ public class NeighborBoardController {
     }
 
 
+// ====================================== Authentication ======================================
     public Object authentication() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();

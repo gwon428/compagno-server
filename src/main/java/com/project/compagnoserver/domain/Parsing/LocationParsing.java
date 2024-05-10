@@ -25,7 +25,7 @@ public class LocationParsing {
 
     @Column(name = "location_parent_code")
     private int locationParentCode;
-
+//(cascade = CascadeType.ALL)
     @ManyToOne
     @JoinColumn(name = "location_parent_code", referencedColumnName = "location_code", insertable = false, updatable = false)
     private LocationParsing parent;

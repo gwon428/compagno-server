@@ -33,7 +33,7 @@ public class SitterBoard {
     @ManyToOne
     @JoinColumn(name = "animal_category_code")
     private AnimalCategory animalCategoryCode;
-
+//(cascade = CascadeType.ALL)
     @ManyToOne
     @JoinColumn(name = "location_code")
     private LocationParsing location;
@@ -57,7 +57,9 @@ public class SitterBoard {
     @Column(name = "sitter_update_date")
     private Date sitterUpdateDate;
 
-    @OneToMany(mappedBy = "sitterBoard", orphanRemoval = true)
+//    @OneToMany(mappedBy = "sitterBoard", orphanRemoval = true)
+    @OneToMany(mappedBy = "sitterBoard")
+
     private List<SitterBoardImage> images;
 
 //    @OneToMany(mappedBy = "sitterBoard")

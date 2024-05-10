@@ -1,7 +1,10 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.NeighborBoard.*;
+import com.project.compagnoserver.repo.Animal.AnimalCategoryDAO;
 import com.project.compagnoserver.repo.NeighborBoard.*;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class NeighborBoardService {
     private final QNeighborBoard qNeighborBoard = QNeighborBoard.neighborBoard;
 
     @Autowired
+    private AnimalCategoryDAO animalCategoryDAO;
+
+    @Autowired
     private NeighborBoardImageDAO neighborBoardImageDAO;
     private final QNeighborBoardImage qNeighborBoardImage = QNeighborBoardImage.neighborBoardImage;
 
@@ -41,9 +47,15 @@ public class NeighborBoardService {
     private final QNeighborBoardLocation qNeighborBoardLocation = QNeighborBoardLocation.neighborBoardLocation;
 
 
+    // 동물 카테고리 전체보기
+    public List<AnimalCategory> animalCategoryView() {
+        return animalCategoryDAO.findAll();
+    }
+
+
     // 전체 보기
-    public Page<NeighborBoard> neighborViewAll(Pageable pageable) {
-        return neighborBoardDAO.findAll(pageable);
+    public Page<NeighborBoard> neighborViewAll(Pageable pageable, BooleanBuilder builder) {
+        return neighborBoardDAO.findAll(builder,pageable);
     }
     public List<NeighborBoardImage> neighborViewAllImg(int code) {
         return neighborBoardImageDAO.findByBoardCode(code);
@@ -140,6 +152,7 @@ public class NeighborBoardService {
     }
 
     // 댓글 삭제
+    @Transactional
     public void neighborCommentDelete(int commentCode) {
         NeighborBoardComment target = neighborBoardCommentDAO.findById(commentCode).orElse(null);
         if(target != null) {
