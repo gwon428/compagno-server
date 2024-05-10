@@ -237,16 +237,25 @@ public class UserQnaBoardController {
     // answer =============================================================================================
     // 1. answer 작성
     @PostMapping("/userQuestion/answer")
-    public ResponseEntity createAnswer(@RequestBody UserQnaAnswerBoard vo){
+    public ResponseEntity createAnswer(UserQnaAnswerBoardDTO dto){
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
-
+    log.info("dto : " + dto);
         if(principal instanceof User){
             User user = (User) principal;
+
+            UserQnaAnswerBoard vo = new UserQnaAnswerBoard();
+
             vo.setUser(user);
             vo.setUserNickname(user.getUserNickname());
             vo.setUserImg(user.getUserImg());
+
+            vo.setUserQuestionBoardCode(dto.getUserQuestionBoardCode());
+
+            vo.setUserAnswerContent(dto.getUserAnswerContent());
+            vo.setAnswerParentCode(dto.getAnswerParentCode());
+
             return ResponseEntity.ok().body(answerService.create(vo));
         }
         return ResponseEntity.badRequest().build();
@@ -294,9 +303,17 @@ public class UserQnaBoardController {
 
     // 3. answer 수정
     @PutMapping("/userQuestion/answer")
-    public ResponseEntity<UserQnaAnswerBoard> updateAnswer(@RequestBody UserQnaAnswerBoardDTO dto){
+    public ResponseEntity<UserQnaAnswerBoard> updateAnswer(UserQnaAnswerBoardDTO dto){
+
         UserQnaAnswerBoard vo = answerService.viewAnswer(dto.getUserAnswerBoardCode());
-        vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
+
+        log.info("vo : " + vo);
+        log.info("dto : " + dto);
+        if(dto.getUserAnswerDate() == null){
+            vo.setUserAnswerDate(dto.getUserAnswerDateUpdate());
+        } else {
+            vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
+        }
         vo.setUserAnswerContent(dto.getUserAnswerContent());
 
         UserQnaAnswerBoard result = answerService.update(vo);
@@ -307,13 +324,20 @@ public class UserQnaBoardController {
 
     // 4. answer 삭제
     @DeleteMapping("/userQuestion/answer/{code}")
-    public ResponseEntity<UserQnaAnswerBoard> deleteAnswer(@PathVariable(name="code") int code){
-        UserQnaAnswerBoard vo = answerService.viewAnswer(code);
-        if(vo != null){
-            answerService.deleteAnswer(code);
+    public ResponseEntity<UserQnaAnswerBoard> deleteAnswer(@PathVariable(name="code") int parent){
+
+            for (UserQnaAnswerBoard element : answerService.getBottomLevelAnswers(parent)) {
+//                log.info("element : " + element);
+//                delete(element.getUserAnswerBoardCode());
+                answerService.deleteAnswer(element.getUserAnswerBoardCode());
+            }
+
+            // 본인삭제
+            answerService.deleteAnswer(parent);
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
     }
+
+
 
 }

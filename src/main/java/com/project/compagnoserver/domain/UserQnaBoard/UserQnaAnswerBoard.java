@@ -3,13 +3,13 @@ package com.project.compagnoserver.domain.UserQnaBoard;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 
 import java.sql.Timestamp;
 
@@ -37,11 +37,11 @@ public class UserQnaAnswerBoard {
     @Column(name="user_answer_content")
     private String userAnswerContent;
 
-    @Column(name="user_answer_date")
+    @Column(name="user_answer_date", updatable = false)
     @CreationTimestamp
     private Timestamp userAnswerDate;
 
-    @Column(name="user_answer_date_update")
+    @Column(name="user_answer_date_update", insertable = false)
     @UpdateTimestamp
     private Timestamp userAnswerDateUpdate;
 
