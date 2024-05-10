@@ -8,7 +8,6 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,10 +18,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
@@ -158,7 +154,7 @@ public class UserController {
             String fileName = dto.getFile().getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
 
-           String saveName = "user" + File.separator + uuid + "_" + fileName;
+            String saveName = "user" + File.separator + uuid + "_" + fileName;
 
             String saveNameWithPath = uploadPath + File.separator + "user" + File.separator + uuid + "_" + fileName;
 

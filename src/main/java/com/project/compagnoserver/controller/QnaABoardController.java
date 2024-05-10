@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
@@ -97,8 +98,10 @@ public class QnaABoardController {
             QnaQBoard update = questionService.view(dto.getQnaQCode());
             update.setQnaACode(result);
             update.setQnaQStatus("Y");
+            Timestamp date = update.getQnaQDate();
+            log.info("date :: " + date);
             // 수정 때문에..
-            update.setQnaQDateUpdate(update.getQnaQDate());
+            update.setQnaQDateUpdate(date);
             log.info("date : " + update.getQnaQDate());
             log.info("상태 업데이트했어요");
 

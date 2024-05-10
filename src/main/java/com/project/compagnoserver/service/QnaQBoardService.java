@@ -35,6 +35,7 @@ public class QnaQBoardService {
     }
 
     public Page<QnaQBoard> viewAll(BooleanBuilder builder, Pageable pageable){
+
         return dao.findAll(builder, pageable);
     }
 
