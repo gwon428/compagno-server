@@ -1,6 +1,7 @@
 package com.project.compagnoserver.domain.ProductBoard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class ProductBoardBookmark {
 
     @ManyToOne
     @JoinColumn(name="product_board_code")
-    @JsonIgnore
+    @JsonIgnoreProperties("bookmark")
     private ProductBoard productBoard;
 
     @ManyToOne
