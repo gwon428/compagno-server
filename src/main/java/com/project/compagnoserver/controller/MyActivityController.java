@@ -12,6 +12,7 @@ import com.project.compagnoserver.service.MyAnimalBoardFavService;
 import com.project.compagnoserver.service.MyPageQnaService;
 import com.project.compagnoserver.service.MyProductBoardFavService;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class MyActivityController {
             BooleanBuilder builder = new BooleanBuilder();
 
             BooleanExpression expression = qProductBoardBookmark.user.userId.eq(id);
-            
+
 
             builder.and(expression);
 
@@ -90,6 +91,8 @@ public class MyActivityController {
 
             return ResponseEntity.ok(list.getContent());
         }
+
+
 
     // 일반유저 - 내가 작성한 질문 리스트
     @GetMapping("/api/mypage/myactivity/myqna/{id}")
