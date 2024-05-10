@@ -27,7 +27,7 @@ public class AdRecommendLogic {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "animal_category_code")
+    @JoinColumn(name = "category_code")
     private AnimalCategory animalCategory;
 
     @Column(name = "total_score")

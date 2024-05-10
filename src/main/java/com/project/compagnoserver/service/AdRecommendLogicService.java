@@ -2,7 +2,8 @@ package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.Animal.AdRecommendLogic;
 import com.project.compagnoserver.domain.Animal.QAdRecommendLogic;
-import com.project.compagnoserver.domain.user.User;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoard;
+import com.project.compagnoserver.domain.ProductBoard.QProductBoard;
 import com.project.compagnoserver.repo.Animal.AdRecommendLogicDAO;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -13,16 +14,25 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class AdRecommentLogicService {
+public class AdRecommendLogicService {
     @Autowired
     private AdRecommendLogicDAO logicDAO;
 
     @Autowired
     private JPAQueryFactory queryFactory;
     private final QAdRecommendLogic qAdRecommendLogic = QAdRecommendLogic.adRecommendLogic;
+    private final QProductBoard qProductBoard =QProductBoard.productBoard;
+
+    // 현재 포인트 가져오기
     public List<AdRecommendLogic> getCurrentPoint(String userId){
+        log.info("point id : " + userId);
         return queryFactory.selectFrom(qAdRecommendLogic)
                 .where(qAdRecommendLogic.user.userId.eq(userId))
                 .fetch();
+    }
+
+    // 상품 가져오기
+    public List<ProductBoard> getReviews(){
+        return queryFactory.selectFrom(qProductBoard).fetch();
     }
 }
