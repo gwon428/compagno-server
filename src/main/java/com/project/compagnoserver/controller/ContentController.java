@@ -45,7 +45,7 @@ public class ContentController {
         log.info("keyword : " + keyword);
 
         Sort sort = Sort.by(Sort.Order.asc("latitude"), Sort.Order.asc(("longtitude")));
-        Pageable pageable = PageRequest.of(page-1, 30, sort);
+        Pageable pageable = PageRequest.of(page-1, 20, sort);
 
         QParsing qParsing = QParsing.parsing;
         BooleanBuilder builder = new BooleanBuilder();
