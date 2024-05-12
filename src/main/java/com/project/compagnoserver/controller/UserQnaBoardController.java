@@ -62,6 +62,7 @@ public class UserQnaBoardController {
         vo.setUserQuestionBoardTitle(dto.getUserQuestionBoardTitle());
         vo.setUserQuestionBoardContent(dto.getUserQuestionBoardContent());
 
+
         UserQnaQuestionBoard result = service.create(UserQnaQuestionBoard.builder()
                         .userId(dto.getUserId())
                         .userNickname(dto.getUserNickname())
@@ -99,6 +100,7 @@ public class UserQnaBoardController {
     public ResponseEntity<Page<UserQnaQuestionBoard>> viewAll(@RequestParam(name="title", required=false) String title,
                                                               @RequestParam(name="content", required = false) String content,
                                                               @RequestParam(name="id", required = false) String id,
+                                                              @RequestParam(name="category", required = false) String category,
                                                               @RequestParam(name="page", defaultValue = "1") int page){
         Sort sort = Sort.by("userQuestionBoardCode").descending();
         Pageable pageable = PageRequest.of(page-1, 10, sort);
@@ -119,6 +121,22 @@ public class UserQnaBoardController {
             expression = qUserQnaQuestionBoard.userQuestionBoardContent.like("%" + content + "%");
             builder.and(expression);
         }
+        if(category != null){
+            switch(category){
+                case "1":
+                    expression = qUserQnaQuestionBoard.animalCategoryCode.eq(1);
+                    builder.and(expression);
+                    break;
+                case "2":
+                    expression = qUserQnaQuestionBoard.animalCategoryCode.eq(2);
+                    builder.and(expression);
+                    break;
+                case "3":
+                    expression = qUserQnaQuestionBoard.animalCategoryCode.eq(3);
+                    builder.and(expression);
+                    break;
+            }
+        }
 
         Page<UserQnaQuestionBoard> list = service.viewAll(builder, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -133,6 +151,7 @@ public class UserQnaBoardController {
                 .userQuestionBoardTitle(result.getUserQuestionBoardTitle())
                 .userQuestionBoardContent(result.getUserQuestionBoardContent())
                 .userQuestionBoardstatus(result.getUserQuestionBoardStatus())
+                .animalCategoryCode(result.getAnimalCategoryCode())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
                 .userImg(result.getUserImg())
