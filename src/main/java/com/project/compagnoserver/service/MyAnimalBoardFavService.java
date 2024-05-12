@@ -38,8 +38,4 @@ public class MyAnimalBoardFavService {
                 .fetchOne();
 
     }
-
-    // 북마크한 상품 목록 출력
-
-
 }
