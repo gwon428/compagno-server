@@ -31,7 +31,6 @@ public class MyAnimalBoardFavService {
 
     // 내 좋아요 갯수 출력
     public Long countFav(String id) {
-
         return queryFactory.select(qAnimalBoardFavorite.count())
                 .from(qAnimalBoardFavorite)
                 .where(qAnimalBoardFavorite.user.userId.eq(id))

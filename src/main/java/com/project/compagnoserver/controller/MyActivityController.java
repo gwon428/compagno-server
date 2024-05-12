@@ -7,11 +7,15 @@ import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalCategory;
 import com.project.compagnoserver.domain.LostBoard.LostBoard;
 import com.project.compagnoserver.domain.LostBoard.QLostBoard;
+import com.project.compagnoserver.domain.OneDayClass.ClassBoard;
+import com.project.compagnoserver.domain.OneDayClass.QClassBoard;
 import com.project.compagnoserver.domain.ProductBoard.ProductBoardBookmark;
 import com.project.compagnoserver.domain.ProductBoard.QProductBoard;
 import com.project.compagnoserver.domain.ProductBoard.QProductBoardBookmark;
 import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.domain.UserQnaBoard.QUserQnaQuestionBoard;
+import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoard;
 import com.project.compagnoserver.service.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -52,6 +56,18 @@ public class MyActivityController {
     // 실종공고 서비스
     @Autowired
     private MyLostService lostService;
+
+    // 유저-유저 질문 서비스
+    @Autowired
+    private MyUserQnaService userQnaService;
+
+    // 내 원데이클래스 서비스
+    @Autowired
+    private MyOdcService odcService;
+
+    // 내 시터 서비스
+    @Autowired
+    private MySitterService sitterService;
 
 
     // 최애 동물 좋아요 목록 출력
@@ -102,7 +118,6 @@ public class MyActivityController {
         public ResponseEntity countBookmark(@PathVariable("id") String id) {
             return ResponseEntity.ok(mpbfService.countBookmark(id));
         }
-
 
 
     // 일반유저 - 내가 작성한 질문 리스트
@@ -195,7 +210,51 @@ public class MyActivityController {
         return ResponseEntity.ok(lostService.countMyLost(id));
     }
 
+    // 내 유저-유저 질문 리스트 출력
+    @GetMapping("/api/mypage/myactivity/myuserqna/{id}")
+    public ResponseEntity myUserQnaList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+        Sort sort = Sort.by("userQuestionBoardCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
 
+        QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qUserQnaQuestionBoard.userId.eq(id);
+        builder.and(expression);
 
+        Page<UserQnaQuestionBoard> list = userQnaService.myUserQnaList(pageable, builder);
+        return ResponseEntity.ok(list.getContent());
+    }
 
+    // 내 유저-유저 질문 갯수 출력
+    @GetMapping("/api/mypage/myactivity/myuserqna/count/{id}")
+    public ResponseEntity countMyUserQna(@PathVariable("id") String id) {
+        return ResponseEntity.ok(userQnaService.countMyUserQna(id));
+    }
+
+    // 내 원데이클래스 리스트 출력
+    @GetMapping("/api/mypage/myactivity/myodc/{id}")
+    public ResponseEntity myOdcList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+        Sort sort = Sort.by("odcCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QClassBoard qClassBoard = QClassBoard.classBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qClassBoard.user.userId.eq(id);
+        builder.and(expression);
+
+        Page<ClassBoard> list = odcService.myOdcList(pageable, builder);
+        return ResponseEntity.ok(list.getContent());
+    }
+
+    // 내 원데이클래스 갯수 출력
+    @GetMapping("/api/mypage/myactivity/myodc/count/{id}")
+    public ResponseEntity countMyOdc(@PathVariable("id") String id) {
+        return ResponseEntity.ok(odcService.countMyOdc(id));
+    }
+
+    // 내 시터 공고 리스트 출력
+//    @GetMapping("/api/mypage/myactivity/mysitterpost/{id}")
+
+    // 내 시터 공고 갯수 출력
+//    @GetMapping("/api/mypage/myactivity/count/mysitterpost/{id}")
 }
