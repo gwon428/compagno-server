@@ -252,6 +252,35 @@ public class UserQnaBoardController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 6-1. 답변 채택
+    @PostMapping("/userQuestion/answerChoose")
+    public ResponseEntity<UserQnaAnswerChoose> chooseAnswer(UserQnaAnswerChoose vo){
+        service.chooseAnswer(vo);
+        return null;
+    }
+
+    // 6-2. 답변 취소하기
+    @DeleteMapping("/userQuestion/answerChoose/{code}")
+    public void deleteChoose(@PathVariable(name="code") int code){
+        UserQnaAnswerChoose chooseAnswer = service.getChoose(code);
+        log.info("취소할 답변 : " + chooseAnswer);
+        service.deleteChoose(chooseAnswer.getChooseCode());
+    }
+
+    // 6-3. 채택된 답변 보기!
+    @GetMapping("/public/userQuestion/answerChoose/{code}")
+    public ResponseEntity<UserQnaAnswerBoard> getAnswer(@PathVariable(name="code") int code){
+        // questionBoardCode로 choose 찾아서 그와 연결된 answer 출력
+        UserQnaAnswerChoose choose = service.getChoose(code);
+        UserQnaAnswerBoard chooseAnswer;
+        if(choose != null){
+             chooseAnswer = answerService.viewAnswer(choose.getUserAnswerBoardCode());
+        } else {
+             chooseAnswer= null;
+        }
+
+        return chooseAnswer != null ? ResponseEntity.status(HttpStatus.OK).body(chooseAnswer) : ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     // answer =============================================================================================
     // 1. answer 작성

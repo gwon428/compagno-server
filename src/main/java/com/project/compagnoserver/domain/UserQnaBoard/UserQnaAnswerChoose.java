@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 public class UserQnaAnswerChoose {
     @Id
     @Column(name="choose_code")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int chooseCode;
 
     @Column(name="user_question_board_code")

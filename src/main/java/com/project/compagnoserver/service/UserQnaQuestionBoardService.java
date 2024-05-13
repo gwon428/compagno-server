@@ -1,7 +1,9 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.UserQnaBoard.UserQnaAnswerChoose;
 import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoard;
 import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoardImage;
+import com.project.compagnoserver.repo.UserQnaBoard.UserQnaAnswerChooseDAO;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionBoardDAO;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionBoardImageDAO;
 import com.querydsl.core.BooleanBuilder;
@@ -20,6 +22,10 @@ public class UserQnaQuestionBoardService {
 
     @Autowired
     private UserQnaQuestionBoardImageDAO image;
+
+    @Autowired
+    private UserQnaAnswerChooseDAO choose;
+
 
     // 1. 질문 등록
     public UserQnaQuestionBoard create(UserQnaQuestionBoard vo){
@@ -66,5 +72,20 @@ public class UserQnaQuestionBoardService {
     // 5-1. 질문 삭제 시 이미지 삭제하기
     public void deleteImg(int code){
         image.deleteById(code);
+    }
+
+    // 6-1. 질문 채택하기
+    public void chooseAnswer(UserQnaAnswerChoose vo){
+        choose.save(vo);
+    }
+
+    // 6-2. 채택 취소하기
+    public void deleteChoose(int code){
+        choose.deleteById(code);
+    }
+
+    // 6-3. 채택 질문 찾기
+    public UserQnaAnswerChoose getChoose(int code){
+       return choose.findByQCode(code);
     }
 }
