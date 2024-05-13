@@ -273,7 +273,7 @@ public class MyActivityController {
 
     // 내 시터 공고 리스트 출력
     @GetMapping("/api/mypage/myactivity/mysitterpost/{id}")
-    public  ResponseEntity mySitterPostList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+    public  ResponseEntity mySitterPostList(@PathVariable("id") String id, @RequestParam(name = "postPage",defaultValue = "1")int page) {
         Sort sort = Sort.by("sitterBoardCode").descending();
         Pageable pageable = PageRequest.of(page-1, 5, sort);
 
@@ -294,7 +294,7 @@ public class MyActivityController {
 
     // 내 시터게시판 댓글 리스트
     @GetMapping("/api/mypage/myactivity/mysittercom/{id}")
-    public ResponseEntity mySitterComList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+    public ResponseEntity mySitterComList(@PathVariable("id") String id, @RequestParam(name = "comPage",defaultValue = "1")int page) {
         Sort sort = Sort.by("sitterCommentCode").descending();
         Pageable pageable = PageRequest.of(page-1, 5, sort);
 
