@@ -23,11 +23,13 @@ public class NeighborBoardDTO {
 
     private String neighborBoardContent;
 
-    private String userId;
+    private String userNickname;
 
     private int neighborBoardViewCount;
 
     private Date neighborBoardRegiDate;
+
+    private Date neighborBoardUpdateDate;
 
     private List<MultipartFile> files;
     private List<String> images;

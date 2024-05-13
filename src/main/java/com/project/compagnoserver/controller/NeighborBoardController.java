@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -140,6 +141,14 @@ public class NeighborBoardController {
     // 게시글 등록
     @PostMapping("neighbor")
     public ResponseEntity<NeighborBoard> neighborCreate(NeighborBoardDTO neighborBoardDTO) throws IOException {
+
+        Object principal = authentication();
+        if(principal == null || !(principal instanceof UserDetails)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Date now = new Date();
+
         // 게시글 작성
         NeighborBoard neighbor = NeighborBoard.builder()
                 .animalCategoryCode(AnimalCategory.builder()
@@ -148,7 +157,8 @@ public class NeighborBoardController {
                         .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-                .user(userInfo())
+                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
+                .neighborBoardRegiDate(now)
                 .build();
         NeighborBoard result = neighborBoardService.neighborCreate(neighbor);
 
@@ -224,7 +234,8 @@ public class NeighborBoardController {
                         .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-                .user(userInfo())
+                .neighborBoardUpdateDate(neighborBoardDTO.getNeighborBoardUpdateDate())
+                .user(User.builder().userNickname(neighborBoardDTO.getUserNickname()).build())
                 .build();
         neighborBoardService.neighborCreate(neighbor);
 
@@ -273,7 +284,10 @@ public class NeighborBoardController {
 
         if(principal instanceof User) {
             User user = (User) principal;
+            log.info("user:"+user);
+            log.info("user.nick:"+user.getUserNickname());
             neighborBoardCommentVo.setUser(user);
+            log.info("?:"+neighborBoardCommentVo.getUser());
             return ResponseEntity.ok(neighborBoardService.neighborCommentCreate(neighborBoardCommentVo));
         }
 
@@ -317,7 +331,7 @@ public class NeighborBoardController {
                         .neighborCommentContent(reply.getNeighborCommentContent())
                         .neighborCommentRegiDate(reply.getNeighborCommentRegiDate())
                         .user(UserDTO.builder()
-                                .userId(reply.getUser().getUserId())
+                                .userNickname(reply.getUser().getUserNickname())
                                 .build())
                         .build();
                 repliesDTO.add(dto);
@@ -329,7 +343,7 @@ public class NeighborBoardController {
                     .neighborCommentContent(top.getNeighborCommentContent())
                     .neighborCommentRegiDate(top.getNeighborCommentRegiDate())
                     .user(UserDTO.builder()
-                            .userId(top.getUser().getUserId())
+                            .userNickname(top.getUser().getUserNickname())
                             .build())
                     .neighborReplies(repliesDTO)
                     .build();

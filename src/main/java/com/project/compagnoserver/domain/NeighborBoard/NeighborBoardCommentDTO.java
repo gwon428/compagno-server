@@ -16,14 +16,13 @@ import java.util.List;
 public class NeighborBoardCommentDTO {
 
     private int neighborCommentCode;
-
     private int neighborBoardCode;
-
     private String neighborCommentContent;
-
     private Date neighborCommentRegiDate;
-
     private UserDTO user;
+//    private int sitterCommentParentCode;
+//    private String sitterCommentStatus;
+//    private Date sitterCommentDelDate;
 
     private List<NeighborBoardCommentDTO> neighborReplies = new ArrayList<>();
 }
