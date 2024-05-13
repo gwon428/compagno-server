@@ -7,6 +7,10 @@ import com.project.compagnoserver.domain.Animal.QAnimalBoardFavorite;
 import com.project.compagnoserver.domain.Animal.QAnimalCategory;
 import com.project.compagnoserver.domain.LostBoard.LostBoard;
 import com.project.compagnoserver.domain.LostBoard.QLostBoard;
+import com.project.compagnoserver.domain.NeighborBoard.NeighborBoard;
+import com.project.compagnoserver.domain.NeighborBoard.NeighborBoardComment;
+import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoard;
+import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoardComment;
 import com.project.compagnoserver.domain.OneDayClass.ClassBoard;
 import com.project.compagnoserver.domain.OneDayClass.QClassBoard;
 import com.project.compagnoserver.domain.ProductBoard.ProductBoardBookmark;
@@ -14,11 +18,14 @@ import com.project.compagnoserver.domain.ProductBoard.QProductBoard;
 import com.project.compagnoserver.domain.ProductBoard.QProductBoardBookmark;
 import com.project.compagnoserver.domain.QnaQ.QQnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
+import com.project.compagnoserver.domain.SitterBoard.QSitterBoard;
+import com.project.compagnoserver.domain.SitterBoard.QSitterBoardComment;
+import com.project.compagnoserver.domain.SitterBoard.SitterBoard;
+import com.project.compagnoserver.domain.SitterBoard.SitterBoardComment;
 import com.project.compagnoserver.domain.UserQnaBoard.QUserQnaQuestionBoard;
 import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoard;
 import com.project.compagnoserver.service.*;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +75,18 @@ public class MyActivityController {
     // 내 시터 서비스
     @Autowired
     private MySitterService sitterService;
+
+    // 내 시터게시판 댓글 서비스
+    @Autowired
+    private MySitterComService sitterComService;
+
+    // 우리동네 게시판 게시글 서비스
+    @Autowired
+    private MyNeighborPostService neighborPostService;
+
+    // 우리동네 게시판 댓글 서비스
+    @Autowired
+    private MyNeighborComService neighborComService;
 
 
     // 최애 동물 좋아요 목록 출력
@@ -253,8 +272,86 @@ public class MyActivityController {
     }
 
     // 내 시터 공고 리스트 출력
-//    @GetMapping("/api/mypage/myactivity/mysitterpost/{id}")
+    @GetMapping("/api/mypage/myactivity/mysitterpost/{id}")
+    public  ResponseEntity mySitterPostList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+        Sort sort = Sort.by("sitterBoardCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QSitterBoard qSitterBoard = QSitterBoard.sitterBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qSitterBoard.user.userId.eq(id);
+        builder.and(expression);
+
+        Page<SitterBoard> list = sitterService.mySitterList(pageable, builder);
+        return ResponseEntity.ok(list.getContent());
+    }
 
     // 내 시터 공고 갯수 출력
-//    @GetMapping("/api/mypage/myactivity/count/mysitterpost/{id}")
+    @GetMapping("/api/mypage/myactivity/mysitterpost/count/{id}")
+    public ResponseEntity countMySitterPost(@PathVariable("id") String id) {
+        return ResponseEntity.ok(sitterService.countMySitter(id));
+    }
+
+    // 내 시터게시판 댓글 리스트
+    @GetMapping("/api/mypage/myactivity/mysittercom/{id}")
+    public ResponseEntity mySitterComList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+        Sort sort = Sort.by("sitterCommentCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QSitterBoardComment qSitterBoardComment = QSitterBoardComment.sitterBoardComment;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qSitterBoardComment.user.userId.eq(id);
+        builder.and(expression);
+
+        Page<SitterBoardComment> list = sitterComService.mySitterComList(pageable, builder);
+        return  ResponseEntity.ok(list.getContent());
+    }
+
+    // 내 시터게시판 댓글 갯수
+    @GetMapping("/api/mypage/myactivity/mysittercom/count/{id}")
+    public ResponseEntity countMySitterCom(@PathVariable("id") String id) {
+        return ResponseEntity.ok(sitterComService.countMySitterCom(id));
+    }
+
+    // 우리동네 게시판 게시글 리스트
+    @GetMapping("/api/mypage/myactivity/myneighborpost/{id}")
+    public ResponseEntity myNeighborPost(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+        Sort sort = Sort.by("neighborBoardCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QNeighborBoard qNeighborBoard = QNeighborBoard.neighborBoard;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qNeighborBoard.user.userId.eq(id);
+        builder.and(expression);
+
+        Page<NeighborBoard> list = neighborPostService.myNeighborPost(pageable, builder);
+        return ResponseEntity.ok(list.getContent());
+    }
+
+    // 우리동네 게시판 게시글 갯수
+    @GetMapping("/api/mypage/myactivity/myneighborpost/count/{id}")
+    public ResponseEntity CountMyNeighborPost(@PathVariable("id") String id) {
+        return ResponseEntity.ok(neighborPostService.CountMyNeighborPost(id));
+    }
+
+    // 우리동네 게시판 댓글 리스트
+    @GetMapping("/api/mypage/myactivity/myneighborcom/{id}")
+    public ResponseEntity myNeighborCom(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
+        Sort sort = Sort.by("neighborCommentCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 5, sort);
+
+        QNeighborBoardComment qNeighborBoardComment = QNeighborBoardComment.neighborBoardComment;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = qNeighborBoardComment.user.userId.eq(id);
+        builder.and(expression);
+
+        Page<NeighborBoardComment> list = neighborComService.myNeighborCom(pageable, builder);
+        return ResponseEntity.ok(list.getContent());
+    }
+
+    // 우리동네 게시판 댓글 갯수
+    @GetMapping("/api/mypage/myactivity/myneighborcom/count/{id}")
+    public ResponseEntity countmyNeighborCom(@PathVariable("id") String id) {
+        return ResponseEntity.ok(neighborComService.countmyNeighborCom(id));
+    }
 }

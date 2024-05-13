@@ -21,12 +21,12 @@ public class MySitterService {
     private final QSitterBoard qSitterBoard = QSitterBoard.sitterBoard;
 
     // 내 시터 공고 리스트 출력
-    private Page<SitterBoard> mySitterList(Pageable pageable, BooleanBuilder builder) {
+    public Page<SitterBoard> mySitterList(Pageable pageable, BooleanBuilder builder) {
         return sitterDAO.findAll(builder, pageable);
     }
 
     // 내 시터 공고 갯수 출력
-    private Long countMySitter(String id) {
+    public Long countMySitter(String id) {
         return jpaQueryFactory.select(qSitterBoard.count())
                 .from(qSitterBoard)
                 .where(qSitterBoard.user.userId.eq(id))
