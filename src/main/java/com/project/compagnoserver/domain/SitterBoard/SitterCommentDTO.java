@@ -16,9 +16,9 @@ public class SitterCommentDTO {
 
     private int sitterCommentCode;
     private int sitterBoardCode;
-    private UserDTO user;
     private String sitterCommentContent;
     private Date sitterCommentRegiDate;
+    private UserDTO user;
     private int sitterCommentParentCode;
     private String sitterCommentStatus;
     private Date sitterCommentDelDate;

@@ -52,6 +52,7 @@ public class SitterBoardService {
 
     // 카테고리 전체보기
     public List<SitterCategory> sitterCategoryView() {
+
         return sitterCategoryDAO.findAll();
     }
 

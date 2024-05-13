@@ -174,7 +174,7 @@ public class SitterBoardController {
                         .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
-                .user(User.builder().userId(((UserDetails) principal).getUsername()).build())
+                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
                 .sitterRegiDate(now)
                 .build();
 
@@ -253,9 +253,9 @@ public class SitterBoardController {
                         .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
-                .sitterRegiDate(sitterBoard.getSitterRegiDate())
+                .sitterUpdateDate(sitterBoard.getSitterUpdateDate())
                 .user(User.builder()
-                        .userId(sitterBoardDTO.getUserId()).build())
+                        .userNickname(sitterBoardDTO.getUserNickname()).build())
                 .build();
 
         sitterBoardService.sitterUpdate(sitter);
@@ -336,7 +336,7 @@ public class SitterBoardController {
                         .sitterCommentRegiDate(reply.getSitterCommentRegiDate())
                         .sitterCommentStatus(reply.getSitterCommentStatus())
                         .user(UserDTO.builder()
-                                .userId(reply.getUser().getUserId())
+                                .userNickname(reply.getUser().getUserNickname())
                                 .build())
                         .build();
                 repliesDTO.add(dto);
@@ -349,7 +349,7 @@ public class SitterBoardController {
                     .sitterCommentRegiDate(top.getSitterCommentRegiDate())
                     .sitterCommentStatus(top.getSitterCommentStatus())
                     .user(UserDTO.builder()
-                            .userId(top.getUser().getUserId())
+                            .userNickname(top.getUser().getUserNickname())
                             .build())
                     .sitterReplies(repliesDTO)
                     .build();

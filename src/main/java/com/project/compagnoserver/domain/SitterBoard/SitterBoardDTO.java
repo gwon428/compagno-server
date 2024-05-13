@@ -26,7 +26,7 @@ public class SitterBoardDTO {
 
     private String sitterContent;
 
-    private String userId;
+    private String userNickname;
 
     private Date sitterRegiDate;
 
