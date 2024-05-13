@@ -7,6 +7,7 @@ import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocation;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetFaqDAO;
 import com.project.compagnoserver.repo.RegisterPet.RegisterPetLocationDAO;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -46,6 +47,7 @@ public class RegisterPetService {
     // 대행기관 전체 보기
     public Page<RegisterPet> instList(Pageable pageable) {
         return dao.findAll(pageable);
+
     }
 
 

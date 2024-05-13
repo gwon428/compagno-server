@@ -1,15 +1,16 @@
 package com.project.compagnoserver.controller;
 
-import com.project.compagnoserver.domain.RegisterPet.RegisterPet;
-import com.project.compagnoserver.domain.RegisterPet.RegisterPetFaq;
-import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocation;
-import com.project.compagnoserver.domain.RegisterPet.RegisterPetLocationDTO;
+import com.project.compagnoserver.domain.RegisterPet.*;
+import com.project.compagnoserver.domain.SitterBoard.QSitterBoard;
 import com.project.compagnoserver.service.RegisterPetService;
 import com.project.compagnoserver.service.XlsParsingService;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,39 @@ public class RegisterPetController {
 
     // 대행기관 전체보기
     @GetMapping("public/register-pet")
-    public ResponseEntity<Page<RegisterPet>> instList(@RequestParam(name = "page", defaultValue = "1") int page) {
+    public ResponseEntity<Page<RegisterPet>> instList(@RequestParam(name = "locationProvince", required = false) Integer provinceCode,
+                                                      @RequestParam(name = "locationDistrict", required = false) Integer districtCode,
+                                                      @RequestParam(name = "page", defaultValue = "1") int page,
+                                                      @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
+
+        // ================================ 검색 ================================
+        QRegisterPet qRegisterPet = QRegisterPet.registerPet;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression;
+
+
+
+        // ================================ 정렬 ================================
+        Sort sort = null;
+        switch (sortBy) {
+            case 1: // 기관명 오름차순
+                sort = Sort.by("regiInstName").ascending();
+                break;
+            case 2: // 기관명 내림차순
+                sort = Sort.by("regiInstName").descending();
+                break;
+            case 3: // 주소 오름차순
+                sort = Sort.by("regiInstAddr").ascending();
+                break;
+            case 4: // 주소 내림차순
+                sort = Sort.by("regiInstAddr").descending();
+                break;
+            default:
+                // 기본 정렬 설정: 기관명 오름차순
+                sort = Sort.by("sitterRegiDate").descending();
+                break;
+        }
+
         Pageable pageable = PageRequest.of(page-1, 10);
 
         Page<RegisterPet> list = service.instList(pageable);
