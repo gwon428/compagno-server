@@ -161,7 +161,7 @@ public class NoteController {
         }
 
         if(sender!=null){
-            expression = qNote.receiver.contains(receiver);
+            expression = qNote.sender.contains(sender);
             builder.and(expression);
         }
         if(noteTitle!=null){
