@@ -101,27 +101,59 @@ public class UserQnaBoardController {
                                                               @RequestParam(name="content", required = false) String content,
                                                               @RequestParam(name="id", required = false) String id,
                                                               @RequestParam(name="category", required = false) String category,
+                                                              @RequestParam(name="status", required = false) String status,
+                                                              @RequestParam(name="sort", defaultValue = "0") int sortval,
                                                               @RequestParam(name="page", defaultValue = "1") int page){
-        Sort sort = Sort.by("userQuestionBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Pageable pageable = PageRequest.of(page-1, 10);
+
+        // 최신 등록순
+        Sort sortregisterdesc = Sort.by("userQuestionBoardCode").descending();
+
+        // 오래된 순
+        Sort sortregisterasc = Sort.by("userQuestionBoardCode").ascending();
+
+        // 답변 많은순
+        Sort sortanswers = Sort.by("userQuestionBoardCount").descending();
+
+        if(sortval !=0){
+        if(sortval == 1){
+            pageable = PageRequest.of(page-1, 10, sortregisterdesc);
+        }
+        if(sortval == 2){
+            pageable = PageRequest.of(page-1, 10, sortregisterasc);
+        }
+        if(sortval == 3){
+            pageable = PageRequest.of(page-1, 10, sortanswers);
+        }
+        }
+
 
         QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression;
 
+        /*
+        * SELECT * FROM
+        * */
         if(title != null){
+            log.info("title : ");
             expression = qUserQnaQuestionBoard.userQuestionBoardTitle.like("%" + title + "%");
-            builder.and(expression);
+            builder.or(expression);
         }
         if(id != null){
+            log.info("id : ");
             expression = qUserQnaQuestionBoard.userId.like("%" + id + "%");
             builder.and(expression);
         }
         if(content != null){
+            log.info("content : ");
             expression = qUserQnaQuestionBoard.userQuestionBoardContent.like("%" + content + "%");
             builder.and(expression);
         }
+
         if(category != null){
+            log.info("category : ");
             switch(category){
                 case "1":
                     expression = qUserQnaQuestionBoard.animalCategoryCode.eq(1);
@@ -137,6 +169,22 @@ public class UserQnaBoardController {
                     break;
             }
         }
+        log.info("status" + status);
+        if(status != null){
+            switch(status){
+                case "1" :
+                    expression = qUserQnaQuestionBoard.userQuestionBoardStatus.eq('Y');
+                    log.info("status : " + status);
+                    builder.and(expression);
+                    break;
+
+                case "2":
+                    expression = qUserQnaQuestionBoard.userQuestionBoardStatus.eq('N');
+                    builder.and(expression);
+                    break;
+            }
+        }
+
 
         Page<UserQnaQuestionBoard> list = service.viewAll(builder, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -146,17 +194,21 @@ public class UserQnaBoardController {
     @GetMapping("/public/userQuestion/{code}")
     public ResponseEntity<UserQnaQuestionBoardDTO> view (@PathVariable(name="code") int code){
         UserQnaQuestionBoard result = service.view(code);
+
         UserQnaQuestionBoardDTO dto = UserQnaQuestionBoardDTO.builder()
                 .userQuestionBoardCode(result.getUserQuestionBoardCode())
                 .userQuestionBoardTitle(result.getUserQuestionBoardTitle())
                 .userQuestionBoardContent(result.getUserQuestionBoardContent())
                 .userQuestionBoardstatus(result.getUserQuestionBoardStatus())
+                .viewcount((result.getViewcount()))
                 .animalCategoryCode(result.getAnimalCategoryCode())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
                 .userImg(result.getUserImg())
                 .images(service.viewImg(code))
                 .build();
+
+        log.info("조회수 : " + result.getViewcount());
 
         if(result.getUserQuestionBoardDate() == null){
             dto.setUserQuestionBoardDate(result.getUserQuestionBoardDateUpdate());
@@ -223,7 +275,7 @@ public class UserQnaBoardController {
                         .userQuestionBoardCode(dto.getUserQuestionBoardCode())
                         .userQuestionBoardTitle(dto.getUserQuestionBoardTitle())
                         .userQuestionBoardContent(dto.getUserQuestionBoardContent())
-                        .userQuestionBoardStatus("N")
+                        .userQuestionBoardStatus('N')
                         .build();
 
                 service.update(vo);
@@ -256,14 +308,24 @@ public class UserQnaBoardController {
     @PostMapping("/userQuestion/answerChoose")
     public ResponseEntity<UserQnaAnswerChoose> chooseAnswer(UserQnaAnswerChoose vo){
         service.chooseAnswer(vo);
+
+        // 채택 시 채택 상태 "Y"로 변경
+        UserQnaQuestionBoard result = service.view(vo.getUserQuestionBoardCode());
+        result.setUserQuestionBoardStatus('Y');
+        service.update(result);
         return null;
     }
 
-    // 6-2. 답변 취소하기
+    // 6-2. 채택 취소하기
     @DeleteMapping("/userQuestion/answerChoose/{code}")
     public void deleteChoose(@PathVariable(name="code") int code){
         UserQnaAnswerChoose chooseAnswer = service.getChoose(code);
         log.info("취소할 답변 : " + chooseAnswer);
+
+        // 취소 시 채택 상태 N으로 변경
+        UserQnaQuestionBoard result = service.view(code);
+        result.setUserQuestionBoardStatus('N');
+        service.update(result);
         service.deleteChoose(chooseAnswer.getChooseCode());
     }
 
@@ -289,7 +351,6 @@ public class UserQnaBoardController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
-    log.info("dto : " + dto);
         if(principal instanceof User){
             User user = (User) principal;
 
@@ -306,6 +367,10 @@ public class UserQnaBoardController {
 
             return ResponseEntity.ok().body(answerService.create(vo));
         }
+
+        UserQnaQuestionBoard result = service.view(dto.getUserQuestionBoardCode());
+        result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(dto.getUserQuestionBoardCode()).size());
+        service.update(result);
         return ResponseEntity.badRequest().build();
     }
 
@@ -314,6 +379,10 @@ public class UserQnaBoardController {
     public ResponseEntity<List<UserQnaAnswerBoardDTO>> viewAnswers(@PathVariable(name="code") int code){
         List<UserQnaAnswerBoard> topList = answerService.getTopLevelAnswers(code);
         List<UserQnaAnswerBoardDTO> response = AnswerDetailList(topList, code);
+
+        UserQnaQuestionBoard vo = service.view(code);
+        vo.setUserQuestionBoardCount(topList.size());
+        service.update(vo);
 
         return ResponseEntity.ok(response);
     }
@@ -382,6 +451,11 @@ public class UserQnaBoardController {
 
             // 본인삭제
             answerService.deleteAnswer(parent);
+
+        UserQnaQuestionBoard result = service.view(parent);
+        result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(parent).size());
+        service.update(result);
+
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 
     }

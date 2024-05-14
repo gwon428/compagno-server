@@ -37,9 +37,11 @@ public class QUserQnaQuestionBoard extends EntityPathBase<UserQnaQuestionBoard> 
 
     public final DateTimePath<java.sql.Timestamp> userQuestionBoardDateUpdate = createDateTime("userQuestionBoardDateUpdate", java.sql.Timestamp.class);
 
-    public final StringPath userQuestionBoardStatus = createString("userQuestionBoardStatus");
+    public final ComparablePath<Character> userQuestionBoardStatus = createComparable("userQuestionBoardStatus", Character.class);
 
     public final StringPath userQuestionBoardTitle = createString("userQuestionBoardTitle");
+
+    public final NumberPath<Integer> viewcount = createNumber("viewcount", Integer.class);
 
     public QUserQnaQuestionBoard(String variable) {
         super(UserQnaQuestionBoard.class, forVariable(variable));
