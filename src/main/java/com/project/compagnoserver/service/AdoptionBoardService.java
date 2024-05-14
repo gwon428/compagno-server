@@ -27,6 +27,11 @@ public class AdoptionBoardService {
     public AdoptionBoard create(AdoptionBoard vo) {return dao.save(vo);}
     public AdoptionBoardImage createImg(AdoptionBoardImage image) {return imgDao.save(image);}
 
+    /* views Counting*/
+    public void updateView(int adopBoardCode){
+        dao.updateView(adopBoardCode);
+    }
+
     // 전체 보기
     public Page<AdoptionBoard> viewAll(Pageable pagealbe, BooleanBuilder builder){return dao.findAll(builder, pagealbe);}
 

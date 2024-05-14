@@ -42,6 +42,6 @@ public class Note {
     @Column(name="deleted_by_receiver")
     private Boolean deletedByReceiver;
 
-    @OneToMany(mappedBy = "noteCode")
+    @OneToMany(mappedBy = "noteCode", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<NoteFIle> files;
 }

@@ -25,6 +25,11 @@ public class LostBoardService {
     public LostBoard create(LostBoard vo) {return boardDAO.save(vo);}
     public LostBoardImage createImages(LostBoardImage images) {return imagesDAO.save(images);}
 
+    /* views Counting*/
+    public void updateView(int lostBoardCode){
+         boardDAO.updateView(lostBoardCode);
+    }
+
     // 보기 -----------------------------------------------------------
     // 전체 보기 ----------------------------
     public Page<LostBoard> viewAll(Pageable pageable, BooleanBuilder builder) {return boardDAO.findAll(builder, pageable);}
@@ -37,11 +42,7 @@ public class LostBoardService {
     public Page<LostBoard> viewBySearch(Pageable pageable, BooleanBuilder builder){
         return boardDAO.findAll(builder, pageable);
     }
-    
-    // 정렬 보기
-//    public Page<LostBoard> viewBySort(Pageable pageable){
-//        return boardDAO.findAll(pageable);
-//    }
+
 
     // lostBoardCode로 이미지 테이블에서 찾기
     public List<LostBoardImage> findByCode(int lostBoardCode) {return imagesDAO.findByCode(lostBoardCode);}
