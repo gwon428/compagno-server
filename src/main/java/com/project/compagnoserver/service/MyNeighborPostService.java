@@ -26,7 +26,7 @@ public class MyNeighborPostService {
     }
 
     // 우리동네 게시판 게시글 갯수
-    public Long CountMyNeighborPost(String id) {
+    public Long countMyNeighborPost(String id) {
         return jpaQueryFactory.select(qNeighborBoard.count())
                 .from(qNeighborBoard)
                 .where(qNeighborBoard.user.userId.eq(id))

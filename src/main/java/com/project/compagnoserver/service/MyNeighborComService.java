@@ -1,6 +1,7 @@
 package com.project.compagnoserver.service;
 
 import com.project.compagnoserver.domain.NeighborBoard.NeighborBoardComment;
+import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoard;
 import com.project.compagnoserver.domain.NeighborBoard.QNeighborBoardComment;
 import com.project.compagnoserver.repo.user.MyNeighborComDAO;
 import com.querydsl.core.BooleanBuilder;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MyNeighborComService {

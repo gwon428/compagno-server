@@ -331,7 +331,7 @@ public class MyActivityController {
     // 우리동네 게시판 게시글 갯수
     @GetMapping("/api/mypage/myactivity/myneighborpost/count/{id}")
     public ResponseEntity CountMyNeighborPost(@PathVariable("id") String id) {
-        return ResponseEntity.ok(neighborPostService.CountMyNeighborPost(id));
+        return ResponseEntity.ok(neighborPostService.countMyNeighborPost(id));
     }
 
     // 우리동네 게시판 댓글 리스트
