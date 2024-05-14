@@ -25,7 +25,7 @@ public class OneDayClassService {
         return img.save(vo);
     }
     // 이미지 조회 (메인이미지관련 정보 조회)
-    public List<ClassBoardMainImage> viewImg(int odcCode){
+    public ClassBoardMainImage viewImg(int odcCode){
         return img.findByCode(odcCode);
     }
 
