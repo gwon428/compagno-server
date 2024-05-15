@@ -4,12 +4,14 @@ import com.project.compagnoserver.domain.UserQnaBoard.*;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaAnswerChooseDAO;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionBoardDAO;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionBoardImageDAO;
+import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionLikeDAO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryFactory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +30,13 @@ public class UserQnaQuestionBoardService {
     private UserQnaAnswerChooseDAO choose;
 
     @Autowired
+    private UserQnaQuestionLikeDAO like;
+
+    @Autowired
     private JPAQueryFactory queryFactory;
 
     private final QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
-
+    private final QUserQnaQuestionLike qUserQnaQuestionLike = QUserQnaQuestionLike.userQnaQuestionLike;
     // 1. 질문 등록
     public UserQnaQuestionBoard create(UserQnaQuestionBoard vo){
         return dao.save(vo);
@@ -45,6 +50,16 @@ public class UserQnaQuestionBoardService {
     // 2. 질문 전체 보기
     public Page<UserQnaQuestionBoard> viewAll(BooleanBuilder builder, Pageable pageable){
         return dao.findAll(builder, pageable);
+    }
+
+    // 2-1. 좋아요한 질문 전체 보기
+    public Page<UserQnaQuestionBoard> viewliked(List<UserQnaQuestionBoard> list, Pageable pageable) {
+        int start = (int)pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), list.size());
+        List<UserQnaQuestionBoard> sublist = list.subList(start, end);
+
+        return new PageImpl<>(sublist, pageable, list.size());
+
     }
 
     // 3-0. 질문 상세보기 시 조회수 업데이트
@@ -100,5 +115,25 @@ public class UserQnaQuestionBoardService {
     // 6-3. 채택 질문 찾기
     public UserQnaAnswerChoose getChoose(int code){
        return choose.findByQCode(code);
+    }
+
+    // 7-1. 질문 좋아요
+    public UserQnaQuestionLike addLike(UserQnaQuestionLike vo){
+        return like.save(vo);
+    }
+
+    // 7-2. 좋아요 확인하기
+    public UserQnaQuestionLike selectLike(UserQnaQuestionLike vo){
+        return queryFactory.select(qUserQnaQuestionLike)
+                .from(qUserQnaQuestionLike)
+                .where(qUserQnaQuestionLike.userQuestionBoardCode.eq(vo.getUserQuestionBoardCode())
+                        .and(qUserQnaQuestionLike.userId.eq(vo.getUserId()))).fetchOne();
+
+    }
+
+    // 7-3. 질문 삭제
+    public void deleteLike(UserQnaQuestionLike vo){
+        UserQnaQuestionLike result = selectLike(vo);
+        like.deleteById(result.getUserQuestionLikeCode());
     }
 }

@@ -38,14 +38,25 @@ public class ContentController {
                                               @RequestParam(name="subCate", required = true, defaultValue = "0") int subCate,
                                               @RequestParam(name="mainReg", required = true, defaultValue = "0") int mainReg,
                                               @RequestParam(name="keyword", required = false) String keyword,
+//                                              @RequestParam(name="sort", defaultValue = "0") int sortval,
                                               @RequestParam(name="page", required = false, defaultValue = "1") int page){
 
-        log.info("출력!!!!!!!!!");
 
-        log.info("keyword : " + keyword);
 
-        Sort sort = Sort.by(Sort.Order.asc("latitude"), Sort.Order.asc(("longtitude")));
-        Pageable pageable = PageRequest.of(page-1, 20, sort);
+        Sort base = Sort.by(Sort.Order.desc("viewcount"),
+                Sort.Order.asc("latitude"),
+                Sort.Order.asc("longtitude")
+        );
+        Pageable pageable = PageRequest.of(page-1, 20, base);
+
+//        Sort viewcount = Sort.by("viewcount").descending();
+
+//        if(sortval != 0){
+//            pageable = PageRequest.of(page-1, 20, base);
+//            if(sortval == 1){
+//                pageable = PageRequest.of(page-1, 20, viewcount);
+//            }
+//        }
 
         QParsing qParsing = QParsing.parsing;
         BooleanBuilder builder = new BooleanBuilder();
@@ -77,6 +88,7 @@ public class ContentController {
     // 상세 페이지
     @GetMapping("/content/{code}")
     public ResponseEntity<Parsing> view(@PathVariable(name="code") int code){
+        service.updateviewcount(code);
         Parsing result = service.view(code);
         log.info("result : " + result);
         return ResponseEntity.status(HttpStatus.OK).body(result);

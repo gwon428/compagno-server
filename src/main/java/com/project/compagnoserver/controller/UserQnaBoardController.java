@@ -7,6 +7,7 @@ import com.project.compagnoserver.service.UserQnaAnswerBoardService;
 import com.project.compagnoserver.service.UserQnaQuestionBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,9 @@ public class UserQnaBoardController {
 
     @Autowired
     private UserQnaAnswerBoardService answerService;
+
+    @Autowired
+    private JPAQueryFactory queryFactory;
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
@@ -175,7 +179,7 @@ public class UserQnaBoardController {
                     break;
             }
         }
-        log.info("status" + status);
+
         if(status != null){
             switch(status){
                 case "1" :
@@ -191,9 +195,48 @@ public class UserQnaBoardController {
             }
         }
 
-
         Page<UserQnaQuestionBoard> list = service.viewAll(builder, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @GetMapping("/userQuestion")
+    public ResponseEntity<Page<UserQnaQuestionBoard>> viewliked(@RequestParam(name="liked", defaultValue = "false") boolean liked,
+                                                                @RequestParam(name="page", defaultValue = "1") int page){
+        Pageable pageable = PageRequest.of(page-1, 10);
+
+        QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
+        QUserQnaQuestionLike qUserQnaQuestionLike = QUserQnaQuestionLike.userQnaQuestionLike;
+
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        //SELECT * FROM user_question_board
+        //JOIN user_question_like USING (user_question_board_code)
+        //WHERE user_question_like.user_id = "user0002";
+        if(principal instanceof User) {
+            User user = (User) principal;
+            if(liked){
+                List<UserQnaQuestionBoard> list = queryFactory
+                        .selectFrom(qUserQnaQuestionBoard)
+                        .join(qUserQnaQuestionLike).on(qUserQnaQuestionBoard.userQuestionBoardCode.eq(qUserQnaQuestionLike.userQuestionBoardCode))
+                        .where(qUserQnaQuestionLike.userId.eq(user.getUserId()))
+                        .fetch();
+
+
+                log.info("list :" + list);
+
+                Page<UserQnaQuestionBoard> likedlist = service.viewliked(list, pageable);
+                log.info("likedlist : " + likedlist);
+                return ResponseEntity.status(HttpStatus.OK).body(likedlist);
+            } else{
+                return ResponseEntity.status(HttpStatus.OK).body(service.viewAll(builder, pageable));
+            }
+
+        }
+        return null;
     }
 
     // 3. 상세보기
@@ -351,6 +394,64 @@ public class UserQnaBoardController {
         }
 
         return chooseAnswer != null ? ResponseEntity.status(HttpStatus.OK).body(chooseAnswer) : ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 7-1. 좋아요 등록하기
+    @PostMapping("/userQuestion/like")
+    public ResponseEntity addLike(UserQnaQuestionLike like){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+        log.info("like : " + like);
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            UserQnaQuestionLike vo = new UserQnaQuestionLike();
+            vo.setUserId(user.getUserId());
+            vo.setUserQuestionBoardCode(like.getUserQuestionBoardCode());
+
+            service.addLike(vo);
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 7-2. 좋아요 확인하기
+    @GetMapping("/userQuestion/like/{code}")
+    public int selectLike(@PathVariable(name="code") int code){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            UserQnaQuestionLike vo = new UserQnaQuestionLike();
+            vo.setUserId(user.getUserId());
+            vo.setUserQuestionBoardCode(code);
+
+            service.selectLike(vo);
+            if(service.selectLike(vo) == null){
+                return 0;
+            } else {
+                return 1;
+            }
+        } else{
+            return 0;
+        }
+    }
+
+    @DeleteMapping("userQuestion/like/{code}")
+    public void deleteLike(@PathVariable(name="code") int code){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            UserQnaQuestionLike vo = new UserQnaQuestionLike();
+            vo.setUserId(user.getUserId());
+            vo.setUserQuestionBoardCode(code);
+            service.deleteLike(vo);
+        }
     }
 
     // answer =============================================================================================
