@@ -46,6 +46,10 @@ public class NoteService {
         return noteDAO.findAll(builder, pageable);
     }
 
+    // 중요 쪽지함
+    public void updateStarSender(int noteCode){noteDAO.updateStarSender(noteCode);}
+    public void updateStarReceiver(int noteCode){noteDAO.updateStarReceiver(noteCode);}
+
 
     // [수정] ------------------------------------------------------------------------------
     // update(수정) : 보낸 이가 삭제 원할 때 deletedSender을 true로 변경

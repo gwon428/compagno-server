@@ -19,6 +19,6 @@ public class NoteDTO {
     private boolean deletedSender;
     private boolean deletedReceiver;
     private String noteRegiDate;
-
+    private boolean star;
     private List<MultipartFile> files;
 }

@@ -38,6 +38,10 @@ public class QNote extends EntityPathBase<Note> {
 
     public final StringPath sender = createString("sender");
 
+    public final BooleanPath starReceiver = createBoolean("starReceiver");
+
+    public final BooleanPath starSender = createBoolean("starSender");
+
     public QNote(String variable) {
         super(Note.class, forVariable(variable));
     }

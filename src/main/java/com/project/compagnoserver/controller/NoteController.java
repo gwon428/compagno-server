@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,10 +73,21 @@ public class NoteController {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    // 중요 쪽지함
+    @PutMapping("/note/starSender")
+    public ResponseEntity<Note> updateStarSender(@RequestParam(name="noteCode")int noteCode ){
+        service.updateStarSender(noteCode);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    @PutMapping("/note/starReceiver")
+    public ResponseEntity<Note> updateStarReceiver( @RequestParam(name="noteCode")int noteCode ){
+        service.updateStarReceiver(noteCode);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     // 보기 ------------------------------------
     // viewAll(전체보기) - 전체쪽지함
     @GetMapping("/note/viewAll/{nickName}")
-
     public ResponseEntity<Page<Note>> viewAll(@PathVariable(name="nickName")String nickName, @RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) String noteRegiDate){
 
         Sort sort = Sort.by("noteCode").descending();
