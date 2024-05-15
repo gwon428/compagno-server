@@ -8,7 +8,6 @@ import com.project.compagnoserver.service.UserQnaQuestionBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -116,6 +116,9 @@ public class UserQnaBoardController {
         // 답변 많은순
         Sort sortanswers = Sort.by("userQuestionBoardCount").descending();
 
+        // 조회순
+        Sort viewcounts = Sort.by("viewcount").descending();
+
         if(sortval !=0){
         if(sortval == 1){
             pageable = PageRequest.of(page-1, 10, sortregisterdesc);
@@ -125,6 +128,9 @@ public class UserQnaBoardController {
         }
         if(sortval == 3){
             pageable = PageRequest.of(page-1, 10, sortanswers);
+        }
+        if(sortval == 4){
+            pageable = PageRequest.of(page-1, 10, viewcounts);
         }
         }
 
@@ -193,6 +199,9 @@ public class UserQnaBoardController {
     // 3. 상세보기
     @GetMapping("/public/userQuestion/{code}")
     public ResponseEntity<UserQnaQuestionBoardDTO> view (@PathVariable(name="code") int code){
+
+        service.updateviewcount(code);
+
         UserQnaQuestionBoard result = service.view(code);
 
         UserQnaQuestionBoardDTO dto = UserQnaQuestionBoardDTO.builder()

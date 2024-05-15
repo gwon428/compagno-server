@@ -1,17 +1,18 @@
 package com.project.compagnoserver.service;
 
-import com.project.compagnoserver.domain.UserQnaBoard.UserQnaAnswerChoose;
-import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoard;
-import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoardImage;
+import com.project.compagnoserver.domain.UserQnaBoard.*;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaAnswerChooseDAO;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionBoardDAO;
 import com.project.compagnoserver.repo.UserQnaBoard.UserQnaQuestionBoardImageDAO;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryFactory;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 @Service @Slf4j
@@ -26,6 +27,10 @@ public class UserQnaQuestionBoardService {
     @Autowired
     private UserQnaAnswerChooseDAO choose;
 
+    @Autowired
+    private JPAQueryFactory queryFactory;
+
+    private final QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
 
     // 1. 질문 등록
     public UserQnaQuestionBoard create(UserQnaQuestionBoard vo){
@@ -42,6 +47,14 @@ public class UserQnaQuestionBoardService {
         return dao.findAll(builder, pageable);
     }
 
+    // 3-0. 질문 상세보기 시 조회수 업데이트
+    @Transactional
+    public void updateviewcount(int code){
+        queryFactory.update(qUserQnaQuestionBoard)
+                .set(qUserQnaQuestionBoard.viewcount, qUserQnaQuestionBoard.viewcount.add(1))
+                .where(qUserQnaQuestionBoard.userQuestionBoardCode.eq(code))
+                .execute();
+    }
     // 3. 질문 상세보기
     public UserQnaQuestionBoard view(int code){
         return dao.findById(code).orElse(null);
