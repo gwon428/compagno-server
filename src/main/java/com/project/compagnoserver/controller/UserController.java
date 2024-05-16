@@ -139,7 +139,6 @@ public class UserController {
         User user = User.builder()
                 .userEmail(dto.getUserEmail())
                 .userPhone(dto.getUserPhone())
-                .userPwd(passwordEncoder.encode(dto.getUserPwd()))
                 .userId(dto.getUserId())
                 .build();
 
@@ -172,6 +171,19 @@ public class UserController {
            userService.updateUser(user);
        }
 
+        return ResponseEntity.ok().build();
+    }
+
+    // 비밀번호 변경
+    @Transactional
+    @PutMapping("/api/mypage/myinfo/updatepwd")
+    public ResponseEntity changePwd(@RequestBody UserDTO dto) {
+        User user = User.builder()
+                .userPwd(passwordEncoder.encode(dto.getUserPwd()))
+                .userId(dto.getUserId())
+                .build();
+
+        userService.changePwd(user);
         return ResponseEntity.ok().build();
     }
 
