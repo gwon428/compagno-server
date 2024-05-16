@@ -22,7 +22,7 @@ public class QNoticeBoardComment extends EntityPathBase<NoticeBoardComment> {
 
     public static final QNoticeBoardComment noticeBoardComment = new QNoticeBoardComment("noticeBoardComment");
 
-    public final NumberPath<Integer> noticeBoardCode = createNumber("noticeBoardCode", Integer.class);
+    public final QNoticeBoard noticeBoard;
 
     public final NumberPath<Integer> noticeCommentCode = createNumber("noticeCommentCode", Integer.class);
 
@@ -56,6 +56,7 @@ public class QNoticeBoardComment extends EntityPathBase<NoticeBoardComment> {
 
     public QNoticeBoardComment(Class<? extends NoticeBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.noticeBoard = inits.isInitialized("noticeBoard") ? new QNoticeBoard(forProperty("noticeBoard"), inits.get("noticeBoard")) : null;
         this.parent = inits.isInitialized("parent") ? new QNoticeBoardComment(forProperty("parent"), inits.get("parent")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }

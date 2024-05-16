@@ -22,6 +22,8 @@ public class QNoticeBoard extends EntityPathBase<NoticeBoard> {
 
     public static final QNoticeBoard noticeBoard = new QNoticeBoard("noticeBoard");
 
+    public final ListPath<NoticeBoardComment, QNoticeBoardComment> comments = this.<NoticeBoardComment, QNoticeBoardComment>createList("comments", NoticeBoardComment.class, QNoticeBoardComment.class, PathInits.DIRECT2);
+
     public final ListPath<NoticeBoardImage, QNoticeBoardImage> images = this.<NoticeBoardImage, QNoticeBoardImage>createList("images", NoticeBoardImage.class, QNoticeBoardImage.class, PathInits.DIRECT2);
 
     public final NumberPath<Integer> noticeBoardCode = createNumber("noticeBoardCode", Integer.class);

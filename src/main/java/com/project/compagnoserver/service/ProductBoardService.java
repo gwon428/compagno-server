@@ -1,6 +1,8 @@
 package com.project.compagnoserver.service;
 
+import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.ProductBoard.*;
+import com.project.compagnoserver.repo.Animal.AnimalCategoryDAO;
 import com.project.compagnoserver.repo.ProductBoard.ProductBoardBookmarkDAO;
 import com.project.compagnoserver.repo.ProductBoard.ProductBoardDAO;
 import com.project.compagnoserver.repo.ProductBoard.ProductBoardImageDAO;
@@ -57,6 +59,9 @@ public class ProductBoardService {
 
     private final QProductBoardComment qProductBoardComment = QProductBoardComment.productBoardComment;
 
+    @Autowired
+    private AnimalCategoryDAO animalCategoryDAO;
+
     public ProductBoard viewBoard(int code){
         return board.findById(code).orElse(null);
     }
@@ -84,7 +89,7 @@ public class ProductBoardService {
         }
     }
 
-    // 게시판 한개 이미지 삭제
+    // 한개의 게시판 이미지 삭제
     @Transactional
     public void deleteImage(int code) {
         queryFactory.delete(qProductBoardImage)
@@ -236,6 +241,11 @@ public class ProductBoardService {
         orderSpecifiers.add(new OrderSpecifier<>(Order.DESC, qProductBoard.productBoardRegiDate)); // 날짜 순 DESC
 
         return orderSpecifiers.toArray(new OrderSpecifier[orderSpecifiers.size()]);
+    }
+
+    // 동물 카테고리 전체보기
+    public List<AnimalCategory> animalCategoryView() {
+        return animalCategoryDAO.findAll();
     }
 
 }
