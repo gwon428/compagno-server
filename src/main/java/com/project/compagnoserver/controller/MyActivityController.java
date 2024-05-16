@@ -137,7 +137,7 @@ public class MyActivityController {
         @GetMapping("/api/mypage/myactivity/productfav/{id}")
     public ResponseEntity<List<ProductBoardBookmark>> myProFavList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1") int page) {
         Sort sort = Sort.by("ProductBookmarkCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
             QProductBoardBookmark qProductBoardBookmark = QProductBoardBookmark.productBoardBookmark;
             QProductBoard qProductBoard = QProductBoard.productBoard;
@@ -161,7 +161,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/myqna/{id}")
     public ResponseEntity<List<QnaQBoard>> userQnaList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1") int page) {
         Sort sort = Sort.by("qnaQCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -184,7 +184,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/manageqna")
     public ResponseEntity managerQnaList(@RequestParam(name = "page",defaultValue = "1") int page) {
         Sort sort = Sort.by("qnaQCode");
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -251,7 +251,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/myuserqna/{id}")
     public ResponseEntity myUserQnaList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
         Sort sort = Sort.by("userQuestionBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -272,7 +272,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/myodc/{id}")
     public ResponseEntity myOdcList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
         Sort sort = Sort.by("odcCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QClassBoard qClassBoard = QClassBoard.classBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -293,7 +293,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/mysitterpost/{id}")
     public  ResponseEntity mySitterPostList(@PathVariable("id") String id, @RequestParam(name = "postPage",defaultValue = "1")int page) {
         Sort sort = Sort.by("sitterBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QSitterBoard qSitterBoard = QSitterBoard.sitterBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -314,7 +314,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/mysittercom/{id}")
     public ResponseEntity mySitterComList(@PathVariable("id") String id, @RequestParam(name = "comPage",defaultValue = "1")int page) {
         Sort sort = Sort.by("sitterCommentCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QSitterBoardComment qSitterBoardComment = QSitterBoardComment.sitterBoardComment;
         BooleanBuilder builder = new BooleanBuilder();
@@ -335,7 +335,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/myneighborpost/{id}")
     public ResponseEntity myNeighborPost(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
         Sort sort = Sort.by("neighborBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QNeighborBoard qNeighborBoard = QNeighborBoard.neighborBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -356,7 +356,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/myneighborcom/{id}")
     public ResponseEntity myNeighborCom(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1")int page) {
         Sort sort = Sort.by("neighborCommentCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QNeighborBoardComment qNeighborBoardComment = QNeighborBoardComment.neighborBoardComment;
         BooleanBuilder builder = new BooleanBuilder();
