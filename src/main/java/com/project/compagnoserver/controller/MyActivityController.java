@@ -27,6 +27,7 @@ import com.project.compagnoserver.domain.UserQnaBoard.UserQnaQuestionBoard;
 import com.project.compagnoserver.service.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -93,7 +94,7 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/animalfav/{id}")
     public ResponseEntity<List<AnimalBoardFavorite>> myFavList(@PathVariable("id") String id, @RequestParam(name = "page",defaultValue = "1") int page) {
         Sort sort = Sort.by("animalFavoriteDate").descending();
-        Pageable pageable = PageRequest.of(page-1, 5, sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QAnimalBoardFavorite qAnimalBoardFavorite = QAnimalBoardFavorite.animalBoardFavorite;
 
@@ -112,6 +113,23 @@ public class MyActivityController {
     @GetMapping("/api/mypage/myactivity/countanimalfav/{id}")
     public ResponseEntity countFav(@PathVariable("id") String id) {
         return ResponseEntity.ok(mabfService.countFav(id));
+    }
+
+
+    // 최애 동물 좋아요 삭제
+    @Transactional
+    @DeleteMapping("/api/mypage/myactivity/deleteanimalfav/{id}")
+    public ResponseEntity deleteFav(@PathVariable("id") String id, @RequestParam(name = "code") int code) {
+        mabfService.deleteFav(id, code);
+        return ResponseEntity.ok().build();
+    }
+
+    // 좋아요 삭제 시 숫자 마이너스 처리
+    @Transactional
+    @PutMapping("/api/mypage/myactivity/updateanimalfavcount/{code}")
+    public ResponseEntity updateFavCount(@PathVariable("code") int code) {
+        mabfService.updateFavCount(code);
+        return ResponseEntity.ok().build();
     }
 
 
