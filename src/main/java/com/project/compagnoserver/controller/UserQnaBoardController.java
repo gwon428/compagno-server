@@ -57,21 +57,21 @@ public class UserQnaBoardController {
         log.info("dto : " + dto);
 
         // dto로 받은 값을 builder를 통해 vo 형태로 변환
-        UserQnaQuestionBoard vo = new UserQnaQuestionBoard();
+//        UserQnaQuestionBoard vo = new UserQnaQuestionBoard();
 
-        vo.setUserId(dto.getUserId());
-        vo.setUserNickname(dto.getUserNickname());
-        vo.setUserImg(dto.getUserImg());
+//        vo.setUserId(dto.getUserId());
+//        vo.setUserNickname(dto.getUserNickname());
+//        vo.setUserImg(dto.getUserImg());
 
-        vo.setUserQuestionBoardTitle(dto.getUserQuestionBoardTitle());
-        vo.setUserQuestionBoardContent(dto.getUserQuestionBoardContent());
+//        vo.setUserQuestionBoardTitle(dto.getUserQuestionBoardTitle());
+//        vo.setUserQuestionBoardContent(dto.getUserQuestionBoardContent());
 
 
         UserQnaQuestionBoard result = service.create(UserQnaQuestionBoard.builder()
                         .userId(dto.getUserId())
                         .userNickname(dto.getUserNickname())
                         .userImg(dto.getUserImg())
-
+                        .userQuestionBoardStatus('N')
                         .animalCategoryCode(dto.getAnimalCategoryCode())
                         .userQuestionBoardTitle(dto.getUserQuestionBoardTitle())
                         .userQuestionBoardContent(dto.getUserQuestionBoardContent())
@@ -88,7 +88,8 @@ public class UserQnaBoardController {
 
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
-                    img.setUserQuestionImgUrl(saveName.substring(27));
+//                    img.setUserQuestionImgUrl(saveName.substring(27));
+                    img.setUserQuestionImgUrl(saveName.substring(38));
                     img.setUserQuestionBoardCode(result.getUserQuestionBoardCode());
 
                     service.createImg(img);
@@ -106,7 +107,7 @@ public class UserQnaBoardController {
                                                               @RequestParam(name="id", required = false) String id,
                                                               @RequestParam(name="category", required = false) String category,
                                                               @RequestParam(name="status", required = false) String status,
-                                                              @RequestParam(name="sort", defaultValue = "0") int sortval,
+                                                              @RequestParam(name="sort", defaultValue = "1") int sortval,
                                                               @RequestParam(name="page", defaultValue = "1") int page){
 
         Pageable pageable = PageRequest.of(page-1, 10);
@@ -199,10 +200,13 @@ public class UserQnaBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+    // 해당 접속자가 해당 게시글에 좋아요를 눌렀는지 확인
     @GetMapping("/userQuestion")
     public ResponseEntity<Page<UserQnaQuestionBoard>> viewliked(@RequestParam(name="liked", defaultValue = "false") boolean liked,
                                                                 @RequestParam(name="page", defaultValue = "1") int page){
-        Pageable pageable = PageRequest.of(page-1, 10);
+
+        Sort sort = Sort.by("userQuestionBoardCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
         QUserQnaQuestionLike qUserQnaQuestionLike = QUserQnaQuestionLike.userQnaQuestionLike;
@@ -311,7 +315,8 @@ public class UserQnaBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    img.setUserQuestionImgUrl(saveName.substring(27));
+//                    img.setUserQuestionImgUrl(saveName.substring(27));
+                    img.setUserQuestionImgUrl(saveName.substring(38));
                     img.setUserQuestionBoardCode(dto.getUserQuestionBoardCode());
 
                     service.createImg(img);
@@ -402,7 +407,6 @@ public class UserQnaBoardController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
-        log.info("like : " + like);
         if(principal instanceof User) {
             User user = (User) principal;
 

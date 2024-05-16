@@ -59,7 +59,6 @@ public class UserQnaQuestionBoardService {
         List<UserQnaQuestionBoard> sublist = list.subList(start, end);
 
         return new PageImpl<>(sublist, pageable, list.size());
-
     }
 
     // 3-0. 질문 상세보기 시 조회수 업데이트
