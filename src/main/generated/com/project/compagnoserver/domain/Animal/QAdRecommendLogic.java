@@ -24,6 +24,8 @@ public class QAdRecommendLogic extends EntityPathBase<AdRecommendLogic> {
 
     public final QAnimalCategory animalCategory;
 
+    public final NumberPath<Double> inputValue = createNumber("inputValue", Double.class);
+
     public final NumberPath<Integer> logicCode = createNumber("logicCode", Integer.class);
 
     public final NumberPath<Double> totalScore = createNumber("totalScore", Double.class);
