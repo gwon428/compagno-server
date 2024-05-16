@@ -86,13 +86,23 @@ public class NoteController {
     }
 
     // 보기 ------------------------------------
-//    @GetMapping("/note/viewAllNotPage/{nickName}")
-//    public ResponseEntity<List<Note>> viewAllNotPage(@PathVariable(name="nickName")String nickName){
-//        log.info("nicknkame : " + nickName);
-//        List<Note> list = service.viewAllNotPage(nickName);
-//        log.info("list: " + list);
-//        return ResponseEntity.status(HttpStatus.OK).body(list);
-//    }
+    @GetMapping("/note/delCount/{nickName}")
+    public ResponseEntity delCount(@PathVariable(name="nickName")String nickName){
+        return ResponseEntity.status(HttpStatus.OK).body( service.delCount(nickName));
+    }
+    @GetMapping("/note/delReceiverCount/{nickName}")
+    public ResponseEntity delReceiverCount(@PathVariable(name="nickName")String nickName){
+        return ResponseEntity.status(HttpStatus.OK).body( service.delReceiverCount(nickName));
+    }
+    @GetMapping("/note/delSenderCount/{nickName}")
+    public ResponseEntity delSenderCount(@PathVariable(name="nickName")String nickName){
+        return ResponseEntity.status(HttpStatus.OK).body( service.delSenderCount(nickName));
+    }
+    @GetMapping("/note/starCount/{nickName}")
+    public ResponseEntity starCount(@PathVariable(name="nickName")String nickName){
+        return ResponseEntity.status(HttpStatus.OK).body( service.starCount(nickName));
+    }
+
 
     // viewAll(전체보기) - 전체쪽지함
     @GetMapping("/note/viewAll/{nickName}")

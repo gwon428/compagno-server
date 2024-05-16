@@ -22,7 +22,15 @@ public interface NoteDAO extends JpaRepository<Note, Integer>, QuerydslPredicate
     @Query(value="UPDATE note SET star_receiver=(!star_receiver) WHERE note_code =:noteCode",nativeQuery = true )
     void updateStarReceiver(@Param("noteCode")int noteCode);
 
-//    @Query(value="SELECT * FROM note WHERE sender=:nickName OR receiver=:nickName", nativeQuery = true)
-//    List<Note> viewAllNotPage(@Param("nickName")String nickName);
+    @Query(value="select count(*) from note where (sender= :nickName or receiver=:nickName) AND (deleted_by_sender=1 or deleted_by_receiver=1)", nativeQuery = true)
+    int delCount(@Param("nickName")String nickName);
 
+    @Query(value="select count(*) from note where (receiver=:nickName) AND (deleted_by_receiver=1)", nativeQuery = true)
+    int delReceiverCount(@Param("nickName")String nickName);
+
+    @Query(value="select count(*) from note where (sender= :nickName) AND (deleted_by_sender=1)", nativeQuery = true)
+    int delSenderCount(@Param("nickName")String nickName);
+
+    @Query(value="select count(*) from note where(sender=:nickName and star_sender=1) or (receiver=:nickName and star_receiver=1);", nativeQuery = true)
+    int starCount(@Param("nickName")String nickName);
 }
