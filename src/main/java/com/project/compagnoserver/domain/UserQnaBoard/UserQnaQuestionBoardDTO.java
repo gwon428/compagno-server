@@ -23,8 +23,9 @@ public class UserQnaQuestionBoardDTO {
 
     private Date userQuestionBoardDate;
 
-    private String userQuestionBoardstatus;
+    private char userQuestionBoardstatus;
     private int userQuestionBoardCount;
+    private int viewcount;
 
     private ArrayList<MultipartFile> files;
     private List<UserQnaQuestionBoardImage> images;

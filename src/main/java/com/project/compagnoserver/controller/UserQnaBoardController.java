@@ -7,8 +7,8 @@ import com.project.compagnoserver.service.UserQnaAnswerBoardService;
 import com.project.compagnoserver.service.UserQnaQuestionBoardService;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,9 @@ public class UserQnaBoardController {
     @Autowired
     private UserQnaAnswerBoardService answerService;
 
+    @Autowired
+    private JPAQueryFactory queryFactory;
+
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
 
@@ -53,20 +57,21 @@ public class UserQnaBoardController {
         log.info("dto : " + dto);
 
         // dto로 받은 값을 builder를 통해 vo 형태로 변환
-        UserQnaQuestionBoard vo = new UserQnaQuestionBoard();
+//        UserQnaQuestionBoard vo = new UserQnaQuestionBoard();
 
-        vo.setUserId(dto.getUserId());
-        vo.setUserNickname(dto.getUserNickname());
-        vo.setUserImg(dto.getUserImg());
+//        vo.setUserId(dto.getUserId());
+//        vo.setUserNickname(dto.getUserNickname());
+//        vo.setUserImg(dto.getUserImg());
 
-        vo.setUserQuestionBoardTitle(dto.getUserQuestionBoardTitle());
-        vo.setUserQuestionBoardContent(dto.getUserQuestionBoardContent());
+//        vo.setUserQuestionBoardTitle(dto.getUserQuestionBoardTitle());
+//        vo.setUserQuestionBoardContent(dto.getUserQuestionBoardContent());
+
 
         UserQnaQuestionBoard result = service.create(UserQnaQuestionBoard.builder()
                         .userId(dto.getUserId())
                         .userNickname(dto.getUserNickname())
                         .userImg(dto.getUserImg())
-
+                        .userQuestionBoardStatus('N')
                         .animalCategoryCode(dto.getAnimalCategoryCode())
                         .userQuestionBoardTitle(dto.getUserQuestionBoardTitle())
                         .userQuestionBoardContent(dto.getUserQuestionBoardContent())
@@ -83,7 +88,8 @@ public class UserQnaBoardController {
 
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
-                    img.setUserQuestionImgUrl(saveName.substring(27));
+//                    img.setUserQuestionImgUrl(saveName.substring(27));
+                    img.setUserQuestionImgUrl(saveName.substring(38));
                     img.setUserQuestionBoardCode(result.getUserQuestionBoardCode());
 
                     service.createImg(img);
@@ -99,45 +105,172 @@ public class UserQnaBoardController {
     public ResponseEntity<Page<UserQnaQuestionBoard>> viewAll(@RequestParam(name="title", required=false) String title,
                                                               @RequestParam(name="content", required = false) String content,
                                                               @RequestParam(name="id", required = false) String id,
+                                                              @RequestParam(name="category", required = false) String category,
+                                                              @RequestParam(name="status", required = false) String status,
+                                                              @RequestParam(name="sort", defaultValue = "1") int sortval,
                                                               @RequestParam(name="page", defaultValue = "1") int page){
-        Sort sort = Sort.by("userQuestionBoardCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        Pageable pageable = PageRequest.of(page-1, 10);
+
+        // 최신 등록순
+        Sort sortregisterdesc = Sort.by("userQuestionBoardCode").descending();
+
+        // 오래된 순
+        Sort sortregisterasc = Sort.by("userQuestionBoardCode").ascending();
+
+        // 답변 많은순
+        Sort sortanswers = Sort.by("userQuestionBoardCount").descending();
+
+        // 좋아요순
+        Sort likecounts = Sort.by("likecount").descending();
+
+        // 조회순
+        Sort viewcounts = Sort.by("viewcount").descending();
+
+        if(sortval !=0){
+        if(sortval == 1){
+            pageable = PageRequest.of(page-1, 10, sortregisterdesc);
+        }
+        if(sortval == 2){
+            pageable = PageRequest.of(page-1, 10, sortregisterasc);
+        }
+        if(sortval == 3){
+            pageable = PageRequest.of(page-1, 10, sortanswers);
+        }
+        if(sortval == 4){
+            pageable = PageRequest.of(page-1, 10, viewcounts);
+        }
+        if(sortval == 5){
+            pageable = PageRequest.of(page-1, 10, viewcounts);
+        }
+        }
+
 
         QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression;
 
+        /*
+        * SELECT * FROM
+        * */
         if(title != null){
+            log.info("title : ");
             expression = qUserQnaQuestionBoard.userQuestionBoardTitle.like("%" + title + "%");
-            builder.and(expression);
+            builder.or(expression);
         }
         if(id != null){
+            log.info("id : ");
             expression = qUserQnaQuestionBoard.userId.like("%" + id + "%");
             builder.and(expression);
         }
         if(content != null){
+            log.info("content : ");
             expression = qUserQnaQuestionBoard.userQuestionBoardContent.like("%" + content + "%");
             builder.and(expression);
+        }
+
+        if(category != null){
+            log.info("category : ");
+            switch(category){
+                case "1":
+                    expression = qUserQnaQuestionBoard.animalCategoryCode.eq(1);
+                    builder.and(expression);
+                    break;
+                case "2":
+                    expression = qUserQnaQuestionBoard.animalCategoryCode.eq(2);
+                    builder.and(expression);
+                    break;
+                case "3":
+                    expression = qUserQnaQuestionBoard.animalCategoryCode.eq(3);
+                    builder.and(expression);
+                    break;
+            }
+        }
+
+        if(status != null){
+            switch(status){
+                case "1" :
+                    expression = qUserQnaQuestionBoard.userQuestionBoardStatus.eq('Y');
+                    log.info("status : " + status);
+                    builder.and(expression);
+                    break;
+
+                case "2":
+                    expression = qUserQnaQuestionBoard.userQuestionBoardStatus.eq('N');
+                    builder.and(expression);
+                    break;
+            }
         }
 
         Page<UserQnaQuestionBoard> list = service.viewAll(builder, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+    // 좋아요한 글 리스트 보기
+    @GetMapping("/userQuestion")
+    public ResponseEntity<Page<UserQnaQuestionBoard>> viewliked(@RequestParam(name="liked", defaultValue = "false") boolean liked,
+                                                                @RequestParam(name="page", defaultValue = "1") int page){
+
+        Sort sort = Sort.by("userQuestionBoardCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
+
+        QUserQnaQuestionBoard qUserQnaQuestionBoard = QUserQnaQuestionBoard.userQnaQuestionBoard;
+        QUserQnaQuestionLike qUserQnaQuestionLike = QUserQnaQuestionLike.userQnaQuestionLike;
+
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        //SELECT * FROM user_question_board
+        //JOIN user_question_like USING (user_question_board_code)
+        //WHERE user_question_like.user_id = "user0002";
+        if(principal instanceof User) {
+            User user = (User) principal;
+            if(liked){
+                List<UserQnaQuestionBoard> list = queryFactory
+                        .selectFrom(qUserQnaQuestionBoard)
+                        .join(qUserQnaQuestionLike).on(qUserQnaQuestionBoard.userQuestionBoardCode.eq(qUserQnaQuestionLike.userQuestionBoardCode))
+                        .where(qUserQnaQuestionLike.userId.eq(user.getUserId()))
+                        .fetch();
+
+
+                log.info("list :" + list);
+
+                Page<UserQnaQuestionBoard> likedlist = service.viewliked(list, pageable);
+                log.info("likedlist : " + likedlist);
+                return ResponseEntity.status(HttpStatus.OK).body(likedlist);
+            } else{
+                return ResponseEntity.status(HttpStatus.OK).body(service.viewAll(builder, pageable));
+            }
+
+        }
+        return null;
+    }
+
     // 3. 상세보기
     @GetMapping("/public/userQuestion/{code}")
     public ResponseEntity<UserQnaQuestionBoardDTO> view (@PathVariable(name="code") int code){
+
+        service.updateviewcount(code);
+
         UserQnaQuestionBoard result = service.view(code);
+
         UserQnaQuestionBoardDTO dto = UserQnaQuestionBoardDTO.builder()
                 .userQuestionBoardCode(result.getUserQuestionBoardCode())
                 .userQuestionBoardTitle(result.getUserQuestionBoardTitle())
                 .userQuestionBoardContent(result.getUserQuestionBoardContent())
                 .userQuestionBoardstatus(result.getUserQuestionBoardStatus())
+                .viewcount((result.getViewcount()))
+                .animalCategoryCode(result.getAnimalCategoryCode())
                 .userId(result.getUserId())
                 .userNickname(result.getUserNickname())
                 .userImg(result.getUserImg())
                 .images(service.viewImg(code))
                 .build();
+
+        log.info("조회수 : " + result.getViewcount());
 
         if(result.getUserQuestionBoardDate() == null){
             dto.setUserQuestionBoardDate(result.getUserQuestionBoardDateUpdate());
@@ -188,7 +321,8 @@ public class UserQnaBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    img.setUserQuestionImgUrl(saveName.substring(27));
+//                    img.setUserQuestionImgUrl(saveName.substring(27));
+                    img.setUserQuestionImgUrl(saveName.substring(38));
                     img.setUserQuestionBoardCode(dto.getUserQuestionBoardCode());
 
                     service.createImg(img);
@@ -204,7 +338,7 @@ public class UserQnaBoardController {
                         .userQuestionBoardCode(dto.getUserQuestionBoardCode())
                         .userQuestionBoardTitle(dto.getUserQuestionBoardTitle())
                         .userQuestionBoardContent(dto.getUserQuestionBoardContent())
-                        .userQuestionBoardStatus("N")
+                        .userQuestionBoardStatus('N')
                         .build();
 
                 service.update(vo);
@@ -233,22 +367,137 @@ public class UserQnaBoardController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 6-1. 답변 채택
+    @PostMapping("/userQuestion/answerChoose")
+    public ResponseEntity<UserQnaAnswerChoose> chooseAnswer(UserQnaAnswerChoose vo){
+        service.chooseAnswer(vo);
 
-    // answer =============================================================================================
-    // 1. answer 작성
-    @PostMapping("/userQuestion/answer")
-    public ResponseEntity createAnswer(@RequestBody UserQnaAnswerBoard vo){
+        // 채택 시 채택 상태 "Y"로 변경
+        UserQnaQuestionBoard result = service.view(vo.getUserQuestionBoardCode());
+        result.setUserQuestionBoardStatus('Y');
+        service.update(result);
+        return null;
+    }
+
+    // 6-2. 채택 취소하기
+    @DeleteMapping("/userQuestion/answerChoose/{code}")
+    public void deleteChoose(@PathVariable(name="code") int code){
+        UserQnaAnswerChoose chooseAnswer = service.getChoose(code);
+        log.info("취소할 답변 : " + chooseAnswer);
+
+        // 취소 시 채택 상태 N으로 변경
+        UserQnaQuestionBoard result = service.view(code);
+        result.setUserQuestionBoardStatus('N');
+        service.update(result);
+        service.deleteChoose(chooseAnswer.getChooseCode());
+    }
+
+    // 6-3. 채택된 답변 보기!
+    @GetMapping("/public/userQuestion/answerChoose/{code}")
+    public ResponseEntity<UserQnaAnswerBoard> getAnswer(@PathVariable(name="code") int code){
+        // questionBoardCode로 choose 찾아서 그와 연결된 answer 출력
+        UserQnaAnswerChoose choose = service.getChoose(code);
+        UserQnaAnswerBoard chooseAnswer;
+        if(choose != null){
+             chooseAnswer = answerService.viewAnswer(choose.getUserAnswerBoardCode());
+        } else {
+             chooseAnswer= null;
+        }
+
+        return chooseAnswer != null ? ResponseEntity.status(HttpStatus.OK).body(chooseAnswer) : ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 7-1. 좋아요 등록하기
+    @PostMapping("/userQuestion/like")
+    public ResponseEntity addLike(UserQnaQuestionLike like){
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
 
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            UserQnaQuestionLike vo = new UserQnaQuestionLike();
+            vo.setUserId(user.getUserId());
+            vo.setUserQuestionBoardCode(like.getUserQuestionBoardCode());
+
+            // 좋아요 시 udpate
+            UserQnaQuestionBoard result = service.view(like.getUserQuestionBoardCode());
+            service.updatelikecount(like.getUserQuestionBoardCode());
+
+            service.addLike(vo);
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 7-2. 좋아요 확인하기
+    @GetMapping("/userQuestion/like/{code}")
+    public int selectLike(@PathVariable(name="code") int code){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            UserQnaQuestionLike vo = new UserQnaQuestionLike();
+            vo.setUserId(user.getUserId());
+            vo.setUserQuestionBoardCode(code);
+
+            service.selectLike(vo);
+            if(service.selectLike(vo) == null){
+                return 0;
+            } else {
+                return 1;
+            }
+        } else{
+            return 0;
+        }
+    }
+
+    // 7-3. 좋아요 취소하기
+    @DeleteMapping("userQuestion/like/{code}")
+    public void deleteLike(@PathVariable(name="code") int code){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+        if(principal instanceof User) {
+            User user = (User) principal;
+
+            UserQnaQuestionLike vo = new UserQnaQuestionLike();
+            vo.setUserId(user.getUserId());
+            vo.setUserQuestionBoardCode(code);
+            service.discountlikecount(code);
+            service.deleteLike(vo);
+        }
+    }
+
+    // answer =============================================================================================
+    // 1. answer 작성
+    @PostMapping("/userQuestion/answer")
+    public ResponseEntity createAnswer(UserQnaAnswerBoardDTO dto){
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
         if(principal instanceof User){
             User user = (User) principal;
+
+            UserQnaAnswerBoard vo = new UserQnaAnswerBoard();
+
             vo.setUser(user);
             vo.setUserNickname(user.getUserNickname());
             vo.setUserImg(user.getUserImg());
+
+            vo.setUserQuestionBoardCode(dto.getUserQuestionBoardCode());
+
+            vo.setUserAnswerContent(dto.getUserAnswerContent());
+            vo.setAnswerParentCode(dto.getAnswerParentCode());
+
             return ResponseEntity.ok().body(answerService.create(vo));
         }
+
+        UserQnaQuestionBoard result = service.view(dto.getUserQuestionBoardCode());
+        result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(dto.getUserQuestionBoardCode()).size());
+        service.update(result);
         return ResponseEntity.badRequest().build();
     }
 
@@ -257,6 +506,10 @@ public class UserQnaBoardController {
     public ResponseEntity<List<UserQnaAnswerBoardDTO>> viewAnswers(@PathVariable(name="code") int code){
         List<UserQnaAnswerBoard> topList = answerService.getTopLevelAnswers(code);
         List<UserQnaAnswerBoardDTO> response = AnswerDetailList(topList, code);
+
+        UserQnaQuestionBoard vo = service.view(code);
+        vo.setUserQuestionBoardCount(topList.size());
+        service.update(vo);
 
         return ResponseEntity.ok(response);
     }
@@ -294,9 +547,17 @@ public class UserQnaBoardController {
 
     // 3. answer 수정
     @PutMapping("/userQuestion/answer")
-    public ResponseEntity<UserQnaAnswerBoard> updateAnswer(@RequestBody UserQnaAnswerBoardDTO dto){
+    public ResponseEntity<UserQnaAnswerBoard> updateAnswer(UserQnaAnswerBoardDTO dto){
+
         UserQnaAnswerBoard vo = answerService.viewAnswer(dto.getUserAnswerBoardCode());
-        vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
+
+        log.info("vo : " + vo);
+        log.info("dto : " + dto);
+        if(dto.getUserAnswerDate() == null){
+            vo.setUserAnswerDate(dto.getUserAnswerDateUpdate());
+        } else {
+            vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
+        }
         vo.setUserAnswerContent(dto.getUserAnswerContent());
 
         UserQnaAnswerBoard result = answerService.update(vo);
@@ -307,13 +568,25 @@ public class UserQnaBoardController {
 
     // 4. answer 삭제
     @DeleteMapping("/userQuestion/answer/{code}")
-    public ResponseEntity<UserQnaAnswerBoard> deleteAnswer(@PathVariable(name="code") int code){
-        UserQnaAnswerBoard vo = answerService.viewAnswer(code);
-        if(vo != null){
-            answerService.deleteAnswer(code);
+    public ResponseEntity<UserQnaAnswerBoard> deleteAnswer(@PathVariable(name="code") int parent){
+
+            for (UserQnaAnswerBoard element : answerService.getBottomLevelAnswers(parent)) {
+//                log.info("element : " + element);
+//                delete(element.getUserAnswerBoardCode());
+                answerService.deleteAnswer(element.getUserAnswerBoardCode());
+            }
+
+            // 본인삭제
+            answerService.deleteAnswer(parent);
+
+        UserQnaQuestionBoard result = service.view(parent);
+        result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(parent).size());
+        service.update(result);
+
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
     }
+
+
 
 }

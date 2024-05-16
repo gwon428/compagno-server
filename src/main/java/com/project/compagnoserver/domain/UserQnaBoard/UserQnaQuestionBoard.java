@@ -46,8 +46,14 @@ public class UserQnaQuestionBoard {
     private Timestamp userQuestionBoardDateUpdate;
 
     @Column(name="user_question_board_status")
-    private String userQuestionBoardStatus;
+    private char userQuestionBoardStatus;
 
     @Column(name="user_question_board_count")
     private int userQuestionBoardCount;
+
+    @Column
+    private int viewcount;
+
+    @Column
+    private int likecount;
 }

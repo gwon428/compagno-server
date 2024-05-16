@@ -76,4 +76,7 @@ public class Parsing {
 
     @Column(name="operating_hours")
     private String OperatingHours;
+
+    @Column
+    private int viewcount;
 }

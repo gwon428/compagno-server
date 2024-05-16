@@ -57,6 +57,8 @@ public class QParsing extends EntityPathBase<Parsing> {
 
     public final StringPath url = createString("url");
 
+    public final NumberPath<Integer> viewcount = createNumber("viewcount", Integer.class);
+
     public QParsing(String variable) {
         super(Parsing.class, forVariable(variable));
     }

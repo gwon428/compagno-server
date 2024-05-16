@@ -100,8 +100,9 @@ public class QnaQBoardController {
 
                         Path savePath = Paths.get(saveName);
                         file.transferTo(savePath);
-                        img.setQnaQUrl(saveName.substring(27));
-//                        img.setQnaQUrl(saveName.substring(30));
+//                        img.setQnaQUrl(saveName.substring(27));
+                        log.info(saveName);
+                        img.setQnaQUrl(saveName.substring(30));
                         img.setQnaQCode(result.getQnaQCode());
 
                         service.createImg(img);
@@ -284,8 +285,8 @@ public class QnaQBoardController {
                     Path savePath = Paths.get(saveName);
                     file.transferTo(savePath);
 
-                    img.setQnaQUrl(saveName.substring(27));
-//                    img.setQnaQUrl(saveName.substring(30));
+//                    img.setQnaQUrl(saveName.substring(27));
+                    img.setQnaQUrl(saveName.substring(30));
                     img.setQnaQCode(dto.getQnaQCode());
 
 
