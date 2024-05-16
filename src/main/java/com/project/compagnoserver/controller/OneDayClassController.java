@@ -57,14 +57,12 @@ public class OneDayClassController {
 
         // 사용자에게 입력받을거 !!
         ClassBoard vo = ClassBoard.builder()
-                .user(userInfo())
                 .odcTitle(dto.getOdcTitle())
                 .odcContent(dto.getOdcContent())
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
                 .odcAccompaying(dto.getOdcAccompaying().charAt(0))
-                .user(User.builder()
-                        .userId(userInfo().getUserId()).build())
+                .user(userInfo())
                 .build();
 
         ClassBoard result = service.insert(vo); // 등록할때 사용자가 적은걸 저장시키겠다 !
