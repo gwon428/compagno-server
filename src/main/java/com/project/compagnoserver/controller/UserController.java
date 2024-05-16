@@ -105,12 +105,6 @@ public class UserController {
         return ResponseEntity.badRequest().build();
     }
 
-    // 마이페이지 내 정보 가져오기
-    @GetMapping("/api/mypage/myinfo/{id}")
-    public ResponseEntity myPageInfo(@PathVariable("id") String id) {
-        return ResponseEntity.ok(userService.myPageInfo(id));
-    }
-
     // ID 중복검사
     @GetMapping("/signUp/checkid/{id}")
     public ResponseEntity checkUserId(@PathVariable("id") String id) {
