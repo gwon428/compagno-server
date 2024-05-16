@@ -57,14 +57,12 @@ public class OneDayClassController {
 
         // 사용자에게 입력받을거 !!
         ClassBoard vo = ClassBoard.builder()
-                .user(userInfo())
                 .odcTitle(dto.getOdcTitle())
                 .odcContent(dto.getOdcContent())
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
                 .odcAccompaying(dto.getOdcAccompaying().charAt(0))
-                .user(User.builder()
-                        .userId(userInfo().getUserId()).build())
+                .user(userInfo())
                 .build();
 
         ClassBoard result = service.insert(vo); // 등록할때 사용자가 적은걸 저장시키겠다 !
@@ -113,33 +111,41 @@ public class OneDayClassController {
     @PutMapping("/ClassBoard")
     public ResponseEntity update(ClassBoardDTO dto) throws ParseException, IOException {
 
-        // 기존에 등록되어 있던 원데이클래스 클래스중 하나의 정보를 가져오겠다 !!
-//        ClassBoard prev = service.view(dto.getOdcCode());
-        // prev라는 변수에다가 <= 클래스코드로 한개보기한 정보를 닮아 내겠다 !!
-        // 기존에 있던 이미지 정보 가져오기
-        List<ClassBoardMainImage> images = service.viewImg(dto.getOdcCode());
+        // file이 null이 아닐 때만 기존 이미지 삭제하고 해당 이미지 추가!
+        if(dto.getFile()!=null) {
+            // 기존 이미지 삭제 로직! 해당 경로에서 삭제하는 거랑 DB에서 해당 정보 삭제  (imageCode, imageURL)
+            // 반복문을 돌려서 url로 객체에 delete사용
+            File file = new File(dto.getImageURL());
+            file.delete();
 
-        for (ClassBoardMainImage image : images) {
-            if (dto.getFile() != null) {
-                File file = new File(image.getOdcMainImage());
-                file.delete();
-            } else {
-                ClassBoardMainImage imgVo = new ClassBoardMainImage(); // 객체 생성해서 받아내겠다.
+            // 동시에 이미지 테이블 관련 이미지의 odcCode로 삭제 기능 진행
+            service.deleteImg(dto.getImageCode());
 
-                String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
-                String uuid = UUID.randomUUID().toString();  // UUID
-                String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
-                Path savePath = Paths.get(saveName);
-                dto.getFile().transferTo(savePath);
-            }
+            // 새로운 이미지 추가하는 로직! (file)
+            ClassBoardMainImage imgVo = new ClassBoardMainImage(); // 객체 생성해서 받아내겠다.
+            // 파일 업로드 관련 ==================================================
+            String fileName = dto.getFile().getOriginalFilename(); // 파일 업로드
+            String uuid = UUID.randomUUID().toString();  // UUID
+            String saveName = uploadPath + File.separator + "ClassBoard" + File.separator + uuid + "_" + fileName;
+            Path savePath = Paths.get(saveName);
+
+            dto.getFile().transferTo(savePath); // 파일 업로드 실제로 일어나고 있음!
+
+            imgVo.setOdcMainImage(saveName);
+            imgVo.setClassBoard(ClassBoard.builder().odcCode(dto.getOdcCode()).build());
+
+            service.createImg(imgVo);
+
         }
 
+        //////
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = sdf.parse(dto.getOdcStartDate());
         Date lastDate = sdf.parse(dto.getOdcLastDate());
 
         // 원데이 클래스 수정할것들
         ClassBoard vo = ClassBoard.builder()
+                .odcCode(dto.getOdcCode())
                 .user(User.builder()
                         .userId(userInfo().getUserId()).build())
                 .odcTitle(dto.getOdcTitle())
@@ -168,16 +174,15 @@ public class OneDayClassController {
         // 1 . 이미지 테이블(onedayClassMainImage)에 해당 odcCode에 대한 이미지들을 가지고 와야한다 List<ClassBoardMainImage>
         //     ==>
 
-        List<ClassBoardMainImage> images = service.viewImg(odcCode); // images변수에다가 정보를 저장
+        ClassBoardMainImage image = service.viewImg(odcCode); // images변수에다가 정보를 저장
 
-        for (ClassBoardMainImage image : images) {
-            // 반복문을 돌려서 url로 객체에 delete사용
-            File file = new File(image.getOdcMainImage());
-            file.delete();
+        // 반복문을 돌려서 url로 객체에 delete사용
+        File file = new File(image.getOdcMainImage());
+        file.delete();
 
-            // 동시에 이미지 테이블 관련 이미지의 odcCode로 삭제 기능 진행
-            service.deleteImg(image.getOdcImageCode());
-        }
+        // 동시에 이미지 테이블 관련 이미지의 odcCode로 삭제 기능 진행
+        service.deleteImg(image.getOdcImageCode());
+
         service.delete(odcCode);
 
         return ResponseEntity.ok().build();
