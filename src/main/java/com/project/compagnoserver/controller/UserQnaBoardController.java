@@ -394,7 +394,7 @@ public class UserQnaBoardController {
 
     // 6-3. 채택된 답변 보기!
     @GetMapping("/public/userQuestion/answerChoose/{code}")
-    public ResponseEntity<UserQnaAnswerBoard> getAnswer(@PathVariable(name="code") int code){
+    public ResponseEntity<UserQnaAnswerBoardDTO> getAnswer(@PathVariable(name="code") int code){
         // questionBoardCode로 choose 찾아서 그와 연결된 answer 출력
         UserQnaAnswerChoose choose = service.getChoose(code);
         UserQnaAnswerBoard chooseAnswer;
@@ -404,7 +404,45 @@ public class UserQnaBoardController {
              chooseAnswer= null;
         }
 
-        return chooseAnswer != null ? ResponseEntity.status(HttpStatus.OK).body(chooseAnswer) : ResponseEntity.status(HttpStatus.OK).build();
+        List<UserQnaAnswerBoardDTO> response = new ArrayList<>();
+        // 상위 댓글의 revi 코드를 통해 하위 댓글 리스트 가져오기
+        List<UserQnaAnswerBoard> topChooseanswers = answerService.getBottomLevelAnswers(chooseAnswer.getUserAnswerBoardCode(), code);
+
+        // 하위 댓글을 dto를 통해 가공
+
+        for(UserQnaAnswerBoard answer : topChooseanswers){
+            UserQnaAnswerBoardDTO dto = UserQnaAnswerBoardDTO.builder()
+                    .userQuestionBoardCode(answer.getUserQuestionBoardCode())
+                    .userAnswerBoardCode(answer.getUserAnswerBoardCode())
+                    .user(UserDTO.builder()
+                            .userId(answer.getUser().getUserId())
+                            .userNickname(answer.getUserNickname())
+                            .userImg(answer.getUserImg())
+                            .build())
+                    .userAnswerContent(answer.getUserAnswerContent())
+                    .userAnswerDate(answer.getUserAnswerDate())
+                    .userAnswerDateUpdate(answer.getUserAnswerDateUpdate())
+                    .build();
+            response.add(dto);
+        }
+
+        UserQnaAnswerBoardDTO dto = UserQnaAnswerBoardDTO.builder()
+                .userQuestionBoardCode(chooseAnswer.getUserQuestionBoardCode())
+                .userAnswerBoardCode(chooseAnswer.getUserAnswerBoardCode())
+                .user(UserDTO.builder()
+                        .userId(chooseAnswer.getUser().getUserId())
+                        .userNickname(chooseAnswer.getUserNickname())
+                        .userImg(chooseAnswer.getUserImg())
+                        .build())
+                .userNickname(chooseAnswer.getUserNickname())
+                .userImg(chooseAnswer.getUserImg())
+                .userAnswerContent(chooseAnswer.getUserAnswerContent())
+                .userAnswerDate(chooseAnswer.getUserAnswerDate())
+                .userAnswerDateUpdate(chooseAnswer.getUserAnswerDateUpdate())
+                .answers(response)
+                .build();
+
+        return dto != null ? ResponseEntity.status(HttpStatus.OK).body(dto) : ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 7-1. 좋아요 등록하기
