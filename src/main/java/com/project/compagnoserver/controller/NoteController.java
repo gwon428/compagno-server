@@ -86,6 +86,14 @@ public class NoteController {
     }
 
     // 보기 ------------------------------------
+//    @GetMapping("/note/viewAllNotPage/{nickName}")
+//    public ResponseEntity<List<Note>> viewAllNotPage(@PathVariable(name="nickName")String nickName){
+//        log.info("nicknkame : " + nickName);
+//        List<Note> list = service.viewAllNotPage(nickName);
+//        log.info("list: " + list);
+//        return ResponseEntity.status(HttpStatus.OK).body(list);
+//    }
+
     // viewAll(전체보기) - 전체쪽지함
     @GetMapping("/note/viewAll/{nickName}")
     public ResponseEntity<Page<Note>> viewAll(@PathVariable(name="nickName")String nickName, @RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) String noteRegiDate){

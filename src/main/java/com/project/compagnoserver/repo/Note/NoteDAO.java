@@ -8,6 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface NoteDAO extends JpaRepository<Note, Integer>, QuerydslPredicateExecutor<Note> {
 
 @Modifying
@@ -19,5 +21,8 @@ public interface NoteDAO extends JpaRepository<Note, Integer>, QuerydslPredicate
     @Transactional
     @Query(value="UPDATE note SET star_receiver=(!star_receiver) WHERE note_code =:noteCode",nativeQuery = true )
     void updateStarReceiver(@Param("noteCode")int noteCode);
+
+//    @Query(value="SELECT * FROM note WHERE sender=:nickName OR receiver=:nickName", nativeQuery = true)
+//    List<Note> viewAllNotPage(@Param("nickName")String nickName);
 
 }
