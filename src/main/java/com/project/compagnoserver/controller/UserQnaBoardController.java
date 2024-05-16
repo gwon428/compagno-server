@@ -121,6 +121,9 @@ public class UserQnaBoardController {
         // 답변 많은순
         Sort sortanswers = Sort.by("userQuestionBoardCount").descending();
 
+        // 좋아요순
+        Sort likecounts = Sort.by("likecount").descending();
+
         // 조회순
         Sort viewcounts = Sort.by("viewcount").descending();
 
@@ -135,6 +138,9 @@ public class UserQnaBoardController {
             pageable = PageRequest.of(page-1, 10, sortanswers);
         }
         if(sortval == 4){
+            pageable = PageRequest.of(page-1, 10, viewcounts);
+        }
+        if(sortval == 5){
             pageable = PageRequest.of(page-1, 10, viewcounts);
         }
         }
@@ -200,7 +206,7 @@ public class UserQnaBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
-    // 해당 접속자가 해당 게시글에 좋아요를 눌렀는지 확인
+    // 좋아요한 글 리스트 보기
     @GetMapping("/userQuestion")
     public ResponseEntity<Page<UserQnaQuestionBoard>> viewliked(@RequestParam(name="liked", defaultValue = "false") boolean liked,
                                                                 @RequestParam(name="page", defaultValue = "1") int page){
@@ -407,12 +413,17 @@ public class UserQnaBoardController {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
+
         if(principal instanceof User) {
             User user = (User) principal;
 
             UserQnaQuestionLike vo = new UserQnaQuestionLike();
             vo.setUserId(user.getUserId());
             vo.setUserQuestionBoardCode(like.getUserQuestionBoardCode());
+
+            // 좋아요 시 udpate
+            UserQnaQuestionBoard result = service.view(like.getUserQuestionBoardCode());
+            service.updatelikecount(like.getUserQuestionBoardCode());
 
             service.addLike(vo);
         }
@@ -443,6 +454,7 @@ public class UserQnaBoardController {
         }
     }
 
+    // 7-3. 좋아요 취소하기
     @DeleteMapping("userQuestion/like/{code}")
     public void deleteLike(@PathVariable(name="code") int code){
         SecurityContext securityContext = SecurityContextHolder.getContext();
@@ -454,6 +466,7 @@ public class UserQnaBoardController {
             UserQnaQuestionLike vo = new UserQnaQuestionLike();
             vo.setUserId(user.getUserId());
             vo.setUserQuestionBoardCode(code);
+            service.discountlikecount(code);
             service.deleteLike(vo);
         }
     }

@@ -51,6 +51,9 @@ public class UserQnaQuestionBoard {
     @Column(name="user_question_board_count")
     private int userQuestionBoardCount;
 
-    @Column(name="viewcount")
+    @Column
     private int viewcount;
+
+    @Column
+    private int likecount;
 }

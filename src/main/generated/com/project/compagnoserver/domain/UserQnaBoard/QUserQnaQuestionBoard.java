@@ -21,6 +21,8 @@ public class QUserQnaQuestionBoard extends EntityPathBase<UserQnaQuestionBoard> 
 
     public final NumberPath<Integer> animalCategoryCode = createNumber("animalCategoryCode", Integer.class);
 
+    public final NumberPath<Integer> likecount = createNumber("likecount", Integer.class);
+
     public final StringPath userId = createString("userId");
 
     public final StringPath userImg = createString("userImg");

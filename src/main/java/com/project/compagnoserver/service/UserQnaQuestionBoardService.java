@@ -121,7 +121,16 @@ public class UserQnaQuestionBoardService {
         return like.save(vo);
     }
 
-    // 7-2. 좋아요 확인하기
+    // 7-2. 좋아요 시 update
+    @Transactional
+    public void updatelikecount(int code){
+        queryFactory.update(qUserQnaQuestionBoard)
+                .set(qUserQnaQuestionBoard.likecount, qUserQnaQuestionBoard.likecount.add(1))
+                .where(qUserQnaQuestionBoard.userQuestionBoardCode.eq(code))
+                .execute();
+    }
+
+    // 7-3. 좋아요 확인하기
     public UserQnaQuestionLike selectLike(UserQnaQuestionLike vo){
         return queryFactory.select(qUserQnaQuestionLike)
                 .from(qUserQnaQuestionLike)
@@ -130,9 +139,18 @@ public class UserQnaQuestionBoardService {
 
     }
 
-    // 7-3. 질문 삭제
+    // 7-4. 좋아요 취소하기
     public void deleteLike(UserQnaQuestionLike vo){
         UserQnaQuestionLike result = selectLike(vo);
         like.deleteById(result.getUserQuestionLikeCode());
+    }
+
+    // 7-5. 좋아요 취소 시 update
+    @Transactional
+    public void discountlikecount(int code){
+        queryFactory.update(qUserQnaQuestionBoard)
+                .set(qUserQnaQuestionBoard.likecount, qUserQnaQuestionBoard.likecount.add(-1))
+                .where(qUserQnaQuestionBoard.userQuestionBoardCode.eq(code))
+                .execute();
     }
 }

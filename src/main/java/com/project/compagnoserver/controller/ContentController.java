@@ -47,7 +47,7 @@ public class ContentController {
                 Sort.Order.asc("latitude"),
                 Sort.Order.asc("longtitude")
         );
-        Pageable pageable = PageRequest.of(page-1, 20, base);
+        Pageable pageable = PageRequest.of(page-1, 10, base);
 
 //        Sort viewcount = Sort.by("viewcount").descending();
 
