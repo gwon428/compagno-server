@@ -122,7 +122,6 @@ public class SitterBoardService {
 
     @Transactional
     public void sitterDeleteImg(int code) {
-        log.info("code : " + code);
         queryFactory.delete(qSitterBoardImage)
                 .where(qSitterBoardImage.sitterBoard.sitterBoardCode.eq(code))
                 .execute();

@@ -171,10 +171,11 @@ public class SitterBoardController {
                 .location(LocationParsing.builder()
                         .locationCode(sitterBoardDTO.getLocationCode()).build())
                 .sitterCategory(SitterCategory.builder()
-                        .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
+                        .sitterCategoryCode(sitterBoardDTO.getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
-                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
+//                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
+                .user(userInfo())
                 .sitterRegiDate(now)
                 .build();
 
@@ -246,11 +247,9 @@ public class SitterBoardController {
                 .sitterBoardCode(sitterBoardDTO.getSitterBoardCode())
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(sitterBoardDTO.getAnimalCategoryCode()).build())
-//                .location(LocationParsing.builder()
-//                        .locationCode(sitterBoardDTO.getLocationCode()).build())
                 .location(sitterBoard.getLocation())
                 .sitterCategory(SitterCategory.builder()
-                        .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
+                        .sitterCategoryCode(sitterBoardDTO.getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
                 .sitterUpdateDate(sitterBoard.getSitterUpdateDate())
@@ -279,6 +278,19 @@ public class SitterBoardController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+
+    // 로그인 정보
+    public User userInfo() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+        Object principal = authentication.getPrincipal();
+
+        if(principal instanceof User) {
+            User user = (User) principal;
+            return user;
+        }
+        return null;
+    }
 
 
 //    ========================================== 댓글 ==========================================

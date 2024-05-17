@@ -15,8 +15,7 @@ public class SitterBoardDTO {
 
     private int sitterBoardCode;
 
-//    private int sitterCategoryCode;
-    private SitterCategory sitterCategory;
+    private int sitterCategoryCode;
 
     private int animalCategoryCode;
 

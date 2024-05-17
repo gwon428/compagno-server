@@ -57,12 +57,7 @@ public class SitterBoard {
     @Column(name = "sitter_update_date")
     private Date sitterUpdateDate;
 
-//    @OneToMany(mappedBy = "sitterBoard", orphanRemoval = true)
     @OneToMany(mappedBy = "sitterBoard")
-
     private List<SitterBoardImage> images;
-
-//    @OneToMany(mappedBy = "sitterBoard")
-//    private List<SitterBoardComment> comments;
 
 }
