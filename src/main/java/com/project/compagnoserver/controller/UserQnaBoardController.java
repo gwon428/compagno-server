@@ -249,11 +249,17 @@ public class UserQnaBoardController {
         return null;
     }
 
+    // 3-0. 링크 클릭 시 조회수 업데이트
+    @PutMapping("/public/userQuestion/{code}")
+    public ResponseEntity<UserQnaQuestionBoard> updateviewcount (@PathVariable(name="code") int code){
+        service.updateviewcount(code);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     // 3. 상세보기
     @GetMapping("/public/userQuestion/{code}")
     public ResponseEntity<UserQnaQuestionBoardDTO> view (@PathVariable(name="code") int code){
 
-        service.updateviewcount(code);
 
         UserQnaQuestionBoard result = service.view(code);
 
@@ -402,6 +408,7 @@ public class UserQnaBoardController {
              chooseAnswer = answerService.viewAnswer(choose.getUserAnswerBoardCode());
         } else {
              chooseAnswer= null;
+             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
         List<UserQnaAnswerBoardDTO> response = new ArrayList<>();
