@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -150,6 +151,7 @@ public class OneDayClassController {
                         .userId(userInfo().getUserId()).build())
                 .odcTitle(dto.getOdcTitle())
                 .odcContent(dto.getOdcContent())
+                .odcRegiDate(Timestamp.valueOf(dto.getOdcRegiDate()))
                 .odcStartDate(startDate)
                 .odcLastDate(lastDate)
                 .odcAccompaying(dto.getOdcAccompaying().charAt(0))
