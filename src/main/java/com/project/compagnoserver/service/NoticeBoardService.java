@@ -4,8 +4,11 @@ import com.project.compagnoserver.domain.NoticeBoard.NoticeBoard;
 import com.project.compagnoserver.domain.NoticeBoard.NoticeBoardImage;
 import com.project.compagnoserver.domain.NoticeBoard.QNoticeBoard;
 import com.project.compagnoserver.domain.NoticeBoard.QNoticeBoardImage;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoard;
 import com.project.compagnoserver.repo.Notice.NoticeBoardDAO;
 import com.project.compagnoserver.repo.Notice.NoticeBoardImageDAO;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,5 +92,14 @@ public class NoticeBoardService {
                 .execute();
     }
 
-//    public Page<NoticeBoard> searchNoticeBoard(String select, String keyword, Pageable pageable)
+    public Page<NoticeBoard> searchNoticeBoard(String keyword, Pageable pageable) {
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = null;
+        if(keyword != null){
+            expression = qNoticeBoard.noticeBoardContent.contains(keyword);
+            builder.and(expression);
+        }
+
+        return board.findAll(builder, pageable);
+    }
 }

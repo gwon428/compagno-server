@@ -277,7 +277,6 @@ public class ProductBoardController {
     @GetMapping("/public/productBoard")
     public ResponseEntity<Page<ProductBoard>> searchBoard(@ModelAttribute ProductBoardSearchDTO dto, @RequestParam(name = "page", defaultValue = "1") int page) {
         Pageable pageable = PageRequest.of(page - 1, 12);
-        QProductBoard qProductBoard = QProductBoard.productBoard;
 
         Page<ProductBoard> list = productBoard.searchProductBoard(dto, pageable);
         return ResponseEntity.ok().body(list);

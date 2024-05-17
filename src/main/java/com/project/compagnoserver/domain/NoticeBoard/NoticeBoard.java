@@ -32,7 +32,7 @@ public class NoticeBoard {
     @Column(name = "notice_board_content")
     private String noticeBoardContent;
 
-    @Column(name = "notice_board_regi-date")
+    @Column(name = "notice_board_regi_date")
     private Date noticeBoardRegiDate;
 
     @Column(name = "notice_board_view_count")
