@@ -3,6 +3,7 @@ package com.project.compagnoserver.service;
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.Animal.QAdRecommendLogic;
 import com.project.compagnoserver.domain.Animal.QAnimalCategory;
+import com.project.compagnoserver.domain.user.QUser;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.repo.Animal.AdRecommendLogicDAO;
 import com.project.compagnoserver.repo.user.UserDAO;
@@ -93,16 +94,22 @@ public class UserService {
         return 0;
     }
 
-    // 프사제외 개인정보 변경
+    // 프사제외 개인정보 변경 user.getUserPwd()
     public void updateUser(User user) {
-        userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserId());
+        userDao.updateUserInfo(user.getUserEmail(), user.getUserPhone(), user.getUserId());
     }
 
     // 개인정보 + 프로필 변경
     public void changeProfile(User user) {
-        userDao.changeProfile(user.getUserEmail(), user.getUserPhone(), user.getUserPwd(), user.getUserImg(), user.getUserId());
+        userDao.changeProfile(user.getUserEmail(), user.getUserPhone(), user.getUserImg(), user.getUserId());
     }
 
-
-
+    // 비밀번호 변경
+    public void changePwd(User user) {
+        QUser qUser = QUser.user;
+        queryFactory.update(qUser)
+                .set(qUser.userPwd, user.getUserPwd())
+                .where(qUser.userId.eq(user.getUserId()))
+                .execute();
+    }
 }
