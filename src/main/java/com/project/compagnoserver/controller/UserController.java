@@ -97,7 +97,6 @@ public class UserController {
                     .userEnrollDate(showEnrollDate[0])
                     .token(token)
                     .build();
-            log.info("user : " + responseDTO);
             return ResponseEntity.ok().body(responseDTO);
         }
 
