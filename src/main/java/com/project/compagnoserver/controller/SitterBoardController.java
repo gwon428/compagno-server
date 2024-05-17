@@ -293,6 +293,19 @@ public class SitterBoardController {
     }
 
 
+
+//    ========================================== 북마크 ==========================================
+    @PostMapping("sitter/bookmark")
+    public ResponseEntity sitterBoardBookmark(@RequestBody SitterBoardBookmarkDTO sitterBoardBookmarkDTO) {
+        SitterBoardBookmark bookmarkVo = new SitterBoardBookmark();
+        bookmarkVo.setSitterBoard(SitterBoard.builder().sitterBoardCode(sitterBoardBookmarkDTO.getSitterBoardCode()).build());
+        bookmarkVo.setUser(User.builder().userId(sitterBoardBookmarkDTO.getUserId()).build());
+        sitterBoardService.sitterBoardBookmark(bookmarkVo);
+
+        return ResponseEntity.ok().build();
+    }
+
+
 //    ========================================== 댓글 ==========================================
 
     // 댓글 추가

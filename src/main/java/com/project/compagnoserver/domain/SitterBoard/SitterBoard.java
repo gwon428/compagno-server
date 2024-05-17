@@ -3,6 +3,7 @@ package com.project.compagnoserver.domain.SitterBoard;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.Animal.AnimalCategory;
 import com.project.compagnoserver.domain.Parsing.LocationParsing;
+import com.project.compagnoserver.domain.ProductBoard.ProductBoardComment;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

@@ -6,10 +6,7 @@ import com.project.compagnoserver.domain.Parsing.QLocationParsing;
 import com.project.compagnoserver.domain.SitterBoard.*;
 import com.project.compagnoserver.repo.Animal.AnimalCategoryDAO;
 import com.project.compagnoserver.repo.Parsing.LocationParsingDAO;
-import com.project.compagnoserver.repo.SitterBoard.SitterBoardDAO;
-import com.project.compagnoserver.repo.SitterBoard.SitterBoardImageDAO;
-import com.project.compagnoserver.repo.SitterBoard.SitterCategoryDAO;
-import com.project.compagnoserver.repo.SitterBoard.SitterCommentDAO;
+import com.project.compagnoserver.repo.SitterBoard.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +41,10 @@ public class SitterBoardService {
     @Autowired
     private SitterCommentDAO sitterCommentDAO;
     private final QSitterBoardComment qSitterBoardComment = QSitterBoardComment.sitterBoardComment;
+
+    @Autowired
+    private SitterBoardBookmarkDAO sitterBoardBookmarkDAO;
+    private final QSitterBoardBookmark qSitterBoardBookmark = QSitterBoardBookmark.sitterBoardBookmark;
 
     @Autowired
     private LocationParsingDAO locationParsingDAO;
@@ -125,6 +126,24 @@ public class SitterBoardService {
         queryFactory.delete(qSitterBoardImage)
                 .where(qSitterBoardImage.sitterBoard.sitterBoardCode.eq(code))
                 .execute();
+    }
+
+
+// ====================================== 북마크 ======================================
+    public Integer checkBookmark (SitterBoardBookmark bookmarkVo) {
+        return queryFactory.select(qSitterBoardBookmark.sitterBookmarkCode)
+                .from(qSitterBoardBookmark)
+                .where(qSitterBoardBookmark.sitterBoard.sitterBoardCode.eq(bookmarkVo.getSitterBoard().getSitterBoardCode()))
+                .where(qSitterBoardBookmark.user.userId.eq(bookmarkVo.getUser().getUserId()))
+                .fetchOne();
+    }
+
+    public void sitterBoardBookmark(SitterBoardBookmark bookmarkVo) {
+        if(checkBookmark(bookmarkVo) == null) {
+            sitterBoardBookmarkDAO.save(bookmarkVo);
+        } else {
+            sitterBoardBookmarkDAO.deleteById(checkBookmark(bookmarkVo));
+        }
     }
 
 
