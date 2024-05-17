@@ -412,13 +412,14 @@ public class UserQnaBoardController {
              return ResponseEntity.status(HttpStatus.OK).build();
         }
 
+
         List<UserQnaAnswerBoardDTO> response = new ArrayList<>();
         // 상위 댓글의 revi 코드를 통해 하위 댓글 리스트 가져오기
         List<UserQnaAnswerBoard> topChooseanswers = answerService.getBottomLevelAnswers(chooseAnswer.getUserAnswerBoardCode(), code);
 
         // 하위 댓글을 dto를 통해 가공
-
         for(UserQnaAnswerBoard answer : topChooseanswers){
+
             UserQnaAnswerBoardDTO dto = UserQnaAnswerBoardDTO.builder()
                     .userQuestionBoardCode(answer.getUserQuestionBoardCode())
                     .userAnswerBoardCode(answer.getUserAnswerBoardCode())
@@ -445,7 +446,7 @@ public class UserQnaBoardController {
                 .userNickname(chooseAnswer.getUserNickname())
                 .userImg(chooseAnswer.getUserImg())
                 .userAnswerContent(chooseAnswer.getUserAnswerContent())
-                .userAnswerDate(chooseAnswer.getUserAnswerDateUpdate())
+                .userAnswerDate(chooseAnswer.getUserAnswerDate())
                 .userAnswerDateUpdate(chooseAnswer.getUserAnswerDateUpdate())
                 .answers(response)
                 .build();
