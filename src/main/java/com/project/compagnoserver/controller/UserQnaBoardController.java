@@ -276,6 +276,7 @@ public class UserQnaBoardController {
                 .images(service.viewImg(code))
                 .build();
 
+        log.info("dtoimg : "+ result.getUserImg());
         log.info("조회수 : " + result.getViewcount());
 
         if(result.getUserQuestionBoardDate() == null){
@@ -427,7 +428,7 @@ public class UserQnaBoardController {
                             .userImg(answer.getUserImg())
                             .build())
                     .userAnswerContent(answer.getUserAnswerContent())
-                    .userAnswerDate(answer.getUserAnswerDate())
+                    .userAnswerDate(answer.getUserAnswerDateUpdate())
                     .userAnswerDateUpdate(answer.getUserAnswerDateUpdate())
                     .build();
             response.add(dto);
@@ -444,7 +445,7 @@ public class UserQnaBoardController {
                 .userNickname(chooseAnswer.getUserNickname())
                 .userImg(chooseAnswer.getUserImg())
                 .userAnswerContent(chooseAnswer.getUserAnswerContent())
-                .userAnswerDate(chooseAnswer.getUserAnswerDate())
+                .userAnswerDate(chooseAnswer.getUserAnswerDateUpdate())
                 .userAnswerDateUpdate(chooseAnswer.getUserAnswerDateUpdate())
                 .answers(response)
                 .build();
@@ -562,10 +563,18 @@ public class UserQnaBoardController {
     // 반복적인 메서드 빼기
     public UserQnaAnswerBoardDTO reanswerDetail(UserQnaAnswerBoard vo){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        if (vo.getUserAnswerDateUpdate() == null) {
+            vo.setUserAnswerDate(vo.getUserAnswerDate());
+        } else {
+            vo.setUserAnswerDate(vo.getUserAnswerDateUpdate());
+        }
+
         return UserQnaAnswerBoardDTO.builder()
                 .userQuestionBoardCode(vo.getUserQuestionBoardCode())
                 .userAnswerBoardCode(vo.getUserAnswerBoardCode())
                 .userAnswerContent(vo.getUserAnswerContent())
+
                 .userAnswerDate(vo.getUserAnswerDate())
                 .user(UserDTO.builder()
                         .userId(vo.getUser().getUserId())
@@ -598,11 +607,7 @@ public class UserQnaBoardController {
 
         log.info("vo : " + vo);
         log.info("dto : " + dto);
-        if(dto.getUserAnswerDate() == null){
-            vo.setUserAnswerDate(dto.getUserAnswerDateUpdate());
-        } else {
-            vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
-        }
+//
         vo.setUserAnswerContent(dto.getUserAnswerContent());
 
         UserQnaAnswerBoard result = answerService.update(vo);
