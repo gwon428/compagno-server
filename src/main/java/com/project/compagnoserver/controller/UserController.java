@@ -186,5 +186,4 @@ public class UserController {
         userService.changePwd(user);
         return ResponseEntity.ok().build();
     }
-
 }

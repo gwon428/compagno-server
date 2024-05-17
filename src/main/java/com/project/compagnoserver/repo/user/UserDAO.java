@@ -34,6 +34,6 @@ public interface UserDAO extends JpaRepository<User, String>, QuerydslPredicateE
     @Query(value = "UPDATE user SET user_email = :email, user_phone = :phone, user_img = :photo WHERE user_id = :id", nativeQuery = true)
     void changeProfile(@Param("email") String email, @Param("phone") String phone ,@Param("photo") String photo, @Param("id") String id);
 
-    // 비밀번호 변경
+
 
 }
