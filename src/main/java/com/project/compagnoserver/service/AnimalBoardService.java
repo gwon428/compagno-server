@@ -111,7 +111,6 @@ public class AnimalBoardService {
         public List<AnimalBoardFavorite> favList (){
             return queryFactory.selectFrom(qAnimalBoardFavorite)
 //                    .where(qAnimalBoardFavorite.animalBoard.animalBoardCode.eq())
-                    .orderBy(qAnimalBoardFavorite.animalBoard.animalBoardCode.asc())
                     .fetch();
         }
 

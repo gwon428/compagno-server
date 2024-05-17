@@ -92,6 +92,7 @@ public class AnimalBoardController {
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> writeBoard(@RequestBody AnimalBoardDTO dto){
         Date nowDate = currentDate();
+
         log.info("write dto : " + dto);
         Object principal = Authentication();
         if(principal instanceof  User) {
@@ -233,12 +234,14 @@ public class AnimalBoardController {
         List<AnimalBoardFavoriteDTO> listDTO = new ArrayList<>();
         for(AnimalBoardFavorite  fav : list){
             AnimalBoardFavoriteDTO dto =AnimalBoardFavoriteDTO.builder()
+                    .animal_favorite_code(fav.getAnimalFavoriteCode())
                     .animalBoardCode(fav.getAnimalBoard().getAnimalBoardCode())
                     .animalFavoriteDate(fav.getAnimalBoard().getAnimalBoardDate())
                     .userId(fav.getUser().getUserId())
                     .build();
             listDTO.add(dto);
         }
+        log.info("favDTO : " + listDTO);
         return ResponseEntity.ok(listDTO);
     }
 
@@ -450,7 +453,8 @@ public class AnimalBoardController {
     @PostMapping("/animal-board/addFavorite")
     public ResponseEntity<AnimalBoardFavorite> favoriteBoard(@RequestBody AnimalBoardFavoriteDTO dto){
         // 필요값 : userId, animalBoardCode
-        Date nowDate = currentDate();
+//        Date nowDate = currentDate();
+//        log.info("now : " + nowDate);
         AnimalBoardFavorite favoriteBoard = AnimalBoardFavorite.builder()
                 .animalBoard(AnimalBoard.builder()
                         .animalBoardCode(dto.getAnimalBoardCode())
@@ -458,7 +462,7 @@ public class AnimalBoardController {
                 .user(User.builder()
                         .userId(dto.getUserId())
                         .build())
-                .animalFavoriteDate(nowDate)
+//                .animalFavoriteDate(nowDate)
                 .build();
         favoriteService.favoriteBoard(favoriteBoard);
 
