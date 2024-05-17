@@ -19,6 +19,7 @@ public class ClassBoardDTO {
     private String odcTitle;
     private String odcAccompaying;
     private String odcContent;
+    private String odcRegiDate;
     private String odcStartDate;
     private String odcLastDate;
     // ===============================

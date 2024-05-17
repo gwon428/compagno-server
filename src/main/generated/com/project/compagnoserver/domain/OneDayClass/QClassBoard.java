@@ -32,7 +32,7 @@ public class QClassBoard extends EntityPathBase<ClassBoard> {
 
     public final DateTimePath<java.util.Date> odcLastDate = createDateTime("odcLastDate", java.util.Date.class);
 
-    public final DateTimePath<java.util.Date> odcRegiDate = createDateTime("odcRegiDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> odcRegiDate = createDateTime("odcRegiDate", java.sql.Timestamp.class);
 
     public final DateTimePath<java.util.Date> odcStartDate = createDateTime("odcStartDate", java.util.Date.class);
 

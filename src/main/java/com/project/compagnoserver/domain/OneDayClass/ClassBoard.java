@@ -42,7 +42,7 @@ public class ClassBoard {
 
     // 원데이 클래스 등록 날짜
     @Column(name = "odc_regi_date")
-    private Date odcRegiDate;
+    private Timestamp odcRegiDate;
 
     // 원데이 클래스 시작 날짜
     @Column(name = "odc_start_date")
