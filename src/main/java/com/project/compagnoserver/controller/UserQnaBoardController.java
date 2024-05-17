@@ -426,7 +426,7 @@ public class UserQnaBoardController {
                     .user(UserDTO.builder()
                             .userId(answer.getUser().getUserId())
                             .userNickname(answer.getUserNickname())
-                            .userImg(answer.getUserImg())
+                            .userImg(answer.getUser().getUserImg())
                             .build())
                     .userAnswerContent(answer.getUserAnswerContent())
                     .userAnswerDate(answer.getUserAnswerDateUpdate())
@@ -440,8 +440,8 @@ public class UserQnaBoardController {
                 .userAnswerBoardCode(chooseAnswer.getUserAnswerBoardCode())
                 .user(UserDTO.builder()
                         .userId(chooseAnswer.getUser().getUserId())
-                        .userNickname(chooseAnswer.getUserNickname())
-                        .userImg(chooseAnswer.getUserImg())
+                        .userNickname(chooseAnswer.getUser().getUserNickname())
+                        .userImg(chooseAnswer.getUser().getUserImg())
                         .build())
                 .userNickname(chooseAnswer.getUserNickname())
                 .userImg(chooseAnswer.getUserImg())
@@ -627,12 +627,15 @@ public class UserQnaBoardController {
                 answerService.deleteAnswer(element.getUserAnswerBoardCode());
             }
 
-            // 본인삭제
-            answerService.deleteAnswer(parent);
-
         UserQnaQuestionBoard result = service.view(parent);
-        result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(parent).size());
-        service.update(result);
+            if(result != null){
+                result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(parent).size());
+                service.update(result);
+            } 
+
+
+        // 본인삭제
+        answerService.deleteAnswer(parent);
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 
