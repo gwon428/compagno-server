@@ -13,6 +13,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -205,6 +209,7 @@ public class NoticeBoardController {
                         .build())
                 .build();
         comment.update(vo);
+
         return ResponseEntity.ok().build();
     }
 
@@ -221,7 +226,6 @@ public class NoticeBoardController {
     public ResponseEntity<List<NoticeBoardCommentDTO>> viewComment(@PathVariable (name = "code") int code) {
         List<NoticeBoardComment> list = comment.getTopLevelComments(code);
         List<NoticeBoardCommentDTO> response = new ArrayList<>();
-
         for(NoticeBoardComment item : list) {
             List<NoticeBoardComment> comments = comment.getBottomComments(item.getNoticeCommentCode() ,code);
             List<NoticeBoardCommentDTO> replies = new ArrayList<>();
@@ -266,4 +270,14 @@ public class NoticeBoardController {
         return null;
     }
 
+    @GetMapping("/public/noticeBoard")
+    public ResponseEntity<Page<NoticeBoard>> searchBoard(
+            @RequestParam(name="keyword", required = false)String keyword,
+            @RequestParam(name="page", defaultValue = "1")int page) {
+        Pageable pageable = PageRequest.of(page - 1, 12, Sort.by("noticeBoardRegiDate").descending());
+
+        Page<NoticeBoard> list = noticeBoard.searchNoticeBoard(keyword, pageable);
+        return ResponseEntity.ok().body(list);
+    }
 }
+

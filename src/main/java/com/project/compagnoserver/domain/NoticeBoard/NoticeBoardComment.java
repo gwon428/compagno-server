@@ -37,7 +37,7 @@ public class NoticeBoardComment {
     private Date noticeCommentRegiDate;
 
     @Column(name = "notice_comment_delete")
-    private char noticeCommentDelete;
+    private Character noticeCommentDelete;
 
     @Column(name = "notice_parent_code")
     private int noticeParentCode;
