@@ -227,12 +227,36 @@ public class AnimalBoardController {
 
         return list!=null ? ResponseEntity.ok(list) : ResponseEntity.badRequest().build();
     }
+    @GetMapping("public/animal-board/weeklyRank-fav") // with boardCode eq favoriteBoard
+    public ResponseEntity<List<AnimalBoardFavoriteDTO>> favList (){
+        List<AnimalBoardFavorite> list = animalBoardService.favList();
+        List<AnimalBoardFavoriteDTO> listDTO = new ArrayList<>();
+        for(AnimalBoardFavorite  fav : list){
+            AnimalBoardFavoriteDTO dto =AnimalBoardFavoriteDTO.builder()
+                    .animalBoardCode(fav.getAnimalBoard().getAnimalBoardCode())
+                    .animalFavoriteDate(fav.getAnimalBoard().getAnimalBoardDate())
+                    .userId(fav.getUser().getUserId())
+                    .build();
+            listDTO.add(dto);
+        }
+        return ResponseEntity.ok(listDTO);
+    }
+
     //랭킹 - 좋아요 상위권 불러오기
     @GetMapping("public/animal-board/weeklyRank")
     public ResponseEntity<List<AnimalBoardDTO>> viewRankers (){
-        List<AnimalBoard> list = animalBoardService.viewRankers();
+        List<AnimalBoard> list = animalBoardService.viewRankers(); //toplist
         List<AnimalBoardDTO> listDTO = new ArrayList<>();
         for(AnimalBoard part :list){
+//            List<AnimalBoardFavorite> favList = animalBoardService.favList(part.getAnimalBoardCode());
+//            List<AnimalBoardFavoriteDTO> favListDTO = new ArrayList<>();
+//            for(AnimalBoardFavorite child : favList){
+//                AnimalBoardFavoriteDTO dto =AnimalBoardFavoriteDTO.builder()
+//                        .animalBoardCode(child.getAnimalBoard().getAnimalBoardCode())
+//                        .animalFavoriteDate(child.getAnimalFavoriteDate())
+//                        .build();
+//                favListDTO.add(dto);
+//            }
             AnimalBoardDTO dto = AnimalBoardDTO.builder()
                     .animalBoardCode(part.getAnimalBoardCode())
                     .animalBoardView(part.getAnimalBoardView())
@@ -245,6 +269,7 @@ public class AnimalBoardController {
                             .build())
                     .build();
             listDTO.add(dto);
+
         }
 
         return  ResponseEntity.ok(listDTO);

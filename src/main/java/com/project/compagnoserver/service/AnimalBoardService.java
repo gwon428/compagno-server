@@ -34,6 +34,7 @@ public class AnimalBoardService {
     private final QAnimalCategory qAnimalCategory = QAnimalCategory.animalCategory;
     private final QUser qUser = QUser.user;
     private final QAnimalBoardImage qAnimalBoardImage = QAnimalBoardImage.animalBoardImage1;
+    private final QAnimalBoardFavorite qAnimalBoardFavorite = QAnimalBoardFavorite.animalBoardFavorite;
 
     private final QAnimalBoardComment qAnimalBoardComment = QAnimalBoardComment.animalBoardComment;
 
@@ -105,6 +106,13 @@ public class AnimalBoardService {
                     .orderBy(qAnimalBoard.animalBoardFavoriteCount.desc())
                     .fetch();
 
+        }
+    // 자유게시판 - 좋아요 상위권 전체보기 - favorite board로 가져오기
+        public List<AnimalBoardFavorite> favList (){
+            return queryFactory.selectFrom(qAnimalBoardFavorite)
+//                    .where(qAnimalBoardFavorite.animalBoard.animalBoardCode.eq())
+                    .orderBy(qAnimalBoardFavorite.animalBoard.animalBoardCode.asc())
+                    .fetch();
         }
 
 
