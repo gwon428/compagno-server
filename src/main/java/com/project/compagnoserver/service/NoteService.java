@@ -33,7 +33,14 @@ public class NoteService {
     // List_viewAll(전체보기 : 전체 쪽지 리스트 확인)
     public Page<Note> viewAll(Pageable pageable, BooleanBuilder builder){return noteDAO.findAll(builder, pageable);}
 
-//    public List<Note> viewAllNotPage(String nickName){return noteDAO.viewAllNotPage(nickName);}
+    public int delCount(String nickName){return noteDAO.delCount(nickName);}
+    public int delReceiverCount(String nickName){return noteDAO.delReceiverCount(nickName);}
+    public int delSenderCount(String nickName){return noteDAO.delSenderCount(nickName);}
+    public int starCount(String nickName){return noteDAO.starCount(nickName);}
+
+
+
+
     // List_viewSendBox(보낸 쪽지함 : 쪽지 리스트로 확인)
     public Page<Note> viewSendBox(Pageable pageable, BooleanBuilder builder){return noteDAO.findAll(builder, pageable);}
 
