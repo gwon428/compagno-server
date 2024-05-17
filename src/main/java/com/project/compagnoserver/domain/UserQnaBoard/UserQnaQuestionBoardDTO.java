@@ -1,5 +1,6 @@
 package com.project.compagnoserver.domain.UserQnaBoard;
 
+import com.project.compagnoserver.domain.user.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,7 @@ import java.util.List;
 @Data @NoArgsConstructor @AllArgsConstructor @Builder
 public class UserQnaQuestionBoardDTO {
     private int userQuestionBoardCode;
+    private UserDTO user;
     private String userId;
     private String userNickname;
     private String userImg;

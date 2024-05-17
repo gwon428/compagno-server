@@ -249,11 +249,17 @@ public class UserQnaBoardController {
         return null;
     }
 
+    // 3-0. 링크 클릭 시 조회수 업데이트
+    @PutMapping("/public/userQuestion/{code}")
+    public ResponseEntity<UserQnaQuestionBoard> updateviewcount (@PathVariable(name="code") int code){
+        service.updateviewcount(code);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     // 3. 상세보기
     @GetMapping("/public/userQuestion/{code}")
     public ResponseEntity<UserQnaQuestionBoardDTO> view (@PathVariable(name="code") int code){
 
-        service.updateviewcount(code);
 
         UserQnaQuestionBoard result = service.view(code);
 
@@ -270,6 +276,7 @@ public class UserQnaBoardController {
                 .images(service.viewImg(code))
                 .build();
 
+        log.info("dtoimg : "+ result.getUserImg());
         log.info("조회수 : " + result.getViewcount());
 
         if(result.getUserQuestionBoardDate() == null){
@@ -394,7 +401,7 @@ public class UserQnaBoardController {
 
     // 6-3. 채택된 답변 보기!
     @GetMapping("/public/userQuestion/answerChoose/{code}")
-    public ResponseEntity<UserQnaAnswerBoard> getAnswer(@PathVariable(name="code") int code){
+    public ResponseEntity<UserQnaAnswerBoardDTO> getAnswer(@PathVariable(name="code") int code){
         // questionBoardCode로 choose 찾아서 그와 연결된 answer 출력
         UserQnaAnswerChoose choose = service.getChoose(code);
         UserQnaAnswerBoard chooseAnswer;
@@ -402,9 +409,49 @@ public class UserQnaBoardController {
              chooseAnswer = answerService.viewAnswer(choose.getUserAnswerBoardCode());
         } else {
              chooseAnswer= null;
+             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
-        return chooseAnswer != null ? ResponseEntity.status(HttpStatus.OK).body(chooseAnswer) : ResponseEntity.status(HttpStatus.OK).build();
+
+        List<UserQnaAnswerBoardDTO> response = new ArrayList<>();
+        // 상위 댓글의 revi 코드를 통해 하위 댓글 리스트 가져오기
+        List<UserQnaAnswerBoard> topChooseanswers = answerService.getBottomLevelAnswers(chooseAnswer.getUserAnswerBoardCode(), code);
+
+        // 하위 댓글을 dto를 통해 가공
+        for(UserQnaAnswerBoard answer : topChooseanswers){
+
+            UserQnaAnswerBoardDTO dto = UserQnaAnswerBoardDTO.builder()
+                    .userQuestionBoardCode(answer.getUserQuestionBoardCode())
+                    .userAnswerBoardCode(answer.getUserAnswerBoardCode())
+                    .user(UserDTO.builder()
+                            .userId(answer.getUser().getUserId())
+                            .userNickname(answer.getUserNickname())
+                            .userImg(answer.getUser().getUserImg())
+                            .build())
+                    .userAnswerContent(answer.getUserAnswerContent())
+                    .userAnswerDate(answer.getUserAnswerDateUpdate())
+                    .userAnswerDateUpdate(answer.getUserAnswerDateUpdate())
+                    .build();
+            response.add(dto);
+        }
+
+        UserQnaAnswerBoardDTO dto = UserQnaAnswerBoardDTO.builder()
+                .userQuestionBoardCode(chooseAnswer.getUserQuestionBoardCode())
+                .userAnswerBoardCode(chooseAnswer.getUserAnswerBoardCode())
+                .user(UserDTO.builder()
+                        .userId(chooseAnswer.getUser().getUserId())
+                        .userNickname(chooseAnswer.getUser().getUserNickname())
+                        .userImg(chooseAnswer.getUser().getUserImg())
+                        .build())
+                .userNickname(chooseAnswer.getUserNickname())
+                .userImg(chooseAnswer.getUserImg())
+                .userAnswerContent(chooseAnswer.getUserAnswerContent())
+                .userAnswerDate(chooseAnswer.getUserAnswerDate())
+                .userAnswerDateUpdate(chooseAnswer.getUserAnswerDateUpdate())
+                .answers(response)
+                .build();
+
+        return dto != null ? ResponseEntity.status(HttpStatus.OK).body(dto) : ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 7-1. 좋아요 등록하기
@@ -517,10 +564,18 @@ public class UserQnaBoardController {
     // 반복적인 메서드 빼기
     public UserQnaAnswerBoardDTO reanswerDetail(UserQnaAnswerBoard vo){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        if (vo.getUserAnswerDateUpdate() == null) {
+            vo.setUserAnswerDate(vo.getUserAnswerDate());
+        } else {
+            vo.setUserAnswerDate(vo.getUserAnswerDateUpdate());
+        }
+
         return UserQnaAnswerBoardDTO.builder()
                 .userQuestionBoardCode(vo.getUserQuestionBoardCode())
                 .userAnswerBoardCode(vo.getUserAnswerBoardCode())
                 .userAnswerContent(vo.getUserAnswerContent())
+
                 .userAnswerDate(vo.getUserAnswerDate())
                 .user(UserDTO.builder()
                         .userId(vo.getUser().getUserId())
@@ -553,11 +608,7 @@ public class UserQnaBoardController {
 
         log.info("vo : " + vo);
         log.info("dto : " + dto);
-        if(dto.getUserAnswerDate() == null){
-            vo.setUserAnswerDate(dto.getUserAnswerDateUpdate());
-        } else {
-            vo.setUserAnswerDateUpdate(dto.getUserAnswerDate());
-        }
+//
         vo.setUserAnswerContent(dto.getUserAnswerContent());
 
         UserQnaAnswerBoard result = answerService.update(vo);
@@ -576,12 +627,15 @@ public class UserQnaBoardController {
                 answerService.deleteAnswer(element.getUserAnswerBoardCode());
             }
 
-            // 본인삭제
-            answerService.deleteAnswer(parent);
-
         UserQnaQuestionBoard result = service.view(parent);
-        result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(parent).size());
-        service.update(result);
+            if(result != null){
+                result.setUserQuestionBoardCount(answerService.getTopLevelAnswers(parent).size());
+                service.update(result);
+            } 
+
+
+        // 본인삭제
+        answerService.deleteAnswer(parent);
 
             return ResponseEntity.status(HttpStatus.ACCEPTED).build();
 
