@@ -141,7 +141,7 @@ public class UserQnaBoardController {
             pageable = PageRequest.of(page-1, 10, viewcounts);
         }
         if(sortval == 5){
-            pageable = PageRequest.of(page-1, 10, viewcounts);
+            pageable = PageRequest.of(page-1, 10, likecounts);
         }
         }
 
@@ -150,11 +150,8 @@ public class UserQnaBoardController {
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression;
 
-        /*
-        * SELECT * FROM
-        * */
         if(title != null){
-            log.info("title : ");
+            log.info("title : " + title);
             expression = qUserQnaQuestionBoard.userQuestionBoardTitle.like("%" + title + "%");
             builder.or(expression);
         }
@@ -206,7 +203,7 @@ public class UserQnaBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
-    // 좋아요한 글 리스트 보기
+    // 7-0. 좋아요한 글 리스트 보기
     @GetMapping("/userQuestion")
     public ResponseEntity<Page<UserQnaQuestionBoard>> viewliked(@RequestParam(name="liked", defaultValue = "false") boolean liked,
                                                                 @RequestParam(name="page", defaultValue = "1") int page){
@@ -329,6 +326,7 @@ public class UserQnaBoardController {
                     file.transferTo(savePath);
 
 //                    img.setUserQuestionImgUrl(saveName.substring(27));
+
                     img.setUserQuestionImgUrl(saveName.substring(38));
                     img.setUserQuestionBoardCode(dto.getUserQuestionBoardCode());
 
