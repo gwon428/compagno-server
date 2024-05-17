@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class NoteService {
@@ -31,6 +33,7 @@ public class NoteService {
     // List_viewAll(전체보기 : 전체 쪽지 리스트 확인)
     public Page<Note> viewAll(Pageable pageable, BooleanBuilder builder){return noteDAO.findAll(builder, pageable);}
 
+//    public List<Note> viewAllNotPage(String nickName){return noteDAO.viewAllNotPage(nickName);}
     // List_viewSendBox(보낸 쪽지함 : 쪽지 리스트로 확인)
     public Page<Note> viewSendBox(Pageable pageable, BooleanBuilder builder){return noteDAO.findAll(builder, pageable);}
 
@@ -44,6 +47,10 @@ public class NoteService {
     public Page<Note> findBySearch(Pageable pageable, BooleanBuilder builder){
         return noteDAO.findAll(builder, pageable);
     }
+
+    // 중요 쪽지함
+    public void updateStarSender(int noteCode){noteDAO.updateStarSender(noteCode);}
+    public void updateStarReceiver(int noteCode){noteDAO.updateStarReceiver(noteCode);}
 
 
     // [수정] ------------------------------------------------------------------------------

@@ -159,7 +159,7 @@ public class ProductBoardController {
         res.addCookie(cookie);
     }
 
-    // 게시판 수정 (이미지 관련 수정 필요)
+    // 게시판 수정
     @PatchMapping("/productBoard")
     public ResponseEntity<ProductBoard> update(ProductBoardDTO dto) throws IOException {
         ProductBoard prev = productBoard.viewBoard(dto.getProductBoardCode());
@@ -357,5 +357,13 @@ public class ProductBoardController {
             response.add(dto);
         }
         return ResponseEntity.ok(response);
+    }
+
+
+    // 동물 카테고리 전체보기
+    @GetMapping("public/productBoard/animalCategory")
+    public ResponseEntity<List<AnimalCategory>> animalCategoryView() {
+        List<AnimalCategory> animalCategoryList = productBoard.animalCategoryView();
+        return ResponseEntity.ok().body(animalCategoryList);
     }
 }

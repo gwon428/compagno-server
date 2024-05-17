@@ -1,6 +1,7 @@
 package com.project.compagnoserver.controller;
 
 import com.project.compagnoserver.domain.AdoptionBoard.*;
+import com.project.compagnoserver.domain.LostBoard.LostBoard;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.domain.user.UserDTO;
 import com.project.compagnoserver.service.AdoptionBoardCommentService;
@@ -105,6 +106,13 @@ public class AdoptionBoardController {
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
+    // 조회수 관련
+    @PutMapping("public/adopBoard/viewCount")
+    public ResponseEntity<AdoptionBoard> updateViewCount(@RequestParam(name="adopBoardCode", defaultValue = "0") int adopBoardCode){
+        service.updateView(adopBoardCode);
+        return ResponseEntity.ok().build();
+    }
+
     // 전체보기(페이징, 검색, 정렬)
     // 검색 : 종류(전체, 강아지, 고양이, 그외) / 성별 /  입양 동물 중성화 유무 / 센터 이름 / 입양 동물 발견 장소
     // 정렬 : 작성일 순(오래된 순/최신순) / 조회수 순(높&낮)
@@ -150,15 +158,15 @@ public class AdoptionBoardController {
             pageable = PageRequest.of(page-1, 12, aRegiDate);
         }
 
-//        Sort aViewCount = Sort.by("adopViewCount");
-//        Sort aViewCountD = Sort.by("adopViewCount").descending();
-//
-//        if(sortNum==2){
-//            pageable = PageRequest.of(page-1, 12, aViewCount);
-//        }
-//        if(sortNum==3){
-//            pageable = PageRequest.of(page-1, 12, aViewCountD);
-//        }
+        Sort aViewCount = Sort.by("adopViewCount");
+        Sort aViewCountD = Sort.by("adopViewCount").descending();
+
+        if(sortNum==2){
+            pageable = PageRequest.of(page-1, 12, aViewCount);
+        }
+        if(sortNum==3){
+            pageable = PageRequest.of(page-1, 12, aViewCountD);
+        }
 
         return ResponseEntity.ok(service.viewAll(pageable, builder));
     }

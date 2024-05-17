@@ -5,6 +5,7 @@ import com.project.compagnoserver.domain.QnaA.QnaABoardDTO;
 import com.project.compagnoserver.domain.QnaA.QnaABoardImage;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoard;
 import com.project.compagnoserver.domain.QnaQ.QnaQBoardImage;
+import com.project.compagnoserver.domain.UserQnaBoard.UserQnaAnswerChoose;
 import com.project.compagnoserver.domain.user.User;
 import com.project.compagnoserver.service.QnaABoardService;
 import com.project.compagnoserver.service.QnaQBoardService;
@@ -188,6 +189,7 @@ public class QnaABoardController {
 
         return ResponseEntity.ok().build();
     }
+
 
     // 답변 삭제
     @DeleteMapping("/answer/{code}")

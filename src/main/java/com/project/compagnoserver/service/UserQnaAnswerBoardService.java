@@ -43,8 +43,15 @@ public class UserQnaAnswerBoardService {
                 .fetch();
     }
 
+    public List<UserQnaAnswerBoard> getBottomLevelAnswers(int parent){
+        return queryFactory.selectFrom(qUserQnaAnswerBoard)
+                .where(qUserQnaAnswerBoard.answerParentCode.eq(parent))
+                .fetch();
+    }
+
     // 4-1. 수정할 Answer 찾기
     public UserQnaAnswerBoard viewAnswer(int code){
+        log.info("code : " + code);
         return dao.findById(code).orElse(null);
     }
 
@@ -57,11 +64,14 @@ public class UserQnaAnswerBoardService {
         return null;
     }
 
-    // 5. Answer 삭제
+    // 5-1. Answer 삭제
     public void deleteAnswer (int code){
         UserQnaAnswerBoard vo = dao.findById(code).orElse(null);
         if(vo != null){
             dao.delete(vo);
         }
     }
+
+
+
 }

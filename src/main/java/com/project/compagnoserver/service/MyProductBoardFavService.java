@@ -31,8 +31,16 @@ public class MyProductBoardFavService {
     // 북마크한 상품 목록 출력
     public Page<ProductBoardBookmark> myFavList(Pageable pageable, BooleanBuilder builder) {
 
-
         return mpbfDAO.findAll(builder, pageable);
+    }
+
+    // 북마크한 상품 갯수 보내기
+
+    public Long countBookmark(String id) {
+        return jpaQueryFactory.select(qProductBoardBookmark.count())
+                .from(qProductBoardBookmark)
+                .where(qProductBoardBookmark.user.userId.eq(id))
+                .fetchOne();
     }
 
 

@@ -1,9 +1,11 @@
 package com.project.compagnoserver.domain.NoticeBoard;
 
 
+import com.project.compagnoserver.domain.ProductBoard.ProductBoardComment;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @DynamicInsert
+@Builder
 @Table(name="notice_board")
 public class NoticeBoard {
     @Id
@@ -38,6 +41,9 @@ public class NoticeBoard {
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
+
+    @OneToMany(mappedBy = "noticeBoard")
+    private List<NoticeBoardComment> comments;
 
     @OneToMany(mappedBy = "noticeBoard")
     private List<NoticeBoardImage> images;

@@ -102,6 +102,16 @@ public class LostBoardController {
                 ResponseEntity.status(HttpStatus.CREATED).body(result):
                 ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
+    // 조회수 관련
+@PutMapping("public/lostBoard/viewCount")
+public ResponseEntity<LostBoard> updateViewCount(@RequestParam(name="lostBoardCode", defaultValue = "0") int lostBoardCode){
+    log.info("lostBoardCode : " + lostBoardCode);
+    service.updateView(lostBoardCode);
+    return ResponseEntity.ok().build();
+}
+
+
     // 전체 보기------------------------------------------------------------------------------
     // 검색 : 종류(전체, 강아지, 고양이, 그외) / 성별 / 작성자 닉네임 / 분실 날짜 / 분실 지역 / 분실 동물 이름
     // 정렬 : 분실 날짜순(오래된순, 최신순) / 조회수순(높은순, 낮은순) / 작성일순(오래된순/최신순)
@@ -173,15 +183,15 @@ public class LostBoardController {
 
 
         // 조회수순(낮은 순, 높은 순)
-//        Sort lViewCount = Sort.by("lostViewCount");
-//        Sort lViewCountD = Sort.by("lostViewCount").descending();
-//
-//        if(sortNum==4){
-//            pageable = PageRequest.of(page-1, 9, lViewCount);
-//        }
-//        if(sortNum==5){
-//            pageable = PageRequest.of(page-1, 9, lViewCountD);
-//        }
+        Sort lViewCount = Sort.by("lostViewCount");
+        Sort lViewCountD = Sort.by("lostViewCount").descending();
+
+        if(sortNum==4){
+            pageable = PageRequest.of(page-1, 12, lViewCount);
+        }
+        if(sortNum==5){
+            pageable = PageRequest.of(page-1, 12, lViewCountD);
+        }
 
         return ResponseEntity.ok(service.viewAll(pageable, builder));
     }
