@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class AnimalBoardDTO {
     private int animalBoardCode;
     private int animalCategoryCode; // 게시글 작성시 코드 받아오기
     private AnimalCategory animalCategory; // 게시글 볼때(detail/edit) 정보 보내기
+    private List<AnimalBoardFavorite> favList = new ArrayList<>();
 
     private int animalBoardFavoriteCount; //게시글 좋아요 수
     private int animalCommentCount; // 얘는 컬럼명 없음
