@@ -22,8 +22,6 @@ public class ClassBoardDTO {
     private String odcRegiDate;
     private String odcStartDate;
     private String odcLastDate;
-    // ===============================
-
     private MultipartFile file; // 새로추가된이미지
     private int imageCode; // 이미지코드를 받는거
     private String imageURL; // 이미지URL을 받는거
