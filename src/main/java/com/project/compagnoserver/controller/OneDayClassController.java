@@ -113,7 +113,7 @@ public class OneDayClassController {
     public ResponseEntity update(ClassBoardDTO dto) throws ParseException, IOException {
 
         // file이 null이 아닐 때만 기존 이미지 삭제하고 해당 이미지 추가!
-        if(dto.getFile()!=null) {
+        if (dto.getFile() != null) {
             // 기존 이미지 삭제 로직! 해당 경로에서 삭제하는 거랑 DB에서 해당 정보 삭제  (imageCode, imageURL)
             // 반복문을 돌려서 url로 객체에 delete사용
             File file = new File(dto.getImageURL());
@@ -139,7 +139,6 @@ public class OneDayClassController {
 
         }
 
-        //////
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = sdf.parse(dto.getOdcStartDate());
         Date lastDate = sdf.parse(dto.getOdcLastDate());
