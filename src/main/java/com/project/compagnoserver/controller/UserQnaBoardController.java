@@ -209,6 +209,7 @@ public class UserQnaBoardController {
         if(principal instanceof User) {
             User user = (User) principal;
             if(liked){
+
                 List<UserQnaQuestionBoard> list = queryFactory
                         .selectFrom(qUserQnaQuestionBoard)
                         .join(qUserQnaQuestionLike).on(qUserQnaQuestionBoard.userQuestionBoardCode.eq(qUserQnaQuestionLike.userQuestionBoardCode))
@@ -221,7 +222,6 @@ public class UserQnaBoardController {
             } else{
                 return ResponseEntity.status(HttpStatus.OK).body(service.viewAll(builder, pageable));
             }
-
         }
         return null;
     }
