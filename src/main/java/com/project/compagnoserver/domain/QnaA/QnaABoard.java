@@ -50,7 +50,4 @@ public class QnaABoard {
     @Column(name="qna_a_date_update")
     private Timestamp qnaADateUpdate;
 
-//    @OneToMany(mappedBy = "qnaACode")
-//    @JsonIgnore
-//    private List<QnaABoardImage> files;
 }
