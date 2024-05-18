@@ -24,6 +24,8 @@ public class QNeighborBoard extends EntityPathBase<NeighborBoard> {
 
     public final com.project.compagnoserver.domain.Animal.QAnimalCategory animalCategoryCode;
 
+    public final ListPath<NeighborBoardBookmark, QNeighborBoardBookmark> bookmark = this.<NeighborBoardBookmark, QNeighborBoardBookmark>createList("bookmark", NeighborBoardBookmark.class, QNeighborBoardBookmark.class, PathInits.DIRECT2);
+
     public final ListPath<NeighborBoardImage, QNeighborBoardImage> images = this.<NeighborBoardImage, QNeighborBoardImage>createList("images", NeighborBoardImage.class, QNeighborBoardImage.class, PathInits.DIRECT2);
 
     public final com.project.compagnoserver.domain.Parsing.QLocationParsing location;

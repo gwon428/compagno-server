@@ -114,12 +114,14 @@ public class NeighborBoardService {
     }
 
 
+// ====================================== 북마크 ======================================
+
     // 게시글 북마크 확인
     public Integer neighborChkBookmark(NeighborBoardBookmark neighborBoardBookmarkVo) {
         return queryFactory.select(qNeighborBoardBookmark.neighborBookmarkCode)
                 .from(qNeighborBoardBookmark)
-                .where(qNeighborBoardBookmark.neighborBoardCode.eq(neighborBoardBookmarkVo.getNeighborBoardCode()))
-                .where(qNeighborBoardBookmark.userId.userId.eq(neighborBoardBookmarkVo.getUserId().getUserId()))
+                .where(qNeighborBoardBookmark.neighborBoard.neighborBoardCode.eq(neighborBoardBookmarkVo.getNeighborBoard().getNeighborBoardCode()))
+                .where(qNeighborBoardBookmark.user.userId.eq(neighborBoardBookmarkVo.getUser().getUserId()))
                 .fetchOne();
     }
     // 게시글 북마크
@@ -130,6 +132,8 @@ public class NeighborBoardService {
             neighborBoardBookmarkDAO.deleteById(neighborChkBookmark(neighborBoardBookmarkVo));
         }
     }
+
+
 
 
 //    ========================================== 댓글 ==========================================

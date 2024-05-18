@@ -22,13 +22,11 @@ public class QNeighborBoardBookmark extends EntityPathBase<NeighborBoardBookmark
 
     public static final QNeighborBoardBookmark neighborBoardBookmark = new QNeighborBoardBookmark("neighborBoardBookmark");
 
-    public final NumberPath<Integer> neighborBoardCode = createNumber("neighborBoardCode", Integer.class);
+    public final QNeighborBoard neighborBoard;
 
     public final NumberPath<Integer> neighborBookmarkCode = createNumber("neighborBookmarkCode", Integer.class);
 
-    public final DateTimePath<java.util.Date> neighborBookmarkDate = createDateTime("neighborBookmarkDate", java.util.Date.class);
-
-    public final com.project.compagnoserver.domain.user.QUser userId;
+    public final com.project.compagnoserver.domain.user.QUser user;
 
     public QNeighborBoardBookmark(String variable) {
         this(NeighborBoardBookmark.class, forVariable(variable), INITS);
@@ -48,7 +46,8 @@ public class QNeighborBoardBookmark extends EntityPathBase<NeighborBoardBookmark
 
     public QNeighborBoardBookmark(Class<? extends NeighborBoardBookmark> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.userId = inits.isInitialized("userId") ? new com.project.compagnoserver.domain.user.QUser(forProperty("userId")) : null;
+        this.neighborBoard = inits.isInitialized("neighborBoard") ? new QNeighborBoard(forProperty("neighborBoard"), inits.get("neighborBoard")) : null;
+        this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }
 
 }

@@ -24,6 +24,8 @@ public class QSitterBoard extends EntityPathBase<SitterBoard> {
 
     public final com.project.compagnoserver.domain.Animal.QAnimalCategory animalCategoryCode;
 
+    public final ListPath<SitterBoardBookmark, QSitterBoardBookmark> bookmark = this.<SitterBoardBookmark, QSitterBoardBookmark>createList("bookmark", SitterBoardBookmark.class, QSitterBoardBookmark.class, PathInits.DIRECT2);
+
     public final ListPath<SitterBoardImage, QSitterBoardImage> images = this.<SitterBoardImage, QSitterBoardImage>createList("images", SitterBoardImage.class, QSitterBoardImage.class, PathInits.DIRECT2);
 
     public final com.project.compagnoserver.domain.Parsing.QLocationParsing location;
@@ -34,7 +36,7 @@ public class QSitterBoard extends EntityPathBase<SitterBoard> {
 
     public final StringPath sitterContent = createString("sitterContent");
 
-    public final DateTimePath<java.util.Date> sitterRegiDate = createDateTime("sitterRegiDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> sitterRegiDate = createDateTime("sitterRegiDate", java.sql.Timestamp.class);
 
     public final StringPath sitterTitle = createString("sitterTitle");
 
