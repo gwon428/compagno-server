@@ -67,7 +67,6 @@ public class QnaABoardController {
                     .build();
             return ResponseEntity.status(HttpStatus.OK).body(dto);
         } else {
-            log.info("답변이 없엉ㅇ");
             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
@@ -79,14 +78,6 @@ public class QnaABoardController {
 //        Object principal = authentication();
 
         QnaABoard vo = new QnaABoard();
-        log.info("등록?");
-
-//        if(principal instanceof User) {
-//            User user = (User) principal;
-//            String status = questionService.view(dto.getQnaQCode()).getQnaQStatus();
-//            log.info("status : " + status);
-//            log.info("equals : " + status.equals("N"));
-//            if(user.getUserRole().equals("ROLE_ADMIN") && status.equals("N")){
 
             vo.setUserId(dto.getUserId());
             vo.setQnaACode(dto.getQnaACode());
@@ -100,11 +91,7 @@ public class QnaABoardController {
             update.setQnaACode(result);
             update.setQnaQStatus("Y");
             Timestamp date = update.getQnaQDate();
-            log.info("date :: " + date);
-            // 수정 때문에..
             update.setQnaQDateUpdate(date);
-            log.info("date : " + update.getQnaQDate());
-            log.info("상태 업데이트했어요");
 
             questionService.update(update);
 
@@ -128,21 +115,17 @@ public class QnaABoardController {
             }
 //            return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
-        log.info("유저에걸려잇서?");
         return ResponseEntity.ok().build();
 //        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PutMapping("/answer")
     public ResponseEntity<QnaABoard> update(QnaABoardDTO dto) throws IOException {
-       log.info("dto : " + dto);
         if(dto.getImages() != null){
             List<String> imagesList = dto.getImages()
                     .stream().map(image -> image.getQnaAUrl()).collect(Collectors.toList());
-            log.info("imagesList : " + imagesList);
 
             List<QnaABoardImage> list = service.viewImg(dto.getQnaACode());
-            log.info("list :  " + list);
 
             for (QnaABoardImage image : list){
                 if((dto.getImages() != null && !imagesList.contains(image.getQnaAUrl())) || (dto.getImages() == null)){
@@ -173,7 +156,6 @@ public class QnaABoardController {
             }
 
         } else {
-            log.info("추가하는 이미지 없음");
         }
 
         QnaABoard vo = QnaABoard.builder()

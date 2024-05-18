@@ -48,7 +48,6 @@ public class UserQnaAnswerBoard {
     @Column(name="answer_parent_code")
     private int answerParentCode;
 
-    // 관계만 정의..
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="answer_parent_code", referencedColumnName = "user_answer_board_code", insertable = false, updatable = false)

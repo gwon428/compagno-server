@@ -51,7 +51,6 @@ public class UserQnaAnswerBoardService {
 
     // 4-1. 수정할 Answer 찾기
     public UserQnaAnswerBoard viewAnswer(int code){
-        log.info("code : " + code);
         return dao.findById(code).orElse(null);
     }
 

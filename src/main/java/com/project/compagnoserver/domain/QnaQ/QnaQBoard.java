@@ -58,9 +58,6 @@ public class QnaQBoard {
     @Column(name="qna_q_status")
     private String qnaQStatus;
 
-//    @OneToMany(mappedBy = "qnaQCode")
-//    private List<QnaQBoardImage> images;
-
     @Column
     private String secret;
 }

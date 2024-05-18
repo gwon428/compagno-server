@@ -54,18 +54,6 @@ public class UserQnaBoardController {
     // 1. 질문 등록
     @PostMapping("/userQuestion")
     public ResponseEntity<UserQnaQuestionBoard> create(UserQnaQuestionBoardDTO dto) throws IOException {
-        log.info("dto : " + dto);
-
-        // dto로 받은 값을 builder를 통해 vo 형태로 변환
-//        UserQnaQuestionBoard vo = new UserQnaQuestionBoard();
-
-//        vo.setUserId(dto.getUserId());
-//        vo.setUserNickname(dto.getUserNickname());
-//        vo.setUserImg(dto.getUserImg());
-
-//        vo.setUserQuestionBoardTitle(dto.getUserQuestionBoardTitle());
-//        vo.setUserQuestionBoardContent(dto.getUserQuestionBoardContent());
-
 
         UserQnaQuestionBoard result = service.create(UserQnaQuestionBoard.builder()
                         .userId(dto.getUserId())
@@ -151,23 +139,19 @@ public class UserQnaBoardController {
         BooleanExpression expression;
 
         if(title != null){
-            log.info("title : " + title);
             expression = qUserQnaQuestionBoard.userQuestionBoardTitle.like("%" + title + "%");
             builder.or(expression);
         }
         if(id != null){
-            log.info("id : ");
             expression = qUserQnaQuestionBoard.userId.like("%" + id + "%");
             builder.and(expression);
         }
         if(content != null){
-            log.info("content : ");
             expression = qUserQnaQuestionBoard.userQuestionBoardContent.like("%" + content + "%");
             builder.and(expression);
         }
 
         if(category != null){
-            log.info("category : ");
             switch(category){
                 case "1":
                     expression = qUserQnaQuestionBoard.animalCategoryCode.eq(1);
@@ -188,7 +172,6 @@ public class UserQnaBoardController {
             switch(status){
                 case "1" :
                     expression = qUserQnaQuestionBoard.userQuestionBoardStatus.eq('Y');
-                    log.info("status : " + status);
                     builder.and(expression);
                     break;
 
@@ -233,10 +216,7 @@ public class UserQnaBoardController {
                         .fetch();
 
 
-                log.info("list :" + list);
-
                 Page<UserQnaQuestionBoard> likedlist = service.viewliked(list, pageable);
-                log.info("likedlist : " + likedlist);
                 return ResponseEntity.status(HttpStatus.OK).body(likedlist);
             } else{
                 return ResponseEntity.status(HttpStatus.OK).body(service.viewAll(builder, pageable));
@@ -273,9 +253,6 @@ public class UserQnaBoardController {
                 .images(service.viewImg(code))
                 .build();
 
-        log.info("dtoimg : "+ result.getUserImg());
-        log.info("조회수 : " + result.getViewcount());
-
         if(result.getUserQuestionBoardDate() == null){
             dto.setUserQuestionBoardDate(result.getUserQuestionBoardDateUpdate());
         } else {
@@ -293,11 +270,9 @@ public class UserQnaBoardController {
 
             List<UserQnaQuestionBoardImage> list = service.viewImg(dto.getUserQuestionBoardCode());
 
-            log.info("list : " + list);
             // 이전 이미지 삭제
             for(UserQnaQuestionBoardImage image : list){
                 if((dto.getImages() != null && !imageList.contains(image.getUserQuestionImgUrl()) || (dto.getImages() == null))){
-                    log.info("dto : " + dto.getImages());
                     File file = new File(image.getUserQuestionImgUrl());
                     file.delete();
 
@@ -388,7 +363,6 @@ public class UserQnaBoardController {
     @DeleteMapping("/userQuestion/answerChoose/{code}")
     public void deleteChoose(@PathVariable(name="code") int code){
         UserQnaAnswerChoose chooseAnswer = service.getChoose(code);
-        log.info("취소할 답변 : " + chooseAnswer);
 
         // 취소 시 채택 상태 N으로 변경
         UserQnaQuestionBoard result = service.view(code);
@@ -604,9 +578,6 @@ public class UserQnaBoardController {
 
         UserQnaAnswerBoard vo = answerService.viewAnswer(dto.getUserAnswerBoardCode());
 
-        log.info("vo : " + vo);
-        log.info("dto : " + dto);
-//
         vo.setUserAnswerContent(dto.getUserAnswerContent());
 
         UserQnaAnswerBoard result = answerService.update(vo);
@@ -620,8 +591,6 @@ public class UserQnaBoardController {
     public ResponseEntity<UserQnaAnswerBoard> deleteAnswer(@PathVariable(name="code") int parent){
 
             for (UserQnaAnswerBoard element : answerService.getBottomLevelAnswers(parent)) {
-//                log.info("element : " + element);
-//                delete(element.getUserAnswerBoardCode());
                 answerService.deleteAnswer(element.getUserAnswerBoardCode());
             }
 

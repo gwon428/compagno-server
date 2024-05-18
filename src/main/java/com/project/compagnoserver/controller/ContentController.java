@@ -74,13 +74,11 @@ public class ContentController {
             builder.and(expression);
         }
         if(!StringUtils.isEmpty(keyword)){
-            log.info("keyword!!!");
             expression = qParsing.name.like("%" + keyword.trim() + "%");
             builder.and(expression);
         }
 
         Page<Parsing> list = service.viewAll(builder, pageable);
-        log.info("list : " + list);
 
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
@@ -90,7 +88,6 @@ public class ContentController {
     public ResponseEntity<Parsing> view(@PathVariable(name="code") int code){
         service.updateviewcount(code);
         Parsing result = service.view(code);
-        log.info("result : " + result);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

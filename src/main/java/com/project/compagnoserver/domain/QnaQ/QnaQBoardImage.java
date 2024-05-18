@@ -28,8 +28,4 @@ public class QnaQBoardImage  {
     private int qnaQCode;
 
 
-//    @ManyToOne
-//    @JoinColumn(name="qna_q_code")
-//    @JsonIgnore
-//    private QnaQBoard qnaQCode;
 }
