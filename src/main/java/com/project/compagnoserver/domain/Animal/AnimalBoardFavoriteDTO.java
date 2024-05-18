@@ -15,6 +15,7 @@ import java.util.Date;
 public class AnimalBoardFavoriteDTO {
 
 //    private UserDTO user;
+    private int animalFavoriteCode;
     private String userId;
     private int animalBoardCode;
     private Date animalFavoriteDate;
