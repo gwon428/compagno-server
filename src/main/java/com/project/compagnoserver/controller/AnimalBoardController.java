@@ -234,7 +234,7 @@ public class AnimalBoardController {
         List<AnimalBoardFavoriteDTO> listDTO = new ArrayList<>();
         for(AnimalBoardFavorite  fav : list){
             AnimalBoardFavoriteDTO dto =AnimalBoardFavoriteDTO.builder()
-                    .animal_favorite_code(fav.getAnimalFavoriteCode())
+                    .animalFavoriteCode(fav.getAnimalFavoriteCode())
                     .animalBoardCode(fav.getAnimalBoard().getAnimalBoardCode())
                     .animalFavoriteDate(fav.getAnimalBoard().getAnimalBoardDate())
                     .userId(fav.getUser().getUserId())
@@ -482,5 +482,11 @@ public class AnimalBoardController {
         log.info("좋아요 dto : " + dto);
         favoriteService.favCount(dto);
         return ResponseEntity.ok().build();
+    }
+    // 좋아요 수 가장 최신 업데이트전 수
+    @GetMapping("/public/animal-board/{animalBoardCode}/latestFavCount")
+    public ResponseEntity<Integer> latestFacCount(@PathVariable(name = "animalBoardCode") int boardCode){
+        Integer latestCount = favoriteService.latestFavCount(boardCode);
+        return latestCount != null ? ResponseEntity.ok(latestCount) : null;
     }
 }

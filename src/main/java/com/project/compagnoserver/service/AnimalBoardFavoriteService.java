@@ -61,11 +61,10 @@ public class AnimalBoardFavoriteService {
                     .execute();
         }
 
-//        if(dto.isCheckBoolean()){
-//            favoriteDAO.plusFavCount(dto.getAnimalBoardCode());
-//        }else{
-//            favoriteDAO.minusFavCount(dto.getAnimalBoardCode());
-//        }
 
+    }
+
+    public Integer latestFavCount(int boardCode){
+        return favoriteDAO.latestFavCount(boardCode);
     }
 }
