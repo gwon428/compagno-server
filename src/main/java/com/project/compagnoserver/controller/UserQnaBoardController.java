@@ -245,6 +245,7 @@ public class UserQnaBoardController {
                 .userQuestionBoardTitle(result.getUserQuestionBoardTitle())
                 .userQuestionBoardContent(result.getUserQuestionBoardContent())
                 .userQuestionBoardstatus(result.getUserQuestionBoardStatus())
+                .userQuestionBoardCount(result.getUserQuestionBoardCount())
                 .viewcount((result.getViewcount()))
                 .animalCategoryCode(result.getAnimalCategoryCode())
                 .userId(result.getUserId())
