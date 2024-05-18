@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class SitterBoard {
     private int sitterViewCount;
 
     @Column(name = "sitter_regi_date")
-    private Date sitterRegiDate;
+    private Timestamp sitterRegiDate;
 
     @Column(name = "sitter_update_date")
     private Date sitterUpdateDate;

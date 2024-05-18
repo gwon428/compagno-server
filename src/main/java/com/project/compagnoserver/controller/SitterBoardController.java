@@ -33,6 +33,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
@@ -162,7 +166,7 @@ public class SitterBoardController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Date now = new Date();
+//        Date now = new Date();
         log.info("dto : " + sitterBoardDTO);
 
         SitterBoard sitter = SitterBoard.builder()
@@ -176,7 +180,7 @@ public class SitterBoardController {
                 .sitterContent(sitterBoardDTO.getSitterContent())
 //                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
                 .user(userInfo())
-                .sitterRegiDate(now)
+                .sitterRegiDate(Timestamp.valueOf(sitterBoardDTO.getSitterRegiDate()))
                 .build();
 
         SitterBoard result = sitterBoardService.sitterCreate(sitter);
@@ -202,7 +206,7 @@ public class SitterBoardController {
 
     // 글 수정
     @PutMapping("sitter")
-    public ResponseEntity<SitterBoard> sitterUpdate(SitterBoardDTO sitterBoardDTO) throws IOException {
+    public ResponseEntity<SitterBoard> sitterUpdate(SitterBoardDTO sitterBoardDTO) throws IOException, ParseException {
 
         Object principal = authentication();
         if(principal == null || !(principal instanceof UserDetails)) {
@@ -242,6 +246,10 @@ public class SitterBoardController {
 
         SitterBoard sitterBoard = sitterBoardService.sitterView(sitterBoardDTO.getSitterBoardCode());
 
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        log.info("??L"+sitterBoardDTO.getSitterUpdateDate());
+        Date updateDate = formatter.parse(sitterBoardDTO.getSitterUpdateDate());
         // 게시글 수정
         SitterBoard sitter = SitterBoard.builder()
                 .sitterBoardCode(sitterBoardDTO.getSitterBoardCode())
@@ -252,9 +260,9 @@ public class SitterBoardController {
                         .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
-                .sitterUpdateDate(sitterBoard.getSitterUpdateDate())
-                .user(User.builder()
-                        .userNickname(sitterBoardDTO.getUserNickname()).build())
+                .sitterUpdateDate(updateDate)
+                .sitterRegiDate( sitterBoard.getSitterRegiDate())
+                .user(userInfo())
                 .build();
 
         sitterBoardService.sitterUpdate(sitter);

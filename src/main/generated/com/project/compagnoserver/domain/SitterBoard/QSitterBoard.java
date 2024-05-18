@@ -36,7 +36,7 @@ public class QSitterBoard extends EntityPathBase<SitterBoard> {
 
     public final StringPath sitterContent = createString("sitterContent");
 
-    public final DateTimePath<java.util.Date> sitterRegiDate = createDateTime("sitterRegiDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> sitterRegiDate = createDateTime("sitterRegiDate", java.sql.Timestamp.class);
 
     public final StringPath sitterTitle = createString("sitterTitle");
 

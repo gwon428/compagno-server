@@ -27,7 +27,9 @@ public class SitterBoardDTO {
 
     private String userNickname;
 
-    private Date sitterRegiDate;
+    private String sitterRegiDate;
+
+    private String sitterUpdateDate;
 
     private List<MultipartFile> files;
     private List<SitterBoardImage> images;
