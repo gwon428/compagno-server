@@ -239,7 +239,6 @@ public class UserQnaBoardController {
 
 
         UserQnaQuestionBoard result = service.view(code);
-
         UserQnaQuestionBoardDTO dto = UserQnaQuestionBoardDTO.builder()
                 .userQuestionBoardCode(result.getUserQuestionBoardCode())
                 .userQuestionBoardTitle(result.getUserQuestionBoardTitle())
@@ -315,7 +314,7 @@ public class UserQnaBoardController {
                         .userId(dto.getUserId())
                         .userNickname(dto.getUserNickname())
                         .userImg(dto.getUserImg())
-
+                        .animalCategoryCode(dto.getAnimalCategoryCode())
                         .userQuestionBoardCode(dto.getUserQuestionBoardCode())
                         .userQuestionBoardTitle(dto.getUserQuestionBoardTitle())
                         .userQuestionBoardContent(dto.getUserQuestionBoardContent())
