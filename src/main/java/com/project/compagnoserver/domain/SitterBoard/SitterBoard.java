@@ -61,4 +61,7 @@ public class SitterBoard {
     @OneToMany(mappedBy = "sitterBoard")
     private List<SitterBoardImage> images;
 
+    @OneToMany(mappedBy = "sitterBoard")
+    private List<SitterBoardBookmark> bookmark;
+
 }

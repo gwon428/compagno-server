@@ -60,4 +60,7 @@ public class NeighborBoard {
     @OneToMany(mappedBy = "neighborBoard")
     private List<NeighborBoardImage> images;
 
+    @OneToMany(mappedBy = "neighborBoard")
+    private List<NeighborBoardBookmark> bookmark;
+
 }

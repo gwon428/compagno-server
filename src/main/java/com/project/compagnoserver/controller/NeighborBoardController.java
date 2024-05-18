@@ -157,7 +157,8 @@ public class NeighborBoardController {
                         .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
+//                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
+                .user(userInfo())
                 .neighborBoardRegiDate(now)
                 .build();
         NeighborBoard result = neighborBoardService.neighborCreate(neighbor);
@@ -179,16 +180,6 @@ public class NeighborBoardController {
         }
 
         return result!=null ? ResponseEntity.status(HttpStatus.CREATED).body(result) : ResponseEntity.badRequest().build();
-    }
-
-
-    // 게시글 북마크
-    @PostMapping("neighbor/bookmark")
-    public ResponseEntity neighborBookmark(@RequestBody NeighborBoardBookmark neighborBoardBookmarkVo) {
-        neighborBoardBookmarkVo.setUserId(userInfo());
-        neighborBoardService.neighborBookmark(neighborBoardBookmarkVo);
-
-        return ResponseEntity.ok().build();
     }
 
 
@@ -273,6 +264,19 @@ public class NeighborBoardController {
         }
         return null;
     }
+
+
+//    ========================================== 북마크 ==========================================
+    @PostMapping("neighbor/bookmark")
+    public ResponseEntity neighborBookmark(@RequestBody NeighborBoardBookmarkDTO neighborBoardBookmarkDTO) {
+        NeighborBoardBookmark bookmarkVo = new NeighborBoardBookmark();
+        bookmarkVo.setNeighborBoard(NeighborBoard.builder().neighborBoardCode(neighborBoardBookmarkDTO.getNeighborBookmarkCode()).build());
+        bookmarkVo.setUser(User.builder().userId(neighborBoardBookmarkDTO.getUserId()).build());
+        neighborBoardService.neighborBookmark(bookmarkVo);
+
+        return ResponseEntity.ok().build();
+    }
+
 
 
 //    ========================================== 댓글 ==========================================

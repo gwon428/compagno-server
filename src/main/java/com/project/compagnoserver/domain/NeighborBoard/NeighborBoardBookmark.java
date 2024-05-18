@@ -1,4 +1,5 @@
 package com.project.compagnoserver.domain.NeighborBoard;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,14 +19,16 @@ public class NeighborBoardBookmark {
     @Column(name = "neighbor_bookmark_code")
     private int neighborBookmarkCode;
 
-    @Column(name = "neighbor_board_code")
-    private int neighborBoardCode;
+    @ManyToOne
+    @JoinColumn(name = "neighbor_board_code")
+    @JsonIgnoreProperties("bookmark")
+    private NeighborBoard neighborBoard;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User userId;
+    private User user;
 
-    @Column(name = "neighbor_bookmark_date")
-    private Date neighborBookmarkDate;
+//    @Column(name = "neighbor_bookmark_date")
+//    private Date neighborBookmarkDate;
 
 }

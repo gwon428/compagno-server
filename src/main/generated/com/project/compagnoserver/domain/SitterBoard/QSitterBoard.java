@@ -24,6 +24,8 @@ public class QSitterBoard extends EntityPathBase<SitterBoard> {
 
     public final com.project.compagnoserver.domain.Animal.QAnimalCategory animalCategoryCode;
 
+    public final ListPath<SitterBoardBookmark, QSitterBoardBookmark> bookmark = this.<SitterBoardBookmark, QSitterBoardBookmark>createList("bookmark", SitterBoardBookmark.class, QSitterBoardBookmark.class, PathInits.DIRECT2);
+
     public final ListPath<SitterBoardImage, QSitterBoardImage> images = this.<SitterBoardImage, QSitterBoardImage>createList("images", SitterBoardImage.class, QSitterBoardImage.class, PathInits.DIRECT2);
 
     public final com.project.compagnoserver.domain.Parsing.QLocationParsing location;
