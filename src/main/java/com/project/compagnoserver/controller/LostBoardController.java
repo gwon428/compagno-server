@@ -269,13 +269,13 @@ public ResponseEntity<LostBoard> updateViewCount(@RequestParam(name="lostBoardCo
                             .build());
 
                 mainImage.add(saveName);
-
             }
-
-//            log.info(vo.getLostImage());
-            log.info(dto.getImages().toString());
         }
-        lost.setLostAnimalImage(mainImage.getFirst());
+        if(mainImage.size()==0){
+            lost.setLostAnimalImage("");
+        } else{
+            lost.setLostAnimalImage(mainImage.getFirst());
+        }
 
         service.create(lost);
 
