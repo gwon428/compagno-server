@@ -166,9 +166,6 @@ public class SitterBoardController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-//        Date now = new Date();
-        log.info("dto : " + sitterBoardDTO);
-
         SitterBoard sitter = SitterBoard.builder()
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(sitterBoardDTO.getAnimalCategoryCode()).build())
@@ -178,7 +175,6 @@ public class SitterBoardController {
                         .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
-//                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
                 .user(userInfo())
                 .sitterRegiDate(Timestamp.valueOf(sitterBoardDTO.getSitterRegiDate()))
                 .build();
@@ -219,7 +215,6 @@ public class SitterBoardController {
             if((sitterBoardDTO.getImages()!=null && !sitterBoardDTO.getImages().contains(image.getSitterImg())) || sitterBoardDTO.getImages() == null) {
                 File file = new File(image.getSitterImg());
                 file.delete();
-                log.info("이미지 삭제~");
 
                 sitterBoardService.sitterDeleteImg(sitterBoardDTO.getSitterBoardCode());
             }
@@ -228,7 +223,6 @@ public class SitterBoardController {
         // 새로운 이미지 등록
         if(sitterBoardDTO.getFiles() != null) {
             for(MultipartFile file : sitterBoardDTO.getFiles()) {
-                log.info("file~"  + file);
                 SitterBoardImage sitterBoardImageVo = new SitterBoardImage();
 
                 String fileName = file.getOriginalFilename();
@@ -246,10 +240,6 @@ public class SitterBoardController {
 
         SitterBoard sitterBoard = sitterBoardService.sitterView(sitterBoardDTO.getSitterBoardCode());
 
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        log.info("??L"+sitterBoardDTO.getSitterUpdateDate());
-        Date updateDate = formatter.parse(sitterBoardDTO.getSitterUpdateDate());
         // 게시글 수정
         SitterBoard sitter = SitterBoard.builder()
                 .sitterBoardCode(sitterBoardDTO.getSitterBoardCode())
@@ -260,8 +250,8 @@ public class SitterBoardController {
                         .sitterCategoryCode(sitterBoardDTO.getSitterCategory().getSitterCategoryCode()).build())
                 .sitterTitle(sitterBoardDTO.getSitterTitle())
                 .sitterContent(sitterBoardDTO.getSitterContent())
-                .sitterUpdateDate(updateDate)
-                .sitterRegiDate( sitterBoard.getSitterRegiDate())
+                .sitterUpdateDate(Timestamp.valueOf(sitterBoardDTO.getSitterUpdateDate()))
+                .sitterRegiDate(sitterBoard.getSitterRegiDate())
                 .user(userInfo())
                 .build();
 

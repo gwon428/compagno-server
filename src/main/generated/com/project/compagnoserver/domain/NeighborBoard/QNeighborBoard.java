@@ -34,7 +34,7 @@ public class QNeighborBoard extends EntityPathBase<NeighborBoard> {
 
     public final StringPath neighborBoardContent = createString("neighborBoardContent");
 
-    public final DateTimePath<java.util.Date> neighborBoardRegiDate = createDateTime("neighborBoardRegiDate", java.util.Date.class);
+    public final DateTimePath<java.sql.Timestamp> neighborBoardRegiDate = createDateTime("neighborBoardRegiDate", java.sql.Timestamp.class);
 
     public final StringPath neighborBoardStatus = createString("neighborBoardStatus");
 

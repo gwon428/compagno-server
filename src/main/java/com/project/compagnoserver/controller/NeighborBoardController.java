@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.*;
 
 @RestController
@@ -157,9 +158,8 @@ public class NeighborBoardController {
                         .locationCode(neighborBoardDTO.getLocationCode()).build())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-//                .user(User.builder().userNickname(((UserDetails) principal).getUsername()).build())
                 .user(userInfo())
-                .neighborBoardRegiDate(now)
+                .neighborBoardRegiDate(Timestamp.valueOf(neighborBoardDTO.getNeighborBoardRegiDate()))
                 .build();
         NeighborBoard result = neighborBoardService.neighborCreate(neighbor);
 
@@ -216,17 +216,19 @@ public class NeighborBoardController {
             }
         }
 
+        NeighborBoard neighborBoard = neighborBoardService.neighborView(neighborBoardDTO.getNeighborBoardCode());
+
         // 게시글 수정
         NeighborBoard neighbor = NeighborBoard.builder()
                 .neighborBoardCode(neighborBoardDTO.getNeighborBoardCode())
                 .animalCategoryCode(AnimalCategory.builder()
                         .animalCategoryCode(neighborBoardDTO.getAnimalCategoryCode()).build())
-                .location(LocationParsing.builder()
-                        .locationCode(neighborBoardDTO.getLocationCode()).build())
+                .location(neighborBoard.getLocation())
                 .neighborBoardTitle(neighborBoardDTO.getNeighborBoardTitle())
                 .neighborBoardContent(neighborBoardDTO.getNeighborBoardContent())
-                .neighborBoardUpdateDate(neighborBoardDTO.getNeighborBoardUpdateDate())
-                .user(User.builder().userNickname(neighborBoardDTO.getUserNickname()).build())
+                .neighborBoardUpdateDate(Timestamp.valueOf(neighborBoardDTO.getNeighborBoardUpdateDate()))
+                .neighborBoardRegiDate(neighborBoard.getNeighborBoardRegiDate())
+                .user(userInfo())
                 .build();
         neighborBoardService.neighborCreate(neighbor);
 

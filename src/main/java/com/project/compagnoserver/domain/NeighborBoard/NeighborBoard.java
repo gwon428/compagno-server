@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class NeighborBoard {
     private int neighborBoardViewCount;
 
     @Column(name = "neighbor_regi_date")
-    private Date neighborBoardRegiDate;
+    private Timestamp neighborBoardRegiDate;
 
     @Column(name = "neighbor_update_date")
     private Date neighborBoardUpdateDate;
