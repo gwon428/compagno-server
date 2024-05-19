@@ -132,35 +132,6 @@ public class QnaQBoardController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
-    @GetMapping("/question/manage")
-    public ResponseEntity<List<QnaQBoard>> viewManage(@RequestParam (name="page", defaultValue = "1") int page){
-
-        Object principal = authentication();
-
-        QnaQBoard vo = new QnaQBoard();
-
-        if(principal instanceof User) {
-
-            User user = (User) principal;
-
-            Sort sort = Sort.by("QnaQCode").descending();
-            Pageable pageable = PageRequest.of(page - 1, 10, sort);
-
-            QQnaQBoard qQnaQBoard = QQnaQBoard.qnaQBoard;
-            BooleanBuilder builder = new BooleanBuilder();
-
-            if (user.getUserRole().equals("ROLE_ADMIN")) {
-                BooleanExpression expression = qQnaQBoard.qnaQStatus.eq("N");
-                builder.and(expression);
-            }
-
-            Page<QnaQBoard> list = service.viewAll(builder, pageable);
-
-            return ResponseEntity.status(HttpStatus.OK).body(list.getContent());
-        }
-        return ResponseEntity.badRequest().build();
-    }
-
     @GetMapping("/question/mypage")
     public ResponseEntity<List<QnaQBoard>> viewMyQuestion(@RequestParam (name="page", defaultValue = "1") int page){
 
@@ -219,7 +190,7 @@ public class QnaQBoardController {
     @PutMapping("/question")
     public ResponseEntity update(QnaQBoardDTO dto) throws IOException {
 
-        if (dto.getImages() != null) {
+            if (dto.getImages() != null) {
                 List<String> imagesList = dto.getImages()
                         .stream().map(image -> image.getQnaQUrl()).collect(Collectors.toList());
 
@@ -299,33 +270,6 @@ public class QnaQBoardController {
         }
 
         service.delete(code);
-//        QnaQBoardDTO dto = QnaQBoardDTO.builder()
-//                .qnaQCode(result.getQnaQCode())
-//                .qnaQTitle(result.getQnaQTitle())
-//                .qnaQContent(result.getQnaQContent())
-//                .userId(result.getUserId())
-//                .userNickname(result.getUserNickname())
-//                .images(service.viewImg(code))
-//                .build();
-
-//        Object principal = authentication();
-
-//        if(principal instanceof User) {
-//
-//            User user = (User) principal;
-//            if (user.getUserId().equals(dto.getUserId()) || user.getUserRole().equals("ROLE_ADMIN")) {
-//                if(dto.getImages()!= null){
-////                if (prev.getImages() != null) {
-//                    QnaQBoard target = service.delete(code);
-//                    return (dto != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(dto) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//                }
-//            }
-//        }
-//        if(dto.getImages()!= null){
-////                if (prev.getImages() != null) {
-//            QnaQBoard target = service.delete(code);
-//            return (dto != null) ? ResponseEntity.status(HttpStatus.ACCEPTED).body(dto) : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        }
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
