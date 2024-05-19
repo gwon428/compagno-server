@@ -109,7 +109,7 @@ public class NoteController {
     public ResponseEntity<Page<Note>> viewAll(@PathVariable(name="nickName")String nickName, @RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) String noteRegiDate){
 
         Sort sort = Sort.by("noteCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 10+service.delCount(nickName), sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
         QNote qNote = QNote.note;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression = null;
@@ -143,11 +143,49 @@ public class NoteController {
 
     }
 
+    @GetMapping("/note/viewAll/starBox/{nickName}")
+    public ResponseEntity<Page<Note>> viewStarBox(@PathVariable(name="nickName")String nickName, @RequestParam(name="page", defaultValue = "1") int page, @RequestParam(name="sender", required = false)String sender, @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) String noteRegiDate){
+
+        Sort sort = Sort.by("noteCode").descending();
+        Pageable pageable = PageRequest.of(page-1, 10+service.delCount(nickName), sort);
+        QNote qNote = QNote.note;
+        BooleanBuilder builder = new BooleanBuilder();
+        BooleanExpression expression = null;
+        if(nickName!=null){
+            builder.or(qNote.sender.eq(nickName));
+            builder.or(qNote.receiver.eq(nickName));
+        }
+
+        if(sender!=null){
+            expression = qNote.sender.contains(sender);
+            builder.and(expression);
+        }
+
+        if(receiver!=null){
+            expression = qNote.receiver.contains(receiver);
+            builder.and(expression);
+        }
+        if(noteTitle!=null){
+            expression = qNote.noteTitle.contains(noteTitle);
+            builder.and(expression);
+        }
+        if(noteRegiDate!=""){
+            String starts = noteRegiDate+" 00:00:00";
+            String ends = noteRegiDate+" 23:59:59";
+
+            expression = qNote.noteRegiDate.between(Timestamp.valueOf(starts), Timestamp.valueOf(ends));
+            builder.and(expression);
+        }
+
+        return ResponseEntity.ok(service.viewAll(pageable, builder));
+
+    }
+
     // viewSendBox(보낸 쪽지함)
     @GetMapping("/note/sendBox/{sender}")
     public ResponseEntity<Page<Note>> viewSendBox(@PathVariable(name="sender")String sender, @RequestParam(name="page", defaultValue = "1")int page,  @RequestParam(name="receiver", required = false) String receiver, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) String noteRegiDate){
         Sort sort = Sort.by("noteCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 10+service.delSenderCount(sender), sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QNote qNote = QNote.note;
         BooleanBuilder builder = new BooleanBuilder();
@@ -180,7 +218,7 @@ public class NoteController {
     @GetMapping("/note/receiveBox/{receiver}")
     public ResponseEntity<Page<Note>> viewReceiveBox(@PathVariable("receiver")String receiver, @RequestParam(name="page", defaultValue = "1")int page, @RequestParam(name="sender", required = false) String sender, @RequestParam(name="noteTitle", required = false)String noteTitle, @RequestParam(name="noteRegiDate", required = false) String noteRegiDate){
         Sort sort = Sort.by("noteCode").descending();
-        Pageable pageable = PageRequest.of(page-1, 10+service.delReceiverCount(receiver), sort);
+        Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         QNote qNote = QNote.note;
         BooleanBuilder builder = new BooleanBuilder();
