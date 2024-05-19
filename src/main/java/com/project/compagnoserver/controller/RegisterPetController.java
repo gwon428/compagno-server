@@ -38,8 +38,8 @@ public class RegisterPetController {
 
     // 대행기관 전체보기
     @GetMapping("public/register-pet")
-    public ResponseEntity<Page<RegisterPet>> instList(@RequestParam(name = "locationProvince", required = false) Integer provinceCode,
-                                                      @RequestParam(name = "locationDistrict", required = false) Integer districtCode,
+    public ResponseEntity<Page<RegisterPet>> instList(@RequestParam(name = "select", required = false) Integer select,
+                                                      @RequestParam(name = "keyword", required = false) String keyword,
                                                       @RequestParam(name = "page", defaultValue = "1") int page,
                                                       @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
 
@@ -47,6 +47,23 @@ public class RegisterPetController {
         QRegisterPet qRegisterPet = QRegisterPet.registerPet;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression;
+
+        if(keyword!=null) {
+            switch (select) {
+                case 1 : // 기관명
+                    expression = qRegisterPet.regiInstName.contains(keyword);
+                    builder.and(expression);
+                    break;
+                case 2 : // 대표자명
+                    expression = qRegisterPet.regiInstOwner.contains(keyword);
+                    builder.and(expression);
+                    break;
+                case 3 : // 주소
+                    expression = qRegisterPet.regiInstAddr.contains(keyword);
+                    builder.and(expression);
+                    break;
+            }
+        }
 
 
 
