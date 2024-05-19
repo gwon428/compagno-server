@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 @Service @Slf4j
 public class UserQnaQuestionBoardService {
@@ -57,6 +58,9 @@ public class UserQnaQuestionBoardService {
         int start = (int)pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), list.size());
         List<UserQnaQuestionBoard> sublist = list.subList(start, end);
+
+        // 리스트를 역순으로 출력
+        Collections.reverse(sublist);
 
         return new PageImpl<>(sublist, pageable, list.size());
     }

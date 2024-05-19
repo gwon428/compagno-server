@@ -189,6 +189,7 @@ public class QnaABoardController {
 
         QnaABoard target = service.delete(code);
 
+        // 답변 삭제 시 status 업데이트
         QnaQBoard update = questionService.view(target.getQnaQCode().getQnaQCode());
         update.setQnaQStatus("N");
         questionService.update(update);
