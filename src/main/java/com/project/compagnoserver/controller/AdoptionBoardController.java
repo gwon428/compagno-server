@@ -235,7 +235,12 @@ public class AdoptionBoardController {
                 mainImage.add(saveName);
             }
         }
-        adop.setAdopAnimalImage(mainImage.getFirst());
+        if(mainImage.size()==0){
+            adop.setAdopAnimalImage("");
+        } else{
+            adop.setAdopAnimalImage(mainImage.getFirst());
+        }
+
         service.create(adop);
         return ResponseEntity.ok().build();
     }
