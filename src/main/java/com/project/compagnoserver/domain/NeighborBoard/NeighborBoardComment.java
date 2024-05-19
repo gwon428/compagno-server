@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.compagnoserver.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -14,6 +15,7 @@ import java.util.Date;
 @Data @NoArgsConstructor @AllArgsConstructor
 @DynamicInsert
 @Table(name = "neighbor_board_comment")
+@Builder
 public class NeighborBoardComment {
 
     @Id
@@ -21,9 +23,10 @@ public class NeighborBoardComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int neighborCommentCode;
 
-//    @ManyToOne
-    @Column(name = "neighbor_board_code")
-    private int neighborBoardCode;
+    @ManyToOne
+    @JoinColumn(name = "neighbor_board_code")
+    @JsonIgnore
+    private NeighborBoard neighborBoard;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

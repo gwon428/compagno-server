@@ -149,9 +149,14 @@ public class NeighborBoardService {
     }
 
     // 댓글 수정
+    @Transactional
     public void neighborCommentUpdate(NeighborBoardComment neighborBoardCommentVo) {
         if(neighborBoardCommentDAO.existsById(neighborBoardCommentVo.getNeighborCommentCode())) {
-            neighborBoardCommentDAO.save(neighborBoardCommentVo);
+//            neighborBoardCommentDAO.save(neighborBoardCommentVo);
+            queryFactory.update(qNeighborBoardComment)
+                    .set(qNeighborBoardComment.neighborCommentContent, neighborBoardCommentVo.getNeighborCommentContent())
+                    .where(qNeighborBoardComment.neighborCommentCode.eq(neighborBoardCommentVo.getNeighborCommentCode()))
+                    .execute();
         }
     }
 
@@ -162,13 +167,19 @@ public class NeighborBoardService {
         if(target != null) {
             neighborBoardCommentDAO.delete(target);
         }
+//        if(neighborBoardCommentDAO.existsById(commentCode)) {
+//            queryFactory.update(qNeighborBoardComment)
+//                    .set(qNeighborBoardComment.neighborCommentStatus, 'N')
+//                    .where(qNeighborBoardComment.neighborCommentCode.eq(commentCode))
+//                    .execute();
+//        }
     }
 
     // 원 댓글만 조회
     public List<NeighborBoardComment> getTopComments(int code) {
         return queryFactory.selectFrom(qNeighborBoardComment)
                 .where(qNeighborBoardComment.neighborCommentParentCode.eq(0))
-                .where(qNeighborBoardComment.neighborBoardCode.eq(code))
+                .where(qNeighborBoardComment.neighborBoard.neighborBoardCode.eq(code))
                 .orderBy(qNeighborBoardComment.neighborCommentCode.desc())
                 .fetch();
     }
@@ -177,7 +188,7 @@ public class NeighborBoardService {
     public List<NeighborBoardComment> getReplyComments(int parent, int code) {
         return queryFactory.selectFrom(qNeighborBoardComment)
                 .where(qNeighborBoardComment.neighborCommentParentCode.eq(parent))
-                .where(qNeighborBoardComment.neighborBoardCode.eq(code))
+                .where(qNeighborBoardComment.neighborBoard.neighborBoardCode.eq(code))
                 .orderBy(qNeighborBoardComment.neighborCommentRegiDate.asc())
                 .fetch();
     }

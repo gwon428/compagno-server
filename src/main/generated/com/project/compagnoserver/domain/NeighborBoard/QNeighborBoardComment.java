@@ -22,7 +22,7 @@ public class QNeighborBoardComment extends EntityPathBase<NeighborBoardComment> 
 
     public static final QNeighborBoardComment neighborBoardComment = new QNeighborBoardComment("neighborBoardComment");
 
-    public final NumberPath<Integer> neighborBoardCode = createNumber("neighborBoardCode", Integer.class);
+    public final QNeighborBoard neighborBoard;
 
     public final NumberPath<Integer> neighborCommentCode = createNumber("neighborCommentCode", Integer.class);
 
@@ -58,6 +58,7 @@ public class QNeighborBoardComment extends EntityPathBase<NeighborBoardComment> 
 
     public QNeighborBoardComment(Class<? extends NeighborBoardComment> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.neighborBoard = inits.isInitialized("neighborBoard") ? new QNeighborBoard(forProperty("neighborBoard"), inits.get("neighborBoard")) : null;
         this.neighborParent = inits.isInitialized("neighborParent") ? new QNeighborBoardComment(forProperty("neighborParent"), inits.get("neighborParent")) : null;
         this.user = inits.isInitialized("user") ? new com.project.compagnoserver.domain.user.QUser(forProperty("user")) : null;
     }

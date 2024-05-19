@@ -285,28 +285,50 @@ public class NeighborBoardController {
 
     // 댓글 추가
     @PostMapping("neighbor/comment")
-    public ResponseEntity neighborCommentCreate(@RequestBody NeighborBoardComment neighborBoardCommentVo) {
-        Object principal = authentication();
+    public ResponseEntity<NeighborBoardComment> neighborCommentCreate(@RequestBody NeighborBoardCommentDTO dto) {
+//        Object principal = authentication();
+//
+//        if(principal instanceof User) {
+//            User user = (User) principal;
+//            neighborBoardCommentVo.setUser(user);
+//            return ResponseEntity.ok(neighborBoardService.neighborCommentCreate(neighborBoardCommentVo));
+//        }
+//
+//        return ResponseEntity.badRequest().build();
 
-        if(principal instanceof User) {
-            User user = (User) principal;
-            log.info("user:"+user);
-            log.info("user.nick:"+user.getUserNickname());
-            neighborBoardCommentVo.setUser(user);
-            log.info("?:"+neighborBoardCommentVo.getUser());
-            return ResponseEntity.ok(neighborBoardService.neighborCommentCreate(neighborBoardCommentVo));
-        }
-
-        return ResponseEntity.badRequest().build();
+        NeighborBoardComment vo = NeighborBoardComment.builder()
+                .neighborBoard(NeighborBoard.builder()
+                        .neighborBoardCode(dto.getNeighborBoardCode())
+                        .build())
+                .neighborCommentCode(dto.getNeighborCommentCode())
+                .neighborCommentContent(dto.getNeighborCommentContent())
+                .neighborCommentParentCode(dto.getNeighborCommentParentCode())
+                .user(User.builder()
+                        .userId(userInfo().getUserId())
+                        .build())
+                .build();
+        neighborBoardService.neighborCommentCreate(vo);
+        return ResponseEntity.ok().build();
     }
 
     // 댓글 수정
     @PutMapping("neighbor/comment")
-    public ResponseEntity<NeighborBoardComment> neighborCommentUpdate(NeighborBoardCommentDTO neighborBoardCommentDTO) {
-        NeighborBoardComment comment = neighborBoardService.neighborCommentview(neighborBoardCommentDTO.getNeighborCommentCode());
+    public ResponseEntity<NeighborBoardComment> neighborCommentUpdate(@RequestBody NeighborBoardCommentDTO neighborBoardCommentDTO) {
+//        NeighborBoardComment comment = neighborBoardService.neighborCommentview(neighborBoardCommentDTO.getNeighborCommentCode());
+//
+//        comment.setNeighborCommentCode(neighborBoardCommentDTO.getNeighborCommentCode());
+//        comment.setNeighborCommentContent(neighborBoardCommentDTO.getNeighborCommentContent());
 
-        comment.setNeighborCommentCode(neighborBoardCommentDTO.getNeighborCommentCode());
-        comment.setNeighborCommentContent(neighborBoardCommentDTO.getNeighborCommentContent());
+        NeighborBoardComment comment = NeighborBoardComment.builder()
+                .neighborBoard(NeighborBoard.builder()
+                        .neighborBoardCode(neighborBoardCommentDTO.getNeighborBoardCode())
+                        .build())
+                .neighborCommentCode(neighborBoardCommentDTO.getNeighborCommentCode())
+                .neighborCommentContent(neighborBoardCommentDTO.getNeighborCommentContent())
+                .user(User.builder()
+                        .userId(userInfo().getUserId())
+                        .build())
+                .build();
 
         neighborBoardService.neighborCommentUpdate(comment);
         return ResponseEntity.ok().build();
@@ -332,25 +354,27 @@ public class NeighborBoardController {
 
             for(NeighborBoardComment reply : replies) {
                 NeighborBoardCommentDTO dto = NeighborBoardCommentDTO.builder()
-                        .neighborBoardCode(reply.getNeighborBoardCode())
+                        .neighborBoardCode(reply.getNeighborBoard().getNeighborBoardCode())
                         .neighborCommentCode(reply.getNeighborCommentCode())
                         .neighborCommentContent(reply.getNeighborCommentContent())
                         .neighborCommentRegiDate(reply.getNeighborCommentRegiDate())
-                        .user(UserDTO.builder()
-                                .userNickname(reply.getUser().getUserNickname())
-                                .build())
+//                        .user(User.builder()
+//                                .userNickname(reply.getUser().getUserNickname())
+//                                .build())
+                        .user(reply.getUser())
                         .build();
                 repliesDTO.add(dto);
             }
 
             NeighborBoardCommentDTO dto = NeighborBoardCommentDTO.builder()
-                    .neighborBoardCode(top.getNeighborBoardCode())
+                    .neighborBoardCode(top.getNeighborBoard().getNeighborBoardCode())
                     .neighborCommentCode(top.getNeighborCommentCode())
                     .neighborCommentContent(top.getNeighborCommentContent())
                     .neighborCommentRegiDate(top.getNeighborCommentRegiDate())
-                    .user(UserDTO.builder()
-                            .userNickname(top.getUser().getUserNickname())
-                            .build())
+//                    .user(User.builder()
+//                            .userNickname(top.getUser().getUserNickname())
+//                            .build())
+                    .user(top.getUser())
                     .neighborReplies(repliesDTO)
                     .build();
             response.add(dto);

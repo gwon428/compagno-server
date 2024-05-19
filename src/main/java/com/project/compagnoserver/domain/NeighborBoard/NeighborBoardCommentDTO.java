@@ -19,9 +19,9 @@ public class NeighborBoardCommentDTO {
     private int neighborBoardCode;
     private String neighborCommentContent;
     private Date neighborCommentRegiDate;
-    private UserDTO user;
-//    private int sitterCommentParentCode;
-//    private String sitterCommentStatus;
+    private User user;
+    private int neighborCommentParentCode;
+    private String neighborCommentStatus;
 //    private Date sitterCommentDelDate;
 
     private List<NeighborBoardCommentDTO> neighborReplies = new ArrayList<>();
