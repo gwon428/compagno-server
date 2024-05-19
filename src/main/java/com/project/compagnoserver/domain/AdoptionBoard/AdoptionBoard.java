@@ -53,14 +53,12 @@ public class AdoptionBoard {
     @Column(name="adoption_animal_color")
     private String adopAnimalColor;
 
-    // 입양 동물 발견 장소
     @Column(name=" adoption_animal_findplace")
     private String adopAnimalFindplace;
 
     @Column(name="adoption_animal_gender")
     private String adopAnimalGender;
 
-    // 입양 동물 중성화 유무
     @Column(name="adoption_animal_neuter")
     private String adopAnimalNeuter;
 
@@ -81,7 +79,6 @@ public class AdoptionBoard {
     @Column(name="adoption_center_phone")
     private String adopCenterPhone;
 
-//    @OneToMany(mappedBy = "adopBoardCode", cascade = CascadeType.ALL)
     @OneToMany(mappedBy = "adopBoardCode")
     private List<AdoptionBoardImage> images;
 
