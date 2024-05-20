@@ -56,17 +56,20 @@ public class NeighborBoardController {
 
     // 전체 보기
     @GetMapping("public/neighbor")
-    public ResponseEntity<Page<NeighborBoard>> neighborViewAll(@RequestParam(name = "animalCategory", required = false) Integer animalCateCode,
-                                                               @RequestParam(name = "locationProvince", required = false) Integer provinceCode,
-                                                               @RequestParam(name = "locationDistrict", required = false) Integer districtCode,
+    public ResponseEntity<Page<NeighborBoard>> neighborViewAll(@RequestParam(name = "searchAnimal", required = false) Integer animalCateCode,
+                                                               @RequestParam(name = "searchProvince", required = false) Integer provinceCode,
+                                                               @RequestParam(name = "searchDistrict", required = false) Integer districtCode,
+                                                               @RequestParam(name="searchSelect", required = false, defaultValue = "title") String searchSelect,
+                                                               @RequestParam(name="title", required = false) String title,
+                                                               @RequestParam(name="id", required = false) String id,
                                                                @RequestParam(name = "page", defaultValue = "1") int page,
-                                                               @RequestParam(name = "sortBy", defaultValue = "0") int sortBy) {
+                                                               @RequestParam(name = "sort", defaultValue = "0") int sortBy) {
         // ================================ 검색 ================================
         QNeighborBoard qNeighborBoard = QNeighborBoard.neighborBoard;
         BooleanBuilder builder = new BooleanBuilder();
         BooleanExpression expression;
 
-        if(animalCateCode!=null) {
+        if(animalCateCode!=null && animalCateCode != 0) {
             expression = qNeighborBoard.animalCategoryCode.animalCategoryCode.eq(animalCateCode);
             builder.and(expression);
         }
@@ -77,6 +80,15 @@ public class NeighborBoardController {
 
         if(districtCode!=null){
             expression = qNeighborBoard.location.locationCode.eq(districtCode);
+            builder.and(expression);
+        }
+
+        if(title != null){
+            expression = qNeighborBoard.neighborBoardTitle.like("%" + title + "%");
+            builder.and(expression);
+        }
+        if(id != null){
+            expression = qNeighborBoard.user.userId.like("%" + id + "%");
             builder.and(expression);
         }
 
@@ -314,6 +326,7 @@ public class NeighborBoardController {
     // 댓글 수정
     @PutMapping("neighbor/comment")
     public ResponseEntity<NeighborBoardComment> neighborCommentUpdate(@RequestBody NeighborBoardCommentDTO neighborBoardCommentDTO) {
+
 //        NeighborBoardComment comment = neighborBoardService.neighborCommentview(neighborBoardCommentDTO.getNeighborCommentCode());
 //
 //        comment.setNeighborCommentCode(neighborBoardCommentDTO.getNeighborCommentCode());
