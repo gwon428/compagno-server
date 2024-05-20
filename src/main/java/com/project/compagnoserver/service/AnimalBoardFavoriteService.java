@@ -47,7 +47,7 @@ public class AnimalBoardFavoriteService {
     // 좋아요 수
     @Transactional
     public void favCount(AnimalBoardFavoriteDTO dto){
-        log.info("service boolean : " + dto.isCheckBoolean());
+//        log.info("service boolean : " + dto.isCheckBoolean());
         if(dto.isCheckBoolean()){
             jpaQueryFactory.update(qAnimalBoard)
                     .set(qAnimalBoard.animalBoardFavoriteCount, qAnimalBoard.animalBoardFavoriteCount.add(1))

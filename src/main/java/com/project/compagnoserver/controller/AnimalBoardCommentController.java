@@ -44,7 +44,7 @@ public class AnimalBoardCommentController {
     @PostMapping("/animal-board/comment")
     public ResponseEntity<AnimalBoardComment> writeComment(@RequestBody AnimalBoardCommentDTO dto) {
 
-        log.info("dto : " + dto);
+//        log.info("dto : " + dto);
         Date nowDate = currentDate ();
         Object principal = Authentication();
         if(principal instanceof  User){
@@ -84,7 +84,7 @@ public class AnimalBoardCommentController {
     // 댓글 수정 - 권한필요
     @PutMapping("/animal-board/comment")
     public ResponseEntity<AnimalBoardComment> updateComment(@RequestBody AnimalBoardCommentDTO dto){
-        log.info("dto : " + dto);
+//        log.info("dto : " + dto);
         Object principal = Authentication();
         if(principal instanceof  User) {
             User user = (User) principal;
@@ -111,7 +111,7 @@ public class AnimalBoardCommentController {
     @Transactional
     @PostMapping("/animal-board/deleteComment")
     public ResponseEntity<?> deleteComment (@RequestBody AnimalBoardCommentDTO commentCodes){
-        log.info("부모자식 : " + commentCodes);
+//        log.info("부모자식 : " + commentCodes);
         Object principal = Authentication();
         if(principal instanceof  User) {
             if(commentCodes.getAnimalParentCode()!=0){ // 부모코드가 0이 아니면, 즉 자식댓글일때

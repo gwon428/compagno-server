@@ -50,7 +50,7 @@ public class AnimalBoardService {
 
     // 자유게시판 글쓰기 - 2-2) 완성된 이미지 리스트 불러오기
     public AnimalBoardImage getThumbnailList(int boardCode){
-        log.info("받은 boardCode : " + boardCode);
+//        log.info("받은 boardCode : " + boardCode);
         return queryFactory.selectFrom(qAnimalBoardImage)
                 .where(qAnimalBoardImage.animalBoard.animalBoardCode.eq(boardCode))
                 .fetchFirst();
@@ -59,7 +59,7 @@ public class AnimalBoardService {
     // 자유게시판 글쓰기 - 2-3) 썸네일 저장
     @Transactional
     public void saveThumbnail(String image, AnimalBoard vo){
-        log.info("service thumbnail : " + image);
+//        log.info("service thumbnail : " + image);
          queryFactory.update(qAnimalBoard)
                 .set(qAnimalBoard.animalMainImage, image)
                 .where(qAnimalBoard.animalBoardCode.eq(vo.getAnimalBoardCode()))
