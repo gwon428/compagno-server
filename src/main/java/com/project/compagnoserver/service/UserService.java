@@ -46,9 +46,6 @@ public class UserService {
         List<AnimalCategory> category = categoryList();
         for(AnimalCategory oneCategory : category){
 
-//            log.info("user : " + user.getUserId());
-//            log.info("category : " + oneCategory.getAnimalCategoryCode());
-//            log.info("=======================");
             logicDAO.setLogicBase(user.getUserId(), oneCategory.getAnimalCategoryCode());
         }
     }
