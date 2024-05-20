@@ -86,14 +86,14 @@ public class AnimalBoardController {
                 .build(); //    \\DESKTOP-U0CNG13\ upload\여기까지가 25글자   animalBoard전에 딱 끊김
 
         AnimalBoardImage response = animalBoardService.saveImages(image);
-        log.info("controller response : " + response);
+//        log.info("controller response : " + response);
         return ResponseEntity.ok(response); // 제일 중요한거! 사진 미리보기등 특정 부분의 결과값 확인을 위해서
     }
     @PostMapping("/animal-board")
     public ResponseEntity<AnimalBoard> writeBoard(@RequestBody AnimalBoardDTO dto){
         Date nowDate = currentDate();
 
-        log.info("write dto : " + dto);
+//        log.info("write dto : " + dto);
         Object principal = Authentication();
         if(principal instanceof  User) {
             User user = (User) principal;
@@ -171,7 +171,7 @@ public class AnimalBoardController {
 
             // 완성된 이미지 리스트 불러오기 - 추후에 리스트로 변경하여 사용자에게 선택권한을 줌
             AnimalBoardImage thumbnail = animalBoardService.getThumbnailList(response.getAnimalBoardCode());
-            log.info("thumbnail : " + thumbnail);
+//            log.info("thumbnail : " + thumbnail);
             if(thumbnail!=null){
                 animalBoardService.saveThumbnail(thumbnail.getAnimalBoardImage(), response);
             } else{
@@ -190,9 +190,9 @@ public class AnimalBoardController {
     public ResponseEntity<Page<AnimalBoard>> viewAll(@RequestParam(name = "page", defaultValue = "1")int page,
                                                      @RequestParam(name = "animalCategory", required = false)Integer animalCategory,
                                                      @RequestParam(name = "sortBy" , defaultValue = "0")Integer sortBy){
-    log.info("page : " + page);
-        log.info("animalCategoryCode : " + animalCategory);
-        log.info("sortBy : " + sortBy);
+//    log.info("page : " + page);
+//        log.info("animalCategoryCode : " + animalCategory);
+//        log.info("sortBy : " + sortBy);
         // category 검색
         QAnimalBoard qAnimalBoard = QAnimalBoard.animalBoard;
         BooleanBuilder builder = new BooleanBuilder();
@@ -224,7 +224,7 @@ public class AnimalBoardController {
         Pageable pageable = PageRequest.of(page-1, 10, sort);
 
         Page<AnimalBoard> list = animalBoardService.viewAll(pageable, builder);
-        log.info("최종 list : " + list);
+//        log.info("최종 list : " + list);
 
         return list!=null ? ResponseEntity.ok(list) : ResponseEntity.badRequest().build();
     }
@@ -241,7 +241,7 @@ public class AnimalBoardController {
                     .build();
             listDTO.add(dto);
         }
-        log.info("favDTO : " + listDTO);
+//        log.info("favDTO : " + listDTO);
         return ResponseEntity.ok(listDTO);
     }
 
@@ -287,7 +287,7 @@ public class AnimalBoardController {
     // 자유게시판 - 글 한개보기 = 조회수
     @GetMapping("public/animal-board/{animalBoardCode}/viewCount")
     public ResponseEntity<Integer> viewCount(@PathVariable(name = "animalBoardCode") int animalBoardCode){
-        log.info("조회수 : " + animalBoardCode);
+//        log.info("조회수 : " + animalBoardCode);
         animalBoardService.boardView(animalBoardCode);
         return ResponseEntity.ok().build();
     }
@@ -318,15 +318,15 @@ public class AnimalBoardController {
     // 자유게시판 수정 : 기존 이미지 가져오기
     @GetMapping("public/animal-board/{animalBoardCode}/prevImages")
     public ResponseEntity<List<AnimalBoardImage>> getPrevImages(@PathVariable(name = "animalBoardCode")int boardCode){
-        log.info("글 수정 boardCOde: " + boardCode);
+//        log.info("글 수정 boardCOde: " + boardCode);
         List<AnimalBoardImage> prevImages = animalBoardService.getPrevImages(boardCode);
-        log.info("prevImages : " + prevImages);
+//        log.info("prevImages : " + prevImages);
         return prevImages!=null ?  ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
     // 자유게시판 - 글 수정
     @PutMapping("/animal-board")
     public ResponseEntity<AnimalBoard> boardUpdate(@RequestBody AnimalBoardDTO dto) throws IOException {
-        log.info("수정 dto : " + dto);
+//        log.info("수정 dto : " + dto);
         Date nowDate = currentDate();
         Object principal = Authentication();
         if(principal instanceof  User) {
@@ -367,9 +367,9 @@ public class AnimalBoardController {
                     if(image.contains("\"")){
                         String[] finalizedArr = image.split("\"");
                         String finalizedImage = finalizedArr[0];
-                        log.info("db에 저장될 이미지 : " + image);
-                        log.info("2차 처리 이미지 배열: " + finalizedArr[0]);
-                        log.info("2차 처리 이미지 최종본: " + finalizedImage);
+//                        log.info("db에 저장될 이미지 : " + image);
+//                        log.info("2차 처리 이미지 배열: " + finalizedArr[0]);
+//                        log.info("2차 처리 이미지 최종본: " + finalizedImage);
                         images.add(finalizedImage);
                         // image-resize가 적용될 경우 split을 통해서 이미지 문자열만 2차 재추출 해야함.
                     }else{
@@ -379,15 +379,15 @@ public class AnimalBoardController {
                     }
                 }
             }
-            log.info("수정 후 이미지 리스트 : " + images);
+//            log.info("수정 후 이미지 리스트 : " + images);
             /* =================================================================================== */
             // animal_board_code 가 null 인 이미지 가져오기
             List<AnimalBoardImage> list = animalBoardService.viewImages(); // 여기에 userId=? 조건도 같이 붙으면 여러명이 써도 상관 x
             // 일단 그냥 막 들어와진 이미지들
 
             for(AnimalBoardImage image : list){
-                log.info("imageg where code=null from db : " + image);
-                log.info("새로 들어온 이미지 : " + image.getAnimalBoardImage());
+//                log.info("imageg where code=null from db : " + image);
+//                log.info("새로 들어온 이미지 : " + image.getAnimalBoardImage());
                 if(images.contains(image.getAnimalBoardImage())){
                     // 확실이 들어가야하는 이미지리스트와 막무가내 리스트 비교, 두 비교값이 같다면?
                     // 즉, DB에 저장되어야 하는 값을 발견했을때는 true
@@ -408,7 +408,7 @@ public class AnimalBoardController {
 
             // 완성된 이미지 리스트 불러오기 - 추후에 리스트로 변경하여 사용자에게 선택권한을 줌
             AnimalBoardImage thumbnail = animalBoardService.getThumbnailList(response.getAnimalBoardCode());
-            log.info("thumbnail : " + thumbnail);
+//            log.info("thumbnail : " + thumbnail);
             if(thumbnail!=null){
                 animalBoardService.saveThumbnail(thumbnail.getAnimalBoardImage(), response);
             } else{
@@ -479,7 +479,7 @@ public class AnimalBoardController {
     // 글마다 좋아요 수 조회
     @PutMapping("/public/animal-board/countFavorite")
     public ResponseEntity<?> favCount(@RequestBody AnimalBoardFavoriteDTO dto){
-        log.info("좋아요 dto : " + dto);
+//        log.info("좋아요 dto : " + dto);
         favoriteService.favCount(dto);
         return ResponseEntity.ok().build();
     }

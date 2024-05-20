@@ -28,7 +28,7 @@ public class AdRecommendLogicService {
 
     // 현재 포인트 가져오기
     public List<AdRecommendLogic> getCurrentPoint(String userId){
-        log.info("point id : " + userId);
+//        log.info("point id : " + userId);
         return queryFactory.selectFrom(qAdRecommendLogic)
                 .where(qAdRecommendLogic.user.userId.eq(userId))
                 .fetch();
