@@ -32,13 +32,11 @@ public class TokenProvider {
                         "userEmail", user.getUserEmail(),
                         "userStatus",user.getUserStatus(),
                         "userEnrollDate", user.getUserEnrollDate()
-
                 ))
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS))) // 로그인 토큰 유지기간 1일
                 .compact();
     }
-
     public User validateGetUser(String token) {
         Claims claims = Jwts.parser()
                             .setSigningKey(secretKey)

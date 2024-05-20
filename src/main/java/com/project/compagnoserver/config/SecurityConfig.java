@@ -23,13 +23,6 @@ public class SecurityConfig {
         return http.csrf(csrf -> csrf.disable())
                 .httpBasic(basic -> basic.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/**").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .build();
-//    }
-//}
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/compagno/login").permitAll()
                         .requestMatchers("/compagno/signUp").permitAll()

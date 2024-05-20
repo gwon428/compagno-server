@@ -46,9 +46,6 @@ public class UserService {
         List<AnimalCategory> category = categoryList();
         for(AnimalCategory oneCategory : category){
 
-//            log.info("user : " + user.getUserId());
-//            log.info("category : " + oneCategory.getAnimalCategoryCode());
-//            log.info("=======================");
             logicDAO.setLogicBase(user.getUserId(), oneCategory.getAnimalCategoryCode());
         }
     }
@@ -57,7 +54,6 @@ public class UserService {
     public User login(String id, String password, PasswordEncoder encoder) {
         User user = userDao.findById(id).orElse(null);
         if (user!=null && encoder.matches(password, user.getUserPwd())) {
-            log.info("user : " + user);
             return user;
         }
         return null;
@@ -77,8 +73,6 @@ public class UserService {
     // 닉네임 중복검사
     public int checkUserNick(String nickname) {
         Integer checkNickResult = userDao.checkDuplicationNick(nickname);
-        log.info("입력값 : " + nickname);
-        log.info("닉네임조회 결과 : " + checkNickResult);
         return checkNickResult;
     }
 
