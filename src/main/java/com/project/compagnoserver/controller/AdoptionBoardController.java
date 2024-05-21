@@ -218,7 +218,8 @@ public class AdoptionBoardController {
                 File file = new File(image.getAdopImage());
                 file.delete();
                 service.delImg(image.getAdopImageCode());
-                mainImage.remove(0);
+//                mainImage.remove(0);
+                mainImage.removeAll(mainImage);
             }
             for(MultipartFile file : dto.getImages()){
                 String fileName =  file.getOriginalFilename();

@@ -252,7 +252,8 @@ public ResponseEntity<LostBoard> updateViewCount(@RequestParam(name="lostBoardCo
                 File file = new File(image.getLostImage());
                 file.delete();
                 service.deleteImage(image.getLostImageCode());
-                mainImage.remove(0);
+//                mainImage.remove(0);
+                mainImage.removeAll(mainImage);
             }
             for(MultipartFile file : dto.getImages()){
 
